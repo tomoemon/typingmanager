@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TypingManager.Properties {
+namespace DetailLogPlugin.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace TypingManager.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TypingManager.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DetailLogPlugin.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,24 +57,6 @@ namespace TypingManager.Properties {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   タイピングマネージャ（仮） に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string ApplicationName {
-            get {
-                return ResourceManager.GetString("ApplicationName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   tomoemon に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string Author {
-            get {
-                return ResourceManager.GetString("Author", resourceCulture);
             }
         }
         
@@ -111,24 +93,6 @@ namespace TypingManager.Properties {
         internal static string NoLogSelect {
             get {
                 return ResourceManager.GetString("NoLogSelect", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   スタートアップへの登録が完了しました に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string StartupRegist {
-            get {
-                return ResourceManager.GetString("StartupRegist", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   スタートアップの登録を解除しました に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string StartupUnregist {
-            get {
-                return ResourceManager.GetString("StartupUnregist", resourceCulture);
             }
         }
     }

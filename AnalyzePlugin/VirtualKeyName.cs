@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TypingManager
+namespace Plugin
 {
     public static class VirtualKeyName
     {

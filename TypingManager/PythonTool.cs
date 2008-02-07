@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using IronPython.Hosting;
-using AnalyzePlugin;
+using Plugin;
 
 namespace TypingManager
 {

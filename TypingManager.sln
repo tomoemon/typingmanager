@@ -2,8 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypingManager", "TypingManager\TypingManager.csproj", "{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD} = {A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalyzePlugin", "AnalyzePlugin\AnalyzePlugin.csproj", "{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin", "AnalyzePlugin\Plugin.csproj", "{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

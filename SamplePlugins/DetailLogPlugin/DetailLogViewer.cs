@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Xml;
 using System.IO;
 
-namespace TypingManager
+namespace DetailLogPlugin
 {
     public class DetailLogViewer
     {
@@ -77,7 +77,7 @@ namespace TypingManager
 
             foreach (string path in files)
             {
-                Debug.WriteLine(path);
+                Console.WriteLine(path);
                 DetailLogInfo info = new DetailLogInfo();
                 info.FileName = path;
 
@@ -114,7 +114,7 @@ namespace TypingManager
                                 {
                                     do
                                     {
-                                        Debug.WriteLine(string.Format("ëÆê´Çî≠å© {0}={1}", reader.Name, reader.Value));
+                                        Console.WriteLine(string.Format("ëÆê´Çî≠å© {0}={1}", reader.Name, reader.Value));
                                     } while (reader.MoveToNextAttribute());
                                 }
                                 */
@@ -163,11 +163,11 @@ namespace TypingManager
                 /*
                 foreach (string tag in TagList)
                 {
-                    Debug.Write(tag + ",");
+                    Console.Write(tag + ",");
                 }
-                Debug.Write("\n");
-                Debug.WriteLine(info.Comment);
-                Debug.WriteLine(info.Date.ToString());
+                Console.Write("\n");
+                Console.WriteLine(info.Comment);
+                Console.WriteLine(info.Date.ToString());
                  * */
             }
         }

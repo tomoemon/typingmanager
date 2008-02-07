@@ -29,7 +29,7 @@ namespace TypingManager
         public ProcessNameInfo() { }
     }
 
-    public class StrokeProcessName
+    public class StrokeProcessName : Plugin.BaseStrokePlugin, Plugin.IProcessNameData
     {
         public const string NO_TARGET = "null";
 
@@ -50,6 +50,39 @@ namespace TypingManager
             get { return path_dic.Count - 1; }
         }
         #endregion
+
+
+        #region BaseStrokePluginの実装上書き
+        /// <summary>プラグインの名前を返すこと</summary>
+        public override string GetPluginName() { return "プロセスID管理"; }
+
+        /// <summary>プラグインの名前を返すこと</summary>
+        public override string GetAccessName() { return "process_name"; }
+
+        /// <summary>プラグインに関する簡単な説明を書くこと</summary>
+        public override string GetComment() { return "プロセス名とID情報を管理します"; }
+
+        /// <summary>プラグイン作者の名前を返すこと</summary>
+        public override string GetAuthorName() { return "tomoemon"; }
+
+        /// <summary>プラグインのバージョンを書くこと</summary>
+        public override string GetVersion() { return "0.0.1"; }
+
+        public override object GetInfo()
+        {
+            return (Plugin.IProcessNameData)this;
+        }
+        #endregion
+
+
+        public StrokeProcessName()
+        {
+            base.Valid = true;
+            path_dic = new Dictionary<string, ProcessNameInfo>();
+            id_dic = new Dictionary<int, string>();
+            Add(NO_TARGET, NO_TARGET);
+            next_id = 1;
+        }
 
         /// <summary>
         /// すべて小文字にしたパスを返す
@@ -128,14 +161,6 @@ namespace TypingManager
             }
             return 0;
         }
-        
-        public StrokeProcessName()
-        {
-            path_dic = new Dictionary<string, ProcessNameInfo>();
-            id_dic = new Dictionary<int, string>();
-            Add(NO_TARGET, NO_TARGET);
-            next_id = 1;
-        }
 
         public void Stroke(string app_path)
         {
@@ -207,7 +232,7 @@ namespace TypingManager
 
         public void Save()
         {
-            Save(LogDir.PROCESS_FILE);
+            Save(Plugin.LogDir.PROCESS_FILE);
         }
 
         public void Load(string filename)
@@ -253,7 +278,7 @@ namespace TypingManager
 
         public void Load()
         {
-            Load(LogDir.PROCESS_FILE);    
+            Load(Plugin.LogDir.PROCESS_FILE);    
         }
     }
 }

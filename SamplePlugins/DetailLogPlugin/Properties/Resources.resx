@@ -117,13 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ApplicationName" xml:space="preserve">
-    <value>タイピングマネージャ（仮）</value>
-    <comment>アプリケーション名（タイトル文字列）</comment>
-  </data>
-  <data name="Author" xml:space="preserve">
-    <value>tomoemon</value>
-  </data>
   <data name="CsvErrMsgTitle" xml:space="preserve">
     <value>CSV出力エラー</value>
   </data>
@@ -135,11 +128,5 @@
   </data>
   <data name="NoLogSelect" xml:space="preserve">
     <value>詳細ログリストから一つ以上のログを選択してください。</value>
-  </data>
-  <data name="StartupRegist" xml:space="preserve">
-    <value>スタートアップへの登録が完了しました</value>
-  </data>
-  <data name="StartupUnregist" xml:space="preserve">
-    <value>スタートアップの登録を解除しました</value>
   </data>
 </root>

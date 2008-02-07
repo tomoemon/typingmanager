@@ -53,11 +53,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label24 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.textBox13 = new System.Windows.Forms.TextBox();
             this.textBox12 = new System.Windows.Forms.TextBox();
@@ -87,59 +82,41 @@
             this.columnHeader2_0 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader2_1 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader2_2 = new System.Windows.Forms.ColumnHeader();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.listView3 = new System.Windows.Forms.ListView();
-            this.columnHeader3_1 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader3_2 = new System.Windows.Forms.ColumnHeader();
-            this.listView4 = new System.Windows.Forms.ListView();
-            this.columnHeader4_0 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader4_1 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader4_2 = new System.Windows.Forms.ColumnHeader();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.ファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.終了ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.オプションOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ウィンドウタイトル別の打鍵数を保存TToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.プラグインPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.プラグイン一覧VToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.スタートアップに登録ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.スタートアップを解除ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.表示ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.常に手前に表示するToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.履歴グラフのマークMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.なしToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.履歴グラフのマークMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.常に手前に表示するToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ウィンドウタイトル別の打鍵数を保存TToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.スタートアップに登録ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.スタートアップを解除ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.プラグインPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.プラグイン一覧VToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.選択した項目をコピーCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.tabPage4.SuspendLayout();
-            this.groupBox6.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -149,8 +126,6 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Controls.Add(this.tabPage4);
-            this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Location = new System.Drawing.Point(12, 29);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -162,7 +137,6 @@
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage1.Controls.Add(this.groupBox5);
             this.tabPage1.Controls.Add(this.groupBox4);
-            this.tabPage1.Controls.Add(this.groupBox3);
             this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
@@ -409,58 +383,6 @@
             this.label4.Size = new System.Drawing.Size(67, 12);
             this.label4.TabIndex = 0;
             this.label4.Text = "イベントタイプ";
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.label24);
-            this.groupBox3.Controls.Add(this.comboBox1);
-            this.groupBox3.Controls.Add(this.button2);
-            this.groupBox3.Controls.Add(this.button1);
-            this.groupBox3.Location = new System.Drawing.Point(10, 101);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(414, 67);
-            this.groupBox3.TabIndex = 2;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "詳細ログ";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(140, 15);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(259, 12);
-            this.label24.TabIndex = 3;
-            this.label24.Text = "コメント（ [タグ] のように括弧で囲むとタグ付けできます）";
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(142, 30);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(254, 20);
-            this.comboBox1.TabIndex = 2;
-            this.comboBox1.Text = "[テスト] コメントのサンプル";
-            // 
-            // button2
-            // 
-            this.button2.Enabled = false;
-            this.button2.Location = new System.Drawing.Point(71, 27);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(52, 25);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "OFF";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(13, 27);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(52, 25);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "ON";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // groupBox2
             // 
@@ -784,170 +706,12 @@
             this.columnHeader2_2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeader2_2.Width = 81;
             // 
-            // tabPage4
-            // 
-            this.tabPage4.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage4.Controls.Add(this.label2);
-            this.tabPage4.Controls.Add(this.label1);
-            this.tabPage4.Controls.Add(this.button4);
-            this.tabPage4.Controls.Add(this.button3);
-            this.tabPage4.Controls.Add(this.listView3);
-            this.tabPage4.Controls.Add(this.listView4);
-            this.tabPage4.Controls.Add(this.groupBox6);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(430, 311);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "詳細ログ";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label2.Location = new System.Drawing.Point(239, 60);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(79, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "詳細ログリスト";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label1.Location = new System.Drawing.Point(45, 60);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(52, 13);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "ログ分類";
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(336, 17);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(89, 31);
-            this.button4.TabIndex = 5;
-            this.button4.Text = "CSV出力";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(241, 16);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(89, 32);
-            this.button3.TabIndex = 4;
-            this.button3.Text = "ログ読み込み";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // listView3
-            // 
-            this.listView3.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader3_1,
-            this.columnHeader3_2});
-            this.listView3.GridLines = true;
-            this.listView3.Location = new System.Drawing.Point(12, 75);
-            this.listView3.MultiSelect = false;
-            this.listView3.Name = "listView3";
-            this.listView3.Size = new System.Drawing.Size(132, 230);
-            this.listView3.TabIndex = 3;
-            this.listView3.UseCompatibleStateImageBehavior = false;
-            this.listView3.View = System.Windows.Forms.View.Details;
-            this.listView3.SelectedIndexChanged += new System.EventHandler(this.listView3_SelectedIndexChanged);
-            this.listView3.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView3_ColumnClick);
-            // 
-            // columnHeader3_1
-            // 
-            this.columnHeader3_1.Text = "日付";
-            this.columnHeader3_1.Width = 73;
-            // 
-            // columnHeader3_2
-            // 
-            this.columnHeader3_2.Text = "数";
-            this.columnHeader3_2.Width = 32;
-            // 
-            // listView4
-            // 
-            this.listView4.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader4_0,
-            this.columnHeader4_1,
-            this.columnHeader4_2});
-            this.listView4.FullRowSelect = true;
-            this.listView4.GridLines = true;
-            this.listView4.Location = new System.Drawing.Point(150, 75);
-            this.listView4.Name = "listView4";
-            this.listView4.Size = new System.Drawing.Size(274, 230);
-            this.listView4.TabIndex = 2;
-            this.listView4.UseCompatibleStateImageBehavior = false;
-            this.listView4.View = System.Windows.Forms.View.Details;
-            this.listView4.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView4_ColumnClick);
-            // 
-            // columnHeader4_0
-            // 
-            this.columnHeader4_0.Text = "日付";
-            this.columnHeader4_0.Width = 93;
-            // 
-            // columnHeader4_1
-            // 
-            this.columnHeader4_1.Text = "時刻";
-            this.columnHeader4_1.Width = 42;
-            // 
-            // columnHeader4_2
-            // 
-            this.columnHeader4_2.Text = "コメント";
-            this.columnHeader4_2.Width = 94;
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.radioButton2);
-            this.groupBox6.Controls.Add(this.radioButton1);
-            this.groupBox6.Location = new System.Drawing.Point(12, 6);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(196, 43);
-            this.groupBox6.TabIndex = 0;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "ログの分類方法";
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(112, 19);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(74, 16);
-            this.radioButton2.TabIndex = 1;
-            this.radioButton2.Text = "タグで分類";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Location = new System.Drawing.Point(14, 19);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(81, 16);
-            this.radioButton1.TabIndex = 0;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "日付で分類";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
-            // 
-            // tabPage5
-            // 
-            this.tabPage5.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(430, 311);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "詳細ログトリガ";
-            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ファイルToolStripMenuItem,
-            this.表示ToolStripMenuItem,
             this.オプションOToolStripMenuItem,
+            this.toolStripMenuItem1,
             this.プラグインPToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -973,6 +737,8 @@
             // オプションOToolStripMenuItem
             // 
             this.オプションOToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.常に手前に表示するToolStripMenuItem,
+            this.履歴グラフのマークMToolStripMenuItem,
             this.ウィンドウタイトル別の打鍵数を保存TToolStripMenuItem,
             this.toolStripSeparator2,
             this.スタートアップに登録ToolStripMenuItem,
@@ -980,6 +746,69 @@
             this.オプションOToolStripMenuItem.Name = "オプションOToolStripMenuItem";
             this.オプションOToolStripMenuItem.Size = new System.Drawing.Size(99, 22);
             this.オプションOToolStripMenuItem.Text = "オプション(&O)";
+            // 
+            // 常に手前に表示するToolStripMenuItem
+            // 
+            this.常に手前に表示するToolStripMenuItem.CheckOnClick = true;
+            this.常に手前に表示するToolStripMenuItem.Name = "常に手前に表示するToolStripMenuItem";
+            this.常に手前に表示するToolStripMenuItem.Size = new System.Drawing.Size(298, 22);
+            this.常に手前に表示するToolStripMenuItem.Text = "常に手前に表示する(&A)";
+            this.常に手前に表示するToolStripMenuItem.CheckedChanged += new System.EventHandler(this.常に手前に表示するToolStripMenuItem_CheckedChanged);
+            // 
+            // 履歴グラフのマークMToolStripMenuItem
+            // 
+            this.履歴グラフのマークMToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.なしToolStripMenuItem,
+            this.toolStripMenuItem2,
+            this.toolStripMenuItem3,
+            this.toolStripMenuItem4,
+            this.toolStripMenuItem5});
+            this.履歴グラフのマークMToolStripMenuItem.Name = "履歴グラフのマークMToolStripMenuItem";
+            this.履歴グラフのマークMToolStripMenuItem.Size = new System.Drawing.Size(298, 22);
+            this.履歴グラフのマークMToolStripMenuItem.Text = "履歴グラフのマーク(&M)";
+            this.履歴グラフのマークMToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.履歴グラフのマークMToolStripMenuItem_DropDownItemClicked);
+            // 
+            // なしToolStripMenuItem
+            // 
+            this.なしToolStripMenuItem.Checked = true;
+            this.なしToolStripMenuItem.CheckOnClick = true;
+            this.なしToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.なしToolStripMenuItem.Name = "なしToolStripMenuItem";
+            this.なしToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.なしToolStripMenuItem.Text = "なし";
+            this.なしToolStripMenuItem.Click += new System.EventHandler(this.なしToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.CheckOnClick = true;
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(100, 22);
+            this.toolStripMenuItem2.Text = "＋";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.CheckOnClick = true;
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(100, 22);
+            this.toolStripMenuItem3.Text = "■";
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.CheckOnClick = true;
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(100, 22);
+            this.toolStripMenuItem4.Text = "－";
+            this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click);
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.CheckOnClick = true;
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(100, 22);
+            this.toolStripMenuItem5.Text = "｜";
+            this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
             // 
             // ウィンドウタイトル別の打鍵数を保存TToolStripMenuItem
             // 
@@ -989,25 +818,53 @@
             this.ウィンドウタイトル別の打鍵数を保存TToolStripMenuItem.Text = "ウィンドウタイトル別の打鍵数を保存(&T)";
             this.ウィンドウタイトル別の打鍵数を保存TToolStripMenuItem.Click += new System.EventHandler(this.ウィンドウタイトル別の打鍵数を保存TToolStripMenuItem_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(295, 6);
+            // 
+            // スタートアップに登録ToolStripMenuItem
+            // 
+            this.スタートアップに登録ToolStripMenuItem.Name = "スタートアップに登録ToolStripMenuItem";
+            this.スタートアップに登録ToolStripMenuItem.Size = new System.Drawing.Size(298, 22);
+            this.スタートアップに登録ToolStripMenuItem.Text = "スタートアップに登録(&R)";
+            this.スタートアップに登録ToolStripMenuItem.Click += new System.EventHandler(this.スタートアップに登録ToolStripMenuItem_Click);
+            // 
+            // スタートアップを解除ToolStripMenuItem
+            // 
+            this.スタートアップを解除ToolStripMenuItem.Name = "スタートアップを解除ToolStripMenuItem";
+            this.スタートアップを解除ToolStripMenuItem.Size = new System.Drawing.Size(298, 22);
+            this.スタートアップを解除ToolStripMenuItem.Text = "スタートアップを解除(&U)";
+            this.スタートアップを解除ToolStripMenuItem.Click += new System.EventHandler(this.スタートアップを解除ToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.選択した項目をコピーCToolStripMenuItem});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(74, 22);
+            this.toolStripMenuItem1.Text = "ツール(&T)";
+            // 
             // プラグインPToolStripMenuItem
             // 
             this.プラグインPToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripSeparator1,
-            this.プラグイン一覧VToolStripMenuItem});
+            this.プラグイン一覧VToolStripMenuItem,
+            this.toolStripSeparator1});
             this.プラグインPToolStripMenuItem.Name = "プラグインPToolStripMenuItem";
             this.プラグインPToolStripMenuItem.Size = new System.Drawing.Size(97, 22);
             this.プラグインPToolStripMenuItem.Text = "プラグイン(&P)";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
             // 
             // プラグイン一覧VToolStripMenuItem
             // 
             this.プラグイン一覧VToolStripMenuItem.Name = "プラグイン一覧VToolStripMenuItem";
             this.プラグイン一覧VToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.プラグイン一覧VToolStripMenuItem.Text = "プラグイン一覧...(&V)";
+            this.プラグイン一覧VToolStripMenuItem.Click += new System.EventHandler(this.プラグイン一覧VToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
             // 
             // statusStrip1
             // 
@@ -1045,96 +902,11 @@
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
             // 
-            // toolStripSeparator2
+            // 選択した項目をコピーCToolStripMenuItem
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(295, 6);
-            // 
-            // スタートアップに登録ToolStripMenuItem
-            // 
-            this.スタートアップに登録ToolStripMenuItem.Name = "スタートアップに登録ToolStripMenuItem";
-            this.スタートアップに登録ToolStripMenuItem.Size = new System.Drawing.Size(298, 22);
-            this.スタートアップに登録ToolStripMenuItem.Text = "スタートアップに登録(&R)";
-            this.スタートアップに登録ToolStripMenuItem.Click += new System.EventHandler(this.スタートアップに登録ToolStripMenuItem_Click);
-            // 
-            // スタートアップを解除ToolStripMenuItem
-            // 
-            this.スタートアップを解除ToolStripMenuItem.Name = "スタートアップを解除ToolStripMenuItem";
-            this.スタートアップを解除ToolStripMenuItem.Size = new System.Drawing.Size(298, 22);
-            this.スタートアップを解除ToolStripMenuItem.Text = "スタートアップを解除(&U)";
-            this.スタートアップを解除ToolStripMenuItem.Click += new System.EventHandler(this.スタートアップを解除ToolStripMenuItem_Click);
-            // 
-            // 表示ToolStripMenuItem
-            // 
-            this.表示ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.常に手前に表示するToolStripMenuItem,
-            this.履歴グラフのマークMToolStripMenuItem});
-            this.表示ToolStripMenuItem.Name = "表示ToolStripMenuItem";
-            this.表示ToolStripMenuItem.Size = new System.Drawing.Size(62, 22);
-            this.表示ToolStripMenuItem.Text = "表示(&V)";
-            // 
-            // なしToolStripMenuItem
-            // 
-            this.なしToolStripMenuItem.Checked = true;
-            this.なしToolStripMenuItem.CheckOnClick = true;
-            this.なしToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.なしToolStripMenuItem.Name = "なしToolStripMenuItem";
-            this.なしToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.なしToolStripMenuItem.Text = "なし";
-            this.なしToolStripMenuItem.Click += new System.EventHandler(this.なしToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.CheckOnClick = true;
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem2.Text = "＋";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.CheckOnClick = true;
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem3.Text = "■";
-            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
-            // 
-            // toolStripMenuItem4
-            // 
-            this.toolStripMenuItem4.CheckOnClick = true;
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem4.Text = "－";
-            this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click);
-            // 
-            // toolStripMenuItem5
-            // 
-            this.toolStripMenuItem5.CheckOnClick = true;
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem5.Text = "｜";
-            this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
-            // 
-            // 履歴グラフのマークMToolStripMenuItem
-            // 
-            this.履歴グラフのマークMToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.なしToolStripMenuItem,
-            this.toolStripMenuItem2,
-            this.toolStripMenuItem3,
-            this.toolStripMenuItem4,
-            this.toolStripMenuItem5});
-            this.履歴グラフのマークMToolStripMenuItem.Name = "履歴グラフのマークMToolStripMenuItem";
-            this.履歴グラフのマークMToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
-            this.履歴グラフのマークMToolStripMenuItem.Text = "履歴グラフのマーク(&M)";
-            this.履歴グラフのマークMToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.履歴グラフのマークMToolStripMenuItem_DropDownItemClicked);
-            // 
-            // 常に手前に表示するToolStripMenuItem
-            // 
-            this.常に手前に表示するToolStripMenuItem.CheckOnClick = true;
-            this.常に手前に表示するToolStripMenuItem.Name = "常に手前に表示するToolStripMenuItem";
-            this.常に手前に表示するToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
-            this.常に手前に表示するToolStripMenuItem.Text = "常に手前に表示する(&A)";
-            this.常に手前に表示するToolStripMenuItem.CheckedChanged += new System.EventHandler(this.常に手前に表示するToolStripMenuItem_CheckedChanged);
+            this.選択した項目をコピーCToolStripMenuItem.Name = "選択した項目をコピーCToolStripMenuItem";
+            this.選択した項目をコピーCToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
+            this.選択した項目をコピーCToolStripMenuItem.Text = "選択した項目をコピー(&C)";
             // 
             // Form1
             // 
@@ -1156,8 +928,6 @@
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
@@ -1168,10 +938,6 @@
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
-            this.tabPage4.ResumeLayout(false);
-            this.tabPage4.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -1194,7 +960,6 @@
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox5;
@@ -1210,10 +975,6 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox10;
         private System.Windows.Forms.TextBox textBox9;
@@ -1227,7 +988,6 @@
         private System.Windows.Forms.TextBox textBox11;
         private System.Windows.Forms.TextBox textBox13;
         private System.Windows.Forms.TextBox textBox12;
-        private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ColumnHeader columnHeader1_0;
         private System.Windows.Forms.ColumnHeader columnHeader1_1;
@@ -1235,25 +995,10 @@
         private System.Windows.Forms.ListView listView2;
         private System.Windows.Forms.ColumnHeader columnHeader2_0;
         private System.Windows.Forms.ColumnHeader columnHeader2_1;
-        private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.ListView listView4;
-        private System.Windows.Forms.ColumnHeader columnHeader4_0;
-        private System.Windows.Forms.ColumnHeader columnHeader4_1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
-        private System.Windows.Forms.ListView listView3;
-        private System.Windows.Forms.ColumnHeader columnHeader3_1;
-        private System.Windows.Forms.ColumnHeader columnHeader4_2;
         private System.Windows.Forms.ColumnHeader columnHeader2_2;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.ColumnHeader columnHeader3_2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ToolStripMenuItem オプションOToolStripMenuItem;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
-        private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.ToolStripMenuItem プラグインPToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem プラグイン一覧VToolStripMenuItem;
@@ -1270,17 +1015,18 @@
         private System.Windows.Forms.TextBox textBox17;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.ToolStripMenuItem 表示ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem スタートアップに登録ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem スタートアップを解除ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 常に手前に表示するToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 履歴グラフのマークMToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem なしToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem スタートアップに登録ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem スタートアップを解除ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 常に手前に表示するToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem 選択した項目をコピーCToolStripMenuItem;
     }
 }
 

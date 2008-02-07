@@ -14,12 +14,11 @@ namespace TypingManager
     {
         private KeyboardHook keyHook;
         private StrokeNumLog strokeNumLog;
-        private StrokeTimeLog strokeTimeLog;
+        private PluginController pluginController;
         private KeyEventView keyEventView;
         private KeyStrokeView keyStrokeView;
         private TypingSpeed typingSpeed;
         private GraphChanger graphChanger;
-        private DetailLogViewer detailLogViewer;
         private TimerTaskController timerTaskController;
 
         /// <summary>
@@ -28,8 +27,8 @@ namespace TypingManager
         /// 項目数が増えて縦のスクロールバーが現れると幅が狭くなって
         /// しまい，横のスクロールバーが出てくる．これを防げる値
         /// </summary>
-        private const int LISTVIEW_RMARGIN = 25;
-        private const int LISTVEW_SMALL_ICON_SIZE = 16;
+        public const int LISTVIEW_RMARGIN = 25;
+        public const int LISTVEW_SMALL_ICON_SIZE = 16;
 
         #region プロパティ...
         public TextBox LastEventType
@@ -116,14 +115,6 @@ namespace TypingManager
         {
             get { return textBox12; }
         }
-        public ComboBox CommentBox
-        {
-            get { return comboBox1; }
-        }
-        public bool Logging
-        {
-            get { return strokeTimeLog.Logging; }
-        }
         public ToolStripMenuItem IsTopMostMenu
         {
             get { return 常に手前に表示するToolStripMenuItem; }
@@ -152,22 +143,6 @@ namespace TypingManager
         {
             get { return listView2; }
         }
-        public ListView DetailLogView
-        {
-            get { return listView4; }
-        }
-        public ListView DetailLogSelectView
-        {
-            get { return listView3; }
-        }
-        public RadioButton DateClassifyButton
-        {
-            get { return radioButton1; }
-        }
-        public RadioButton TagClassifyButton
-        {
-            get { return radioButton2; }
-        }
         public RadioButton ProcessViewTypeToday
         {
             get { return radioButton3; }
@@ -175,6 +150,10 @@ namespace TypingManager
         public RadioButton ProcessViewTypeAll
         {
             get { return radioButton4; }
+        }
+        public ToolStripMenuItem PluginMenu
+        {
+            get { return プラグインPToolStripMenuItem; }
         }
         #endregion
 
@@ -187,7 +166,7 @@ namespace TypingManager
             //this.ShowInTaskbar = false;
 
             // ログ保存用のディレクトリの存在チェックと生成
-            LogDir.LogDirectoryCheck();
+            Plugin.LogDir.LogDirectoryCheck();
 
             // アプリケーションの設定ファイル読み込み
             AppConfig.Load();
@@ -197,7 +176,6 @@ namespace TypingManager
                 AppConfig.TabIndex = 0;
             }
             tabControl1.TabIndex = AppConfig.TabIndex;
-            detailLogViewer = new DetailLogViewer();
             this.Text = Properties.Resources.ApplicationName;
 
             // 各リストビューの幅調整など
@@ -211,17 +189,6 @@ namespace TypingManager
             DayStrokeView.Columns[2].Width = DayStrokeView.Width - DayStrokeView.Columns[0].Width - 
                 DayStrokeView.Columns[1].Width - LISTVIEW_RMARGIN;
             DayStrokeView.ListViewItemSorter = new NumSort(1,2);
-            DetailLogSelectView.SmallImageList = new ImageList();
-            DetailLogSelectView.SmallImageList.ImageSize = new Size(1, LISTVEW_SMALL_ICON_SIZE);
-            DetailLogSelectView.ListViewItemSorter = new NumSort(1);
-            DetailLogSelectView.Columns[1].Width = DetailLogSelectView.Width -
-                DetailLogSelectView.Columns[0].Width - LISTVIEW_RMARGIN;
-            DetailLogView.SmallImageList = new ImageList();
-            DetailLogView.SmallImageList.ImageSize = new Size(1, LISTVEW_SMALL_ICON_SIZE);
-            DetailLogView.ListViewItemSorter = new NumSort();
-            DetailLogView.ShowItemToolTips = true;
-            DetailLogView.Columns[2].Width = DetailLogView.Width - DetailLogView.Columns[0].Width -
-                DetailLogView.Columns[1].Width - LISTVIEW_RMARGIN;
             
             // ステータスバーに現在時刻を反映
             DateTimeStatus.Text = DateTime.Now.ToString();
@@ -232,18 +199,19 @@ namespace TypingManager
 
             // 打鍵数カウントを担当するクラス
             strokeNumLog = new StrokeNumLog();
-
-            // 詳細ロギングを担当するクラス
-            strokeTimeLog = new StrokeTimeLog();            
             
-            // 詳細ログの過去のコメントを取得
-            LoadCommentHistory();
+            // プラグインコントローラの作成とプラグインの読み込み
+            pluginController = new PluginController(this);
+            pluginController.Load();
+            pluginController.AddMenu(PluginMenu);
+            pluginController.Add(strokeNumLog.GetPluginName(), strokeNumLog);
+            pluginController.Add(strokeNumLog.ProcessName.GetPluginName(), strokeNumLog.ProcessName);
 
             // 打鍵速度を計算するクラスを作成（サンプル数20）
             typingSpeed = new TypingSpeed(20);
 
             // キー入力に応じてGUIの値を更新するクラス
-            keyEventView = new KeyEventView(this, strokeTimeLog);
+            keyEventView = new KeyEventView(this);
             keyStrokeView = new KeyStrokeView(this, strokeNumLog);
 
             // 読み込んだAppConfigからGUIに反映させる
@@ -306,21 +274,13 @@ namespace TypingManager
             if (e.UpDown == KeyboardUpDown.Down)
             {
                 //Debug.WriteLine(e.KeyCode.ToString("d") + ":" + e.ScanCode.ToString("d") + ":down");
-                strokeTimeLog.KeyDown((int)e.KeyCode, e.ScanCode, now);
+                pluginController.KeyDown((int)e.KeyCode, now, app_path, app_title);
             }
             else
             {
                 //Debug.WriteLine(QueryTime.Now);
                 //Debug.WriteLine(e.KeyCode.ToString("d") + ":" + e.ScanCode.ToString("d") + ":up");
-                strokeTimeLog.KeyUp((int)e.KeyCode, e.ScanCode, now);
-                if (AppConfig.SaveTitleStroke)
-                {
-                    strokeNumLog.KeyStroke(app_path, app_title);
-                }
-                else
-                {
-                    strokeNumLog.KeyStroke(app_path, "");
-                }
+                pluginController.KeyUp((int)e.KeyCode, now, app_path, app_title);
                 typingSpeed.Stroke(now);
             }
             notifyIcon1.Text = string.Format("今日:{0}{1}昨日:{2}{3}合計:{4}",
@@ -353,42 +313,8 @@ namespace TypingManager
              * */
             AppConfig.TabIndex = tabControl1.SelectedIndex;
             AppConfig.Save();
-            strokeTimeLog.LoggingEnd();
-            strokeNumLog.Save();
-            SaveCommentHistory();
+            pluginController.Close();
             return true;
-        }
-
-        /// <summary>
-        /// 詳細ログにつけたコメントの履歴を保存する
-        /// </summary>
-        private void SaveCommentHistory()
-        {
-            using (StreamWriter sw = new StreamWriter(LogDir.COMMENT_FILE))
-            {
-                foreach (string text in CommentBox.Items)
-                {
-                    sw.WriteLine(text);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 詳細ログにつけるコメントの履歴ファイルを読み込む
-        /// </summary>
-        private void LoadCommentHistory()
-        {
-            if (File.Exists(LogDir.COMMENT_FILE))
-            {
-                using (StreamReader sr = new StreamReader(LogDir.COMMENT_FILE))
-                {
-                    string line;
-                    while ((line = sr.ReadLine()) != null) // 1行ずつ読み出し。
-                    {
-                        CommentBox.Items.Add(line);
-                    }
-                }
-            }
         }
 
         private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -416,38 +342,6 @@ namespace TypingManager
         {
             timerTaskController.CallTask(DateTime.Now);
             DateTimeStatus.Text = DateTime.Now.ToString();
-        }
-
-        /// <summary>
-        /// 「メイン」タブの詳細ログの取得開始ボタンが押されたときに呼び出される
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
-        {
-            strokeTimeLog.LoggingStart(comboBox1.Text);
-            if (comboBox1.Items.IndexOf(comboBox1.Text) == -1)
-            {
-                comboBox1.Items.Add(comboBox1.Text);
-                if (comboBox1.Items.Count > 10)
-                {
-                    comboBox1.Items.RemoveAt(0);
-                }
-            }
-            button1.Enabled = false;
-            button2.Enabled = true;
-        }
-
-        /// <summary>
-        /// 詳細ログの取得終了ボタンが押されたときに呼び出される
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
-        {
-            strokeTimeLog.LoggingEnd();
-            button1.Enabled = true;
-            button2.Enabled = false;
         }
 
         /// <summary>
@@ -482,11 +376,7 @@ namespace TypingManager
             graphChanger[AppConfig.LineGraphType].Draw(e.Graphics);
         }
 
-        private void 常に手前に表示するToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-            AppConfig.TopMost = 常に手前に表示するToolStripMenuItem.Checked;
-            this.TopMost = AppConfig.TopMost;
-        }
+       
 
         #region 線グラフにつけるマークの変更
         private void なしToolStripMenuItem_Click(object sender, EventArgs e)
@@ -582,26 +472,6 @@ namespace TypingManager
         }
 
         /// <summary>
-        /// 詳細ログの分類リストビューのソート
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void listView3_ColumnClick(object sender, ColumnClickEventArgs e)
-        {
-            SortListView(DetailLogSelectView, e.Column);
-        }
-
-        /// <summary>
-        /// 詳細ログのログファイルリストビューのソート
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void listView4_ColumnClick(object sender, ColumnClickEventArgs e)
-        {
-            SortListView(DetailLogView, e.Column);
-        }
-
-        /// <summary>
         /// リストビューと列を指定してソートする
         /// </summary>
         /// <param name="view"></param>
@@ -614,140 +484,6 @@ namespace TypingManager
             sorter.ChangeSortOrder();
         }
         #endregion
-
-        /// <summary>
-        /// 「詳細ログ」タブの読み込みボタンを押したときに呼び出される
-        /// 詳細ログファイルをすべて読み込む
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button3_Click(object sender, EventArgs e)
-        {
-            Debug.WriteLine("Load Button Clicked");
-            detailLogViewer.LoadInfo();
-            SetDetailLogSelect();
-        }
-
-        /// <summary>
-        /// 「詳細ログ」タブの表示するタイプを切り換えたときに呼び出される
-        /// 「タグ」を選択した場合はすべてのタグを表示する
-        /// 「日付」を選択した場合は詳細ログのあるすべての日付を表示する
-        /// </summary>
-        private void SetDetailLogSelect()
-        {
-            DetailLogSelectView.Items.Clear();
-            if (TagClassifyButton.Checked)
-            {
-                DetailLogSelectView.Columns[0].Text = "タグ";
-                foreach (string tag in detailLogViewer.TagList)
-                {
-                    DetailLogSelectView.Items.Add(tag, tag, "");
-                    DetailLogSelectView.Items[tag].SubItems.Add(detailLogViewer.GetTagSetNum(tag).ToString());
-                }
-            }
-            else
-            {
-                DetailLogSelectView.Columns[0].Text = "日付";
-                foreach (string date in detailLogViewer.DateList)
-                {
-                    DetailLogSelectView.Items.Add(date, date, "");
-                    DetailLogSelectView.Items[date].SubItems.Add(detailLogViewer.GetDateSetNum(date).ToString());
-                }
-            }
-        }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-            SetDetailLogSelect();
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-            SetDetailLogSelect();
-        }
-
-        /// <summary>
-        /// 「詳細ログ」タブで日付やタグの選択を変えたときに呼び出される
-        /// 右側のリストビューを変更する
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void listView3_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (DetailLogSelectView.SelectedItems.Count == 0)
-            {
-                return;
-            }
-            ListViewItem item = DetailLogSelectView.SelectedItems[0];
-            Debug.WriteLine(item.Text);
-            DetailLogView.Items.Clear();
-
-            List<DetailLogInfo> info_list;
-            if (TagClassifyButton.Checked)
-            {
-                info_list = detailLogViewer.GetTagInfo(item.Text);
-            }
-            else
-            {
-                info_list = detailLogViewer.GetDateInfo(item.Text);
-            }
-            foreach (DetailLogInfo info in info_list)
-            {
-                ListViewItem add_item = new ListViewItem();
-                add_item.Name = info.Date.ToString();
-                add_item.Text = info.Date.ToString(DetailLogViewer.DATE_FORMAT);
-                add_item.Tag = info;
-                add_item.SubItems.Add(info.Date.ToString(DetailLogViewer.TIME_FORMAT));
-                add_item.SubItems.Add(info.TagConcat("", true) + " " + info.Comment);
-                DetailLogView.Items.Add(add_item);
-                Debug.WriteLine("###"+DetailLogView.Items[add_item.Name].Text);
-                /*
-                 * ListViewはItems.Addした瞬間にソートしようとするため，
-                 * 一列目以外でソートしようとすると，そのあとに追加する予定のアイテムが
-                 * ないため，配列の範囲外と例外が発生する
-                 * これを解決するためには上のようにListViewItemを一気に追加すること
-                DetailLogView.Items.Add(key, date, "");
-                DetailLogView.Items[key].Tag = info;
-                DetailLogView.Items[key].SubItems.Add(info.Date.ToString(DetailLogViewer.TIME_FORMAT));
-                DetailLogView.Items[key].SubItems.Add(info.TagConcat("", true) + " " + info.Comment);
-                */
-                Debug.WriteLine(info.Date.ToString() + ":" + info.Comment);
-            }
-        }
-
-        /// <summary>
-        /// 「詳細ログ」タブでCSV出力ボタンを押したときに呼び出される
-        /// 選択した詳細ログをCSVファイルへ出力する
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button4_Click(object sender, EventArgs e)
-        {
-            if (DetailLogView.SelectedItems.Count == 0)
-            {
-                MessageBox.Show(Properties.Resources.NoLogSelect,
-                    Properties.Resources.CsvErrMsgTitle);
-                return;
-            }
-            string file_list = "";
-            foreach (ListViewItem item in DetailLogView.SelectedItems)
-            {
-                DetailLogInfo info = (DetailLogInfo)item.Tag;
-                StrokeTimeLog log = new StrokeTimeLog();
-                log.Load(info.FileName);
-
-                string filename = Path.Combine(LogDir.DETAIL_CSV_DIR,
-                    Path.GetFileNameWithoutExtension(info.FileName) + ".csv");
-                if (!log.SaveCSV(filename))
-                {
-                    MessageBox.Show(Properties.Resources.FileSaveFailed,
-                        Properties.Resources.CsvErrMsgTitle);
-                    return;
-                }
-                file_list += filename + Environment.NewLine;
-            }
-            MessageBox.Show(file_list, Properties.Resources.FileOutputTitle);
-        }
 
         private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
         {
@@ -989,7 +725,7 @@ namespace TypingManager
                 StrokeNumLog num_log = strokeNumLog;
 
                 // 当日のデータ以外はログに保存されているものを読み込む
-                if (date.ToString(AllDayLog.DAY_FORMAT) != DateTime.Now.ToString(AllDayLog.DAY_FORMAT))
+                if (date.ToString(Plugin.LogDir.DAY_FORMAT) != DateTime.Now.ToString(Plugin.LogDir.DAY_FORMAT))
                 {
                     // ファイルが存在しなくても大丈夫
                     num_log = new StrokeNumLog(date);
@@ -1125,6 +861,18 @@ namespace TypingManager
                 strokeNumLog.ProcessName.Save();
                 keyStrokeView.ProcessViewNameUpdate(e.Path, e.NewName);
             }
+        }
+
+        private void 常に手前に表示するToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            AppConfig.TopMost = 常に手前に表示するToolStripMenuItem.Checked;
+            this.TopMost = AppConfig.TopMost;
+        }
+
+        private void プラグイン一覧VToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ViewPluginForm form = new ViewPluginForm(pluginController);
+            form.ShowDialog(this);
         }
     }
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Reflection;
-using AnalyzePlugin;
+using Plugin;
 using System.Windows.Forms;
 
 namespace TypingManager
@@ -17,9 +17,12 @@ namespace TypingManager
         /// </summary>
         Dictionary<string, IStrokePlugin> plugin_dic;
 
-        public PluginController()
+        private Form main_form;
+
+        public PluginController(Form form)
         {
             plugin_dic = new Dictionary<string, IStrokePlugin>();
+            main_form = form;
         }
 
         public void Load()
@@ -34,11 +37,16 @@ namespace TypingManager
             for (int i = 0; i < pis.Length; i++)
             {
                 IStrokePlugin plugin = (IStrokePlugin)pis[i].CreateInstance();
-                string name = plugin.GetPluginName();
-                if (name != "")
+                string name = plugin.GetAccessName();
+                string author = plugin.GetAuthorName();
+                string version = plugin.GetVersion();
+                if (name != "" && author != "" && version != "")
                 {
                     plugin.Controller = this;
+                    plugin.MainForm = main_form;
+                    plugin.Valid = true;
                     plugin_dic[name] = plugin;
+                    Console.WriteLine("Plugin[{0}]: {1}", i, name);
                 }
             }
 
@@ -53,7 +61,10 @@ namespace TypingManager
         {
             foreach (IStrokePlugin plugin in plugin_dic.Values)
             {
-                plugin.KeyDown(keycode, militime, app_path, app_title);
+                if (plugin.Valid == true)
+                {
+                    plugin.KeyDown(keycode, militime, app_path, app_title);
+                }
             }
         }
 
@@ -62,14 +73,67 @@ namespace TypingManager
         {
             foreach (IStrokePlugin plugin in plugin_dic.Values)
             {
-                plugin.KeyUp(keycode, militime, app_path, app_title);
+                if (plugin.Valid == true)
+                {
+                    plugin.KeyUp(keycode, militime, app_path, app_title);
+                }
             }
         }
 
+        public void Close()
+        {
+            foreach (IStrokePlugin plugin in plugin_dic.Values)
+            {
+                plugin.Close();
+            }
+        }
 
         public void Add(string name, IStrokePlugin plugin)
         {
             plugin_dic[name] = plugin;
+        }
+
+        /// <summary>
+        /// メインメニューのプラグイン欄に表示するメニューを返す
+        /// </summary>
+        /// <param name="parent_menu"></param>
+        public void AddMenu(ToolStripMenuItem parent_menu)
+        {
+            int i = 1;
+            foreach (IStrokePlugin plugin in plugin_dic.Values)
+            {
+                string menu_name;
+                if (i <= 9)
+                {
+                    menu_name = string.Format("{0}(&{1})", plugin.GetPluginName(), i);
+                }
+                else
+                {
+                    menu_name = plugin.GetPluginName();
+                }
+                ToolStripMenuItem item = new ToolStripMenuItem(menu_name);
+                foreach (ToolStripMenuItem menu_item in plugin.GetToolStripMenu())
+                {
+                    item.DropDownItems.Add(menu_item);
+                }
+                parent_menu.DropDownItems.Add(item);
+                i++;
+            }
+        }
+
+        public List<IStrokePlugin> GetPluginList()
+        {
+            return new List<IStrokePlugin>(plugin_dic.Values);
+        }
+
+        public string GetSaveDir(string plugin_name)
+        {
+            if (plugin_dic.ContainsKey(plugin_name))
+            {
+                string dir = Path.GetDirectoryName(Application.ExecutablePath);
+                string path = Path.Combine(Path.Combine(dir, LogDir.PLUGIN_DIR), plugin_name);
+            }
+            return "";
         }
 
         /// <summary>
@@ -131,7 +195,8 @@ namespace TypingManager
             ArrayList plugins = new ArrayList();
 
             //プラグインフォルダ
-            string folder = Path.Combine(Application.ExecutablePath, LogDir.PLUGIN_DIR);
+            string folder = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath),
+                                            LogDir.PLUGIN_DIR);
 
             if (!Directory.Exists(folder))
             {

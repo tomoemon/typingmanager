@@ -12,12 +12,10 @@ namespace TypingManager
     public class KeyEventView
     {
         private Form1 main_form;
-        private StrokeTimeLog stroke_time;
 
-        public KeyEventView(Form1 main_form, StrokeTimeLog stroke_time)
+        public KeyEventView(Form1 main_form)
         {
             this.main_form = main_form;
-            this.stroke_time = stroke_time;
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Xml;
 using System.Diagnostics;
+using Plugin;
 
 namespace TypingManager
 {
@@ -292,7 +293,7 @@ namespace TypingManager
     }
     public delegate void StrokeEventHandler(object sender, StrokeEventArgs args);
 
-    public class StrokeNumLog: ITimerTask
+    public class StrokeNumLog : Plugin.BaseStrokePlugin, Plugin.IStrokeNumData, ITimerTask
     {
         public const int TIMER_ID_SAVE = 0;
         public const int TIMER_ID_NEWDAY = 1;
@@ -368,6 +369,7 @@ namespace TypingManager
         /// </summary>
         public StrokeNumLog()
         {
+            base.Valid = true;
             processName = new StrokeProcessName();
             today_app_log = new Dictionary<int, AppKeyLog>();
             today_app_log[0] = new AppKeyLog(0); // "null" の分
@@ -382,6 +384,7 @@ namespace TypingManager
         /// <param name="date"></param>
         public StrokeNumLog(DateTime date)
         {
+            base.Valid = true;
             processName = new StrokeProcessName();
             today_app_log = new Dictionary<int, AppKeyLog>();
             today_app_log[0] = new AppKeyLog(0); // "null" の分
@@ -390,6 +393,33 @@ namespace TypingManager
             Load(date);
         }
 
+        #region BaseStrokePluginの実装上書き
+        /// <summary>プラグインの名前を返すこと</summary>
+        public override string GetPluginName() { return "打鍵数記録"; }
+
+        /// <summary>プラグインにアクセスするための名前を返すこと</summary>
+        public override string GetAccessName() { return "stroke_num_log"; }
+
+        /// <summary>プラグインに関する簡単な説明を書くこと</summary>
+        public override string GetComment() { return "プロセス別・タイトル別の打鍵数を記録します"; }
+
+        /// <summary>プラグイン作者の名前を返すこと</summary>
+        public override string GetAuthorName() { return "tomoemon"; }
+
+        /// <summary>プラグインのバージョンを書くこと</summary>
+        public override string GetVersion() { return "0.0.1"; }
+
+        public override object GetInfo()
+        {
+            return (Plugin.IStrokeNumData)this;
+        }
+        public override void Close()
+        {
+            Save();
+        }
+        #endregion
+
+        #region ITimerTaskの実装
         /// <summary>
         /// 1秒ごとにTimerTaskControllerから呼ばれるTask
         /// </summary>
@@ -412,6 +442,7 @@ namespace TypingManager
                 }
             }
         }
+        #endregion
 
         public bool IsNewDay(DateTime date)
         {
@@ -443,11 +474,15 @@ namespace TypingManager
         /// </summary>
         /// <param name="app_path"></param>
         /// <param name="win_title"></param>
-        public void KeyStroke(string app_path, string win_title)
+        public override void KeyUp(int keycode, int militime, string app_path, string app_title)
         {
             if (app_path == "")
             {
                 app_path = StrokeProcessName.NO_TARGET;
+            }
+            if (!AppConfig.SaveTitleStroke)
+            {
+                app_title = "";
             }
             
             DateTime now = DateTime.Now;
@@ -463,7 +498,7 @@ namespace TypingManager
             }
             args.app_id = app_id;
             args.app_path = args.app_name = processName.GetPath(app_id);
-            processName.Stroke(args.app_path);
+            processName.Stroke(app_path);
 
             if (IsNewDay(now))
             {
@@ -482,12 +517,12 @@ namespace TypingManager
             // app_path == "null"となっており，"null"の打鍵数を増やす実装となっている
             if (today_app_log.ContainsKey(app_id))
             {
-                today_app_log[app_id].Stroke(win_title, now.Hour, now.Minute);
+                today_app_log[app_id].Stroke(app_title, now.Hour, now.Minute);
             }
             else
             {
                 today_app_log[app_id] = new AppKeyLog(app_id);
-                today_app_log[app_id].Stroke(win_title, now.Hour, now.Minute);
+                today_app_log[app_id].Stroke(app_title, now.Hour, now.Minute);
                 allday_log.TodayTotalApp++;
                 args.today_new_app = true;
                 args.app_name = processName.GetName(app_id);
@@ -596,7 +631,7 @@ namespace TypingManager
         }
 
         /// <summary>
-        /// その月の1日ごとの打鍵数をcountで指定した日数分配列で返す
+        /// 1日ごとの打鍵数をcountで指定した日数分配列で返す
         /// </summary>
         /// <param name="start"></param>
         /// <param name="count"></param>
@@ -687,7 +722,7 @@ namespace TypingManager
             {
                 writer.WriteStartDocument();
                 writer.WriteStartElement("DayLog");
-                writer.WriteElementString("Date", date.ToString(AllDayLog.DAY_FORMAT));
+                writer.WriteElementString("Date", date.ToString(Plugin.LogDir.DAY_FORMAT));
                 writer.WriteElementString("TotalType", allday_log.GetDayTotalType(date).ToString());
                 writer.WriteElementString("TotalApp", allday_log.GetDayTotalApp(date).ToString());
 

@@ -5,16 +5,15 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Xml;
 using System.IO;
+using System.Windows.Forms;
+using Plugin;
 
-namespace TypingManager
+namespace DetailLogPlugin
 {
     public struct Stroke
     {
         // 仮想キー
         private int vkey;
-
-        // スキャンコード
-        private int scan;
 
         // キーの名前
         private string key_name;
@@ -30,10 +29,6 @@ namespace TypingManager
         {
             get { return vkey; }
         }
-        public int ScanCode
-        {
-            get { return scan; }
-        }
         public int DownTime
         {
             get { return down_time; }
@@ -48,18 +43,17 @@ namespace TypingManager
         }
         #endregion
 
-        public Stroke(int vkey, int scan, int down_time, int up_time)
+        public Stroke(int vkey, int down_time, int up_time)
         {
             this.vkey = vkey;
-            this.scan = scan;
             this.down_time = down_time;
             this.up_time = up_time;
-            this.key_name = Plugin.VirtualKeyName.GetKeyName(vkey);
+            this.key_name = VirtualKeyName.GetKeyName(vkey);
         }
 
         public override string ToString()
         {
-            string res = string.Format("{0},{1},{2},{3}", vkey, scan, down_time, up_time);
+            string res = string.Format("{0},{1},{2},{3}", vkey, down_time, up_time);
             return res;
         }
     }
@@ -93,7 +87,7 @@ namespace TypingManager
             foreach (Match m in matches)
             {
                 Tag.Add(m.Groups[1].Value);
-                //Debug.WriteLine(tag_list[tag_list.Count - 1]);
+                //Console.WriteLine(tag_list[tag_list.Count - 1]);
             }
             Comment = Regex.Replace(comment, @"\[[^]]*\]", "").Trim();
         }
@@ -137,6 +131,15 @@ namespace TypingManager
 
         private DetailLogInfo info;
 
+
+        private DetailLogForm form;
+        
+        // 現在フォームを開いているか
+        private bool form_open;
+
+        private List<string> comment_history = new List<string>();
+
+
         #region プロパティ...
         public bool Logging
         {
@@ -146,11 +149,22 @@ namespace TypingManager
         {
             get { return info; }
         }
+        public bool FormOpen
+        {
+            get { return form_open; }
+            set { form_open = value; }
+        }
+        public List<string> Comment
+        {
+            get { return comment_history; }
+        }
         #endregion
 
         #region BaseStrokePluginの実装上書き
         /// <summary>プラグインの名前を返すこと</summary>
-        public override string GetPluginName() { return "detail_log"; }
+        public override string GetAccessName() { return "detail_log"; }
+
+        public override string GetPluginName() { return "詳細ログ取得"; }
 
         /// <summary>プラグインに関する簡単な説明を書くこと</summary>
         public override string GetComment() { return "一打鍵ごとの詳細なログを記録します"; }
@@ -159,11 +173,79 @@ namespace TypingManager
         public override string GetAuthorName() { return "tomoemon"; }
 
         /// <summary>プラグインのバージョンを書くこと</summary>
-        public override string GetVersion() { return "no data."; }
+        public override string GetVersion() { return "0.0.1"; }
+
+        public override void  KeyDown(int keycode, int militime, string app_path, string app_title)
+        {
+            if (!Logging) return;
+
+            if (start_time == 0)
+            {
+                start_time = militime;
+            }
+
+            // キーが上げられないまま再び押された場合は前回のキー押下については
+            // 押した時間と同時に離したと考えてStrokeインスタンスを生成する
+            if (down_dic.ContainsKey(keycode))
+            {
+                stroke_list.Add(new Stroke(keycode, down_dic[keycode], down_dic[keycode]));
+            }
+            down_dic[keycode] = militime - start_time;
+        }
+
+        public override void KeyUp(int keycode, int militime, string app_path, string app_title)
+        {
+            if (!Logging) return;
+
+            if (down_dic.ContainsKey(keycode))
+            {
+                stroke_list.Add(new Stroke(keycode, down_dic[keycode], militime - start_time));
+                down_dic.Remove(keycode);
+            }
+        }
+
+        public override void Close()
+        {
+            LoggingEnd();
+            Save();
+            SaveCommentHistory();
+        }
+
+        public override List<ToolStripMenuItem> GetToolStripMenu()
+        {
+            List<ToolStripMenuItem> menu_item = new List<ToolStripMenuItem>();
+            ToolStripMenuItem item = new ToolStripMenuItem("設定(&C)...");
+            item.Click += new EventHandler(item_Click);
+            menu_item.Add(item);
+            return menu_item;
+        }
+
+        public override bool IsHasConfigForm()
+        {
+            return true;
+        }
+
+        public override void ShowConfigForm()
+        {
+            if (!FormOpen)
+            {
+                FormOpen = true;
+                form = new DetailLogForm(this);
+                Console.WriteLine("x={0}, y={1}", MainForm.Location.X, MainForm.Location.Y);
+                form.Location = MainForm.Location;
+                form.Show();
+            }
+        }
+
+        void item_Click(object sender, EventArgs e)
+        {
+            ShowConfigForm();
+        }
         #endregion
 
         public StrokeTimeLog()
         {
+            form_open = false;
             logging = false;
             start_time = 0;
             info = new DetailLogInfo();
@@ -177,6 +259,7 @@ namespace TypingManager
             info.Reset();
             info.Date = DateTime.Now;
             info.SetComment(comment);
+            comment_history.Add(comment);
         }
 
         public void LoggingEnd()
@@ -196,38 +279,9 @@ namespace TypingManager
                 /*
                 foreach (Stroke s in stroke_list)
                 {
-                    Debug.WriteLine(s.ToString());
+                    Console.WriteLine(s.ToString());
                 }
                  * */
-            }
-        }
-
-        public void KeyDown(int vkey, int scan, int query_time)
-        {
-            if (!Logging) return;
-
-            if (start_time == 0)
-            {
-                start_time = query_time;
-            }
-
-            // キーが上げられないまま再び押された場合は前回のキー押下については
-            // 押した時間と同時に離したと考えてStrokeインスタンスを生成する
-            if (down_dic.ContainsKey(scan))
-            {
-                stroke_list.Add(new Stroke(vkey, scan, down_dic[scan], down_dic[scan]));
-            }
-            down_dic[scan] = query_time - start_time;
-        }
-
-        public void KeyUp(int vkey, int scan, int query_time)
-        {
-            if (!Logging) return;
-
-            if (down_dic.ContainsKey(scan))
-            {
-                stroke_list.Add(new Stroke(vkey, scan, down_dic[scan], query_time - start_time));
-                down_dic.Remove(scan);
             }
         }
 
@@ -250,7 +304,6 @@ namespace TypingManager
                     writer.WriteStartElement("Key");
                     writer.WriteAttributeString("key_name", "", st.KeyName);
                     writer.WriteAttributeString("vkey_code", "", st.VKey.ToString());
-                    writer.WriteAttributeString("scan_code", "", st.ScanCode.ToString());
                     writer.WriteAttributeString("down", "", st.DownTime.ToString());
                     writer.WriteAttributeString("up", "", st.UpTime.ToString());
                     writer.WriteEndElement();
@@ -268,7 +321,40 @@ namespace TypingManager
 
         public void Save()
         {
-            Save(Plugin.LogDir.DETAIL_XML_FILE(DateTime.Now));
+            string filename = Controller.GetSaveDir(this.GetPluginName());
+            Save(LogDir.DETAIL_XML_FILE(DateTime.Now));
+        }
+
+        /// <summary>
+        /// 詳細ログにつけたコメントの履歴を保存する
+        /// </summary>
+        private void SaveCommentHistory()
+        {
+            using (StreamWriter sw = new StreamWriter(Plugin.LogDir.COMMENT_FILE))
+            {
+                foreach (string text in comment_history)
+                {
+                    sw.WriteLine(text);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 詳細ログにつけるコメントの履歴ファイルを読み込む
+        /// </summary>
+        private void LoadCommentHistory()
+        {
+            if (File.Exists(LogDir.COMMENT_FILE))
+            {
+                using (StreamReader sr = new StreamReader(Plugin.LogDir.COMMENT_FILE))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null) // 1行ずつ読み出し。
+                    {
+                        comment_history.Add(line);
+                    }
+                }
+            }
         }
 
         public bool SaveCSV(string filename)
@@ -281,7 +367,6 @@ namespace TypingManager
                     {
                         sw.Write(st.KeyName); sw.Write(",");
                         sw.Write(st.VKey); sw.Write(",");
-                        sw.Write(st.ScanCode); sw.Write(",");
                         sw.Write(st.DownTime); sw.Write(",");
                         sw.Write(st.UpTime); sw.Write("\n");
                     }
@@ -320,10 +405,9 @@ namespace TypingManager
                 {
                     XmlAttributeCollection key_attrs = key_node.Attributes;
                     int vkey = int.Parse(key_attrs["vkey_code"].Value);
-                    int scan = int.Parse(key_attrs["scan_code"].Value);
                     int down = int.Parse(key_attrs["down"].Value);
                     int up = int.Parse(key_attrs["up"].Value);
-                    stroke_list.Add(new Stroke(vkey, scan, down, up));
+                    stroke_list.Add(new Stroke(vkey, down, up));
                 }
             }
         }

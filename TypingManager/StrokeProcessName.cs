@@ -153,6 +153,11 @@ namespace TypingManager
             }
         }
 
+        public List<int> GetProcessList()
+        {
+            return new List<int>(id_dic.Keys);
+        }
+
         public int GetTotal(int id)
         {
             if (id_dic.ContainsKey(id))

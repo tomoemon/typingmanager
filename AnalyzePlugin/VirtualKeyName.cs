@@ -6,6 +6,7 @@ namespace Plugin
 {
     public static class VirtualKeyName
     {
+        // <キーコード, キーの名前>
         static Dictionary<int, string> key_name;
 
         public static string GetKeyName(int index)

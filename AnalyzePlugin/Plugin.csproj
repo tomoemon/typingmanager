@@ -34,12 +34,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasePlugin.cs" />
+    <Compile Include="IKeyState.cs" />
     <Compile Include="IProcessNameData.cs" />
     <Compile Include="LogDir.cs" />
     <Compile Include="Python.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IStrokeNumData.cs" />
-    <Compile Include="StrokePlugin.cs" />
+    <Compile Include="IStrokePlugin.cs" />
     <Compile Include="VirtualKeyName.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

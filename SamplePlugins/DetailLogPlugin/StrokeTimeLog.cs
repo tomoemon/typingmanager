@@ -116,6 +116,27 @@ namespace DetailLogPlugin
 
     public class StrokeTimeLog : Plugin.BaseStrokePlugin
     {
+        public const string PLUGIN_NAME = "detail_log";
+        public static string PLUGIN_DIR = "";
+        public static string DETAIL_XML_FILE(DateTime date)
+            { return Path.Combine(PLUGIN_DIR, date.ToString("yyyyMMdd_HHmmss") + ".xml"); }
+        public static string TRIGGER_FILE
+        {
+            get { return Path.Combine(CONFIG_DIR, "trigger.xml"); }
+        }
+        public static string COMMENT_FILE
+        {
+            get { return Path.Combine(CONFIG_DIR, "comment.txt"); }
+        }
+        public static string CSV_DIR
+        {
+            get { return Path.Combine(PLUGIN_DIR, "csv"); }
+        }
+        public static string CONFIG_DIR
+        {
+            get { return Path.Combine(PLUGIN_DIR, "config"); }
+        }
+
         // 押されたキーと押された時間を保持する辞書
         // そのキーが上がった時に二つを組み合わせてStrokeインスタンスを作る
         private Dictionary<int, int> down_dic = new Dictionary<int, int>();
@@ -126,24 +147,26 @@ namespace DetailLogPlugin
         // 詳細ロギングを開始してから最初の打鍵が行われた時間
         private int start_time;
 
-        // 現在詳細ロギング中か
-        private bool logging;
-
         private DetailLogInfo info;
-
 
         private DetailLogForm form;
         
         // 現在フォームを開いているか
         private bool form_open;
 
+        // これまでに入力したコメントのリスト
         private List<string> comment_history = new List<string>();
 
+        // 詳細ログのトリガコントローラ
+        private TriggerController trigger_controller = new TriggerController();
+
+        private IProcessNameData process_name;
 
         #region プロパティ...
         public bool Logging
         {
-            get{return logging;}
+            get { return TriggerCtrl.Logging; }
+            set { TriggerCtrl.Logging = value; }
         }
         public DetailLogInfo Info
         {
@@ -158,11 +181,19 @@ namespace DetailLogPlugin
         {
             get { return comment_history; }
         }
+        public TriggerController TriggerCtrl
+        {
+            get { return trigger_controller; }
+        }
+        public IProcessNameData ProcessName
+        {
+            get { return process_name; }
+        }
         #endregion
 
         #region BaseStrokePluginの実装上書き
         /// <summary>プラグインの名前を返すこと</summary>
-        public override string GetAccessName() { return "detail_log"; }
+        public override string GetAccessName() { return PLUGIN_NAME; }
 
         public override string GetPluginName() { return "詳細ログ取得"; }
 
@@ -175,9 +206,29 @@ namespace DetailLogPlugin
         /// <summary>プラグインのバージョンを書くこと</summary>
         public override string GetVersion() { return "0.0.1"; }
 
-        public override void  KeyDown(int keycode, int militime, string app_path, string app_title)
+        public override void KeyDown(IKeyState key_state, int militime, string app_path, string app_title)
         {
-            if (!Logging) return;
+            app_path = app_path.ToLower();
+            //Console.WriteLine("StrokeTimeLog.KeyDown: {0}", app_path);
+            if (!Logging)
+            {
+               // Console.WriteLine("Trigger IsStart");
+                DetailTrigger trigger = TriggerCtrl.IsStart(app_path, key_state);
+                if (trigger != null)
+                {
+                    // 次の打鍵からログを有効にするため今はtrueにするだけでreturn
+                    LoggingStart(trigger.Path, trigger.Comment);
+                }
+                return;
+            }
+            else
+            {
+                if (TriggerCtrl.IsEnd(app_path, key_state) != null)
+                {
+                    LoggingEnd();
+                    return;
+                }
+            }
 
             if (start_time == 0)
             {
@@ -186,28 +237,42 @@ namespace DetailLogPlugin
 
             // キーが上げられないまま再び押された場合は前回のキー押下については
             // 押した時間と同時に離したと考えてStrokeインスタンスを生成する
-            if (down_dic.ContainsKey(keycode))
+            if (down_dic.ContainsKey(key_state.KeyCode))
             {
-                stroke_list.Add(new Stroke(keycode, down_dic[keycode], down_dic[keycode]));
+                stroke_list.Add(
+                    new Stroke(key_state.KeyCode, down_dic[key_state.KeyCode],
+                        down_dic[key_state.KeyCode]));
             }
-            down_dic[keycode] = militime - start_time;
+            //Console.WriteLine("DetailLog keydown:{0}", key_state.KeyCode);
+            down_dic[key_state.KeyCode] = militime - start_time;
         }
 
-        public override void KeyUp(int keycode, int militime, string app_path, string app_title)
+        public override void KeyUp(IKeyState key_state, int militime, string app_path, string app_title)
         {
             if (!Logging) return;
 
-            if (down_dic.ContainsKey(keycode))
+            if (down_dic.ContainsKey(key_state.KeyCode))
             {
-                stroke_list.Add(new Stroke(keycode, down_dic[keycode], militime - start_time));
-                down_dic.Remove(keycode);
+                stroke_list.Add(
+                    new Stroke(key_state.KeyCode, down_dic[key_state.KeyCode],
+                    militime - start_time));
+                down_dic.Remove(key_state.KeyCode);
             }
+        }
+
+        public override void Init()
+        {
+            PLUGIN_DIR = Controller.GetSaveDir(GetAccessName());
+            LogDirectoryCheck();
+            process_name = (IProcessNameData)Controller.GetInfo("process_name");
+            TriggerCtrl.Load();
+            LoadCommentHistory();
         }
 
         public override void Close()
         {
             LoggingEnd();
-            Save();
+            TriggerCtrl.Save();
             SaveCommentHistory();
         }
 
@@ -231,7 +296,7 @@ namespace DetailLogPlugin
             {
                 FormOpen = true;
                 form = new DetailLogForm(this);
-                Console.WriteLine("x={0}, y={1}", MainForm.Location.X, MainForm.Location.Y);
+                //Console.WriteLine("x={0}, y={1}", MainForm.Location.X, MainForm.Location.Y);
                 form.Location = MainForm.Location;
                 form.Show();
             }
@@ -246,27 +311,58 @@ namespace DetailLogPlugin
         public StrokeTimeLog()
         {
             form_open = false;
-            logging = false;
             start_time = 0;
             info = new DetailLogInfo();
         }
 
-        public void LoggingStart(string comment)
+        /// <summary>
+        /// このプラグインで使うディレクトリを作成する
+        /// プラグイン用のディレクトリはメインアプリケーションで作成済み
+        /// </summary>
+        private void LogDirectoryCheck()
         {
-            logging = true;
+            if (!Directory.Exists(CSV_DIR))
+            {
+                Directory.CreateDirectory(CSV_DIR);
+            }
+            if (!Directory.Exists(CONFIG_DIR))
+            {
+                Directory.CreateDirectory(CONFIG_DIR);
+            }
+        }
+
+        public void LoggingStart(string path, string comment)
+        {
+            TriggerCtrl.LoggingPath = path;
+            Logging = true;
             start_time = 0;
             stroke_list.Clear();
             info.Reset();
             info.Date = DateTime.Now;
             info.SetComment(comment);
-            comment_history.Add(comment);
+
+            if (comment_history.IndexOf(comment) == -1)
+            {
+                comment_history.Add(comment);
+                if (comment_history.Count > DetailLogForm.MAX_COMBOBOX_HISTORY)
+                {
+                    comment_history.RemoveAt(0);
+                }
+            }
+            
+            // フォームが表示している場合は開始ボタンを無効にする
+            if (FormOpen)
+            {
+                form.StartButton.Enabled = false;
+                form.EndButon.Enabled = true;
+            }
         }
 
         public void LoggingEnd()
         {
-            if (logging)
+            if (Logging)
             {
-                logging = false;
+                Logging = false;
 
                 // Downが早い順に並べ替え
                 stroke_list.Sort(
@@ -282,10 +378,16 @@ namespace DetailLogPlugin
                     Console.WriteLine(s.ToString());
                 }
                  * */
+                // フォームが表示している場合は開始ボタンを有効にする
+                if (FormOpen)
+                {
+                    form.StartButton.Enabled = true;
+                    form.EndButon.Enabled = false;
+                }
             }
         }
 
-        public bool Save(string filename)
+        public void Save(string filename)
         {
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
@@ -316,13 +418,12 @@ namespace DetailLogPlugin
             {
                 writer.Close();
             }
-            return true;
         }
 
         public void Save()
         {
-            string filename = Controller.GetSaveDir(this.GetPluginName());
-            Save(LogDir.DETAIL_XML_FILE(DateTime.Now));
+            Console.WriteLine(DETAIL_XML_FILE(DateTime.Now));
+            Save(DETAIL_XML_FILE(DateTime.Now));
         }
 
         /// <summary>
@@ -330,10 +431,12 @@ namespace DetailLogPlugin
         /// </summary>
         private void SaveCommentHistory()
         {
-            using (StreamWriter sw = new StreamWriter(Plugin.LogDir.COMMENT_FILE))
+            using (StreamWriter sw = new StreamWriter(COMMENT_FILE))
             {
+                Console.WriteLine("Comment Save");
                 foreach (string text in comment_history)
                 {
+                    Console.WriteLine(text);
                     sw.WriteLine(text);
                 }
             }
@@ -344,13 +447,15 @@ namespace DetailLogPlugin
         /// </summary>
         private void LoadCommentHistory()
         {
-            if (File.Exists(LogDir.COMMENT_FILE))
+            if (File.Exists(COMMENT_FILE))
             {
-                using (StreamReader sr = new StreamReader(Plugin.LogDir.COMMENT_FILE))
+                using (StreamReader sr = new StreamReader(COMMENT_FILE))
                 {
+                    Console.WriteLine("Comment Load");
                     string line;
                     while ((line = sr.ReadLine()) != null) // 1行ずつ読み出し。
                     {
+                        Console.WriteLine(line);
                         comment_history.Add(line);
                     }
                 }

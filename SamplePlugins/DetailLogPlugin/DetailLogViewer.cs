@@ -4,6 +4,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Xml;
 using System.IO;
+using Plugin;
 
 namespace DetailLogPlugin
 {
@@ -70,7 +71,8 @@ namespace DetailLogPlugin
         /// </summary>
         public void LoadInfo()
         {
-            string [] files = Directory.GetFiles(Plugin.LogDir.DETAIL_XML_DIR, "*.xml");
+            string plugin_dir = Path.Combine(LogDir.LOG_DIR, StrokeTimeLog.PLUGIN_NAME);
+            string [] files = Directory.GetFiles(plugin_dir, "*.xml");
 
             tag_log.Clear();
             date_log.Clear();

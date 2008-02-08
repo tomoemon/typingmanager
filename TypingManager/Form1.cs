@@ -15,8 +15,8 @@ namespace TypingManager
         private KeyboardHook keyHook;
         private StrokeNumLog strokeNumLog;
         private PluginController pluginController;
-        private KeyEventView keyEventView;
         private KeyStrokeView keyStrokeView;
+        private KeyState keyState;
         private TypingSpeed typingSpeed;
         private GraphChanger graphChanger;
         private TimerTaskController timerTaskController;
@@ -200,18 +200,21 @@ namespace TypingManager
             // 打鍵数カウントを担当するクラス
             strokeNumLog = new StrokeNumLog();
             
+            // キーの状態を保存するクラス
+            keyState = new KeyState();
+            
             // プラグインコントローラの作成とプラグインの読み込み
             pluginController = new PluginController(this);
+            pluginController.Add(strokeNumLog);
+            pluginController.Add(strokeNumLog.ProcessName);
             pluginController.Load();
+            pluginController.Init();
             pluginController.AddMenu(PluginMenu);
-            pluginController.Add(strokeNumLog.GetPluginName(), strokeNumLog);
-            pluginController.Add(strokeNumLog.ProcessName.GetPluginName(), strokeNumLog.ProcessName);
-
+            
             // 打鍵速度を計算するクラスを作成（サンプル数20）
             typingSpeed = new TypingSpeed(20);
 
             // キー入力に応じてGUIの値を更新するクラス
-            keyEventView = new KeyEventView(this);
             keyStrokeView = new KeyStrokeView(this, strokeNumLog);
 
             // 読み込んだAppConfigからGUIに反映させる
@@ -273,21 +276,37 @@ namespace TypingManager
 
             if (e.UpDown == KeyboardUpDown.Down)
             {
-                //Debug.WriteLine(e.KeyCode.ToString("d") + ":" + e.ScanCode.ToString("d") + ":down");
-                pluginController.KeyDown((int)e.KeyCode, now, app_path, app_title);
+                keyState.KeyDown((int)e.KeyCode);
+                pluginController.KeyDown(keyState, now, app_path, app_title);
+                /*
+                if (keyStatePlugin.IsPushKey(e.KeyCode))
+                {
+                    Console.WriteLine((char)e.KeyCode + ":" + e.KeyCode.ToString("d") + ":" + e.ScanCode.ToString("d") + ":push");
+                }
+                */
+                //Console.WriteLine(e.KeyCode.ToString("d") + ":" + e.ScanCode.ToString("d") + ":down");
             }
             else
             {
+                keyState.KeyUp((int)e.KeyCode);
+                pluginController.KeyUp(keyState, now, app_path, app_title);
                 //Debug.WriteLine(QueryTime.Now);
-                //Debug.WriteLine(e.KeyCode.ToString("d") + ":" + e.ScanCode.ToString("d") + ":up");
-                pluginController.KeyUp((int)e.KeyCode, now, app_path, app_title);
+                //Console.WriteLine(e.KeyCode.ToString("d") + ":" + e.ScanCode.ToString("d") + ":up");
                 typingSpeed.Stroke(now);
             }
             notifyIcon1.Text = string.Format("今日:{0}{1}昨日:{2}{3}合計:{4}",
                 strokeNumLog.TodayTotalType, Environment.NewLine,
                 strokeNumLog.YesterdayTotalType, Environment.NewLine,
                 strokeNumLog.TotalType);
-            keyEventView.Update(e.UpDown, (int)e.KeyCode, e.ScanCode, app_path);
+            UpdateKeyEventInfo(e.UpDown, (int)e.KeyCode, e.ScanCode, app_path);
+        }
+
+        private void UpdateKeyEventInfo(KeyboardUpDown updown, int vkey, int scan, string app_path)
+        {
+            LastEventType.Text = updown.ToString();
+            LastKeyCode.Text = vkey.ToString();
+            LastScanCode.Text = scan.ToString();
+            LastAppPath.Text = Path.GetFileName(app_path);
         }
 
         /// <summary>
@@ -375,8 +394,6 @@ namespace TypingManager
         {
             graphChanger[AppConfig.LineGraphType].Draw(e.Graphics);
         }
-
-       
 
         #region 線グラフにつけるマークの変更
         private void なしToolStripMenuItem_Click(object sender, EventArgs e)

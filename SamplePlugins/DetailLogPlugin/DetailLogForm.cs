@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using Plugin;
 
 namespace DetailLogPlugin
 {
@@ -13,9 +14,20 @@ namespace DetailLogPlugin
     {
         private DetailLogViewer detailLogViewer;
         private StrokeTimeLog strokeTimeLog;
+        private DetailTrigger trigger = new DetailTrigger();
+        
+        // ショートカットキーの登録時に押しっぱなしのキーを
+        // 複数回登録しないために，一度押したキーを辞書に登録する
+        // そのキーが離されたら辞書から消す
+        private Dictionary<Keys, int> keydown_dic = new Dictionary<Keys,int>();
 
+        public const int MAX_COMBOBOX_HISTORY = 20;
         private const int LISTVIEW_RMARGIN = 25;
         private const int LISTVEW_SMALL_ICON_SIZE = 16;
+        private const int TRIGGER_VIEW_LMARGIN = 15;
+        private const int TRIGGER_VIEW_RMARGIN = 21;
+        private const int TRIGGER_VIEW_BMARGIN = 35;
+        private const int DETAIL_VIEW_BMARGIN = 10;
 
         public DetailLogForm(StrokeTimeLog log)
         {
@@ -30,16 +42,83 @@ namespace DetailLogPlugin
             DetailLogSelectView.ListViewItemSorter = new NumSort(1);
             DetailLogSelectView.Columns[1].Width = DetailLogSelectView.Width -
                 DetailLogSelectView.Columns[0].Width - LISTVIEW_RMARGIN;
+            
             DetailLogView.SmallImageList = new ImageList();
             DetailLogView.SmallImageList.ImageSize = new Size(1, LISTVEW_SMALL_ICON_SIZE);
             DetailLogView.ListViewItemSorter = new NumSort();
             DetailLogView.ShowItemToolTips = true;
             DetailLogView.Columns[2].Width = DetailLogView.Width - DetailLogView.Columns[0].Width -
                 DetailLogView.Columns[1].Width - LISTVIEW_RMARGIN;
+
+            TriggerView.Width = tabControl1.Width - TRIGGER_VIEW_LMARGIN - TRIGGER_VIEW_RMARGIN;
+            TriggerView.Height = tabControl1.Height - TriggerView.Location.Y - TRIGGER_VIEW_BMARGIN;
+            TriggerView.Location = new Point(TRIGGER_VIEW_LMARGIN, TriggerView.Location.Y);
+            TriggerView.SmallImageList = new ImageList();
+            TriggerView.SmallImageList.ImageSize = new Size(1, LISTVEW_SMALL_ICON_SIZE);
+            TriggerView.ListViewItemSorter = new NumSort();
+            TriggerView.ShowItemToolTips = true;
+            TriggerView.Columns[3].Width = TriggerView.Width - TriggerView.Columns[0].Width -
+                TriggerView.Columns[1].Width - TriggerView.Columns[2].Width - LISTVIEW_RMARGIN;
+
+            // コメントの履歴を追加
+            if (strokeTimeLog.Comment.Count > 0)
+            {
+                comboBox1.Items.Clear();
+            }
+            foreach (string str in strokeTimeLog.Comment)
+            {
+                comboBox1.Items.Add(str);
+            }
+
+            // 作成済みの詳細ログトリガを詳細ログトリガのリストビューに表示
+            foreach (DetailTrigger trigger in strokeTimeLog.TriggerCtrl.GetAllTrigers())
+            {
+                string name = strokeTimeLog.ProcessName.GetName(trigger.Path);
+                TriggerView.Items.Add(name, name, "");
+                TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(trigger.Comment);
+                TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(trigger.Start.ToString());
+                TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(trigger.End.ToString());
+                TriggerView.Items[TriggerView.Items.Count - 1].Tag = trigger;
+            }
+
+            // アプリケーションIDを登録しておく
+            List<int> id_list = strokeTimeLog.ProcessName.GetProcessList();
             
+            // すべてのアプリケーションを対象とする場合を先に登録しておく
+            comboBox2.Items.Add(TriggerController.TARGET_ALL_PROCESS + " … すべてのプロセスを対象とする");
+
+            // 0番目にはnullプロセスが入っているので，これをすべてのプロセスと置き換える
+            id_list.RemoveAt(0);
+
+            foreach (int app_id in id_list)
+            {
+                string proc_name = strokeTimeLog.ProcessName.GetName(app_id);
+                comboBox2.Items.Add(proc_name);
+            }
+            id_list.Insert(0, TriggerController.ALL_PROCESS_ID);
+            comboBox2.Tag = id_list;
+
+            // すでに詳細ロギングの最中の場合は開始ボタンを無効にする
+            if (strokeTimeLog.Logging)
+            {
+                StartButton.Enabled = false;
+                EndButon.Enabled = true;
+            }
         }
 
         #region プロパティ...
+        public Button StartButton
+        {
+            get { return button1; }
+        }
+        public Button EndButon
+        {
+            get { return button2; }
+        }
+        public ListView TriggerView
+        {
+            get { return listView1; }
+        }
         public ListView DetailLogSelectView
         {
             get { return listView3; }
@@ -58,18 +137,24 @@ namespace DetailLogPlugin
         }
         #endregion
 
+
+        private void DetailLogForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            strokeTimeLog.FormOpen = false;
+        }
+
         /// <summary>
-        /// 「メイン」タブの詳細ログの取得開始ボタンが押されたときに呼び出される
+        /// 詳細ログの取得開始ボタンが押されたときに呼び出される
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
-            strokeTimeLog.LoggingStart(comboBox1.Text);
+            strokeTimeLog.LoggingStart(TriggerController.TARGET_ALL_PROCESS, comboBox1.Text);
             if (comboBox1.Items.IndexOf(comboBox1.Text) == -1)
             {
                 comboBox1.Items.Add(comboBox1.Text);
-                if (comboBox1.Items.Count > 10)
+                if (comboBox1.Items.Count > MAX_COMBOBOX_HISTORY)
                 {
                     comboBox1.Items.RemoveAt(0);
                 }
@@ -90,6 +175,7 @@ namespace DetailLogPlugin
             button2.Enabled = false;
         }
 
+        #region 詳細ログ表示タブ関連
         /// <summary>
         /// 「詳細ログ」タブの読み込みボタンを押したときに呼び出される
         /// 詳細ログファイルをすべて読み込む
@@ -152,7 +238,9 @@ namespace DetailLogPlugin
                 StrokeTimeLog log = new StrokeTimeLog();
                 log.Load(info.FileName);
 
-                string filename = Path.Combine(Plugin.LogDir.DETAIL_CSV_DIR,
+                string plugin_dir = Path.Combine(LogDir.LOG_DIR,StrokeTimeLog.PLUGIN_NAME);
+                string csv_dir = Path.Combine(plugin_dir, StrokeTimeLog.CSV_DIR);
+                string filename = Path.Combine(csv_dir, 
                     Path.GetFileNameWithoutExtension(info.FileName) + ".csv");
                 if (!log.SaveCSV(filename))
                 {
@@ -173,11 +261,6 @@ namespace DetailLogPlugin
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
             SetDetailLogSelect();
-        }
-
-        private void DetailLogForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            strokeTimeLog.FormOpen = false;
         }
 
         /// <summary>
@@ -260,6 +343,205 @@ namespace DetailLogPlugin
             sorter.Column = column;
             view.Sort();
             sorter.ChangeSortOrder();
+        }
+        #endregion
+
+        /// <summary>
+        /// 開始ショートカットシーケンス欄でキーを押したときに呼ばれる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textBox2_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Shift, Control, Altキーが単独で押された時は無視する
+            if (e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.Menu
+                || e.KeyCode == Keys.ControlKey)
+            {
+                return;
+            }
+
+            if (!keydown_dic.ContainsKey(e.KeyCode))
+            {
+                //Console.WriteLine("{0}:{1}:{2}:{3}",e.KeyCode, e.KeyValue,e.KeyData,e.Modifiers);
+                keydown_dic[e.KeyCode] = 1;
+                trigger.Start.Add(e.KeyCode, e.KeyData);
+                textBox2.Text = trigger.Start.ToString();
+            }
+        }
+
+        private void textBox2_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (keydown_dic.ContainsKey(e.KeyCode))
+            {
+                keydown_dic.Remove(e.KeyCode);
+            }
+        }
+
+        /// <summary>
+        /// 終了ショートカットシーケンス欄でキーを押したときに呼ばれる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textBox3_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Shift, Control, Altキーが単独で押された時は無視する
+            if (e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.Menu
+                || e.KeyCode == Keys.ControlKey)
+            {
+                return;
+            }
+
+            if (!keydown_dic.ContainsKey(e.KeyCode))
+            {
+                //Console.WriteLine("{0}:{1}:{2}:{3}",e.KeyCode, e.KeyValue,e.KeyData,e.Modifiers);
+                keydown_dic[e.KeyCode] = 1;
+                trigger.End.Add(e.KeyCode, e.KeyData);
+                textBox3.Text = trigger.End.ToString();
+            }
+        }
+
+        private void textBox3_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (keydown_dic.ContainsKey(e.KeyCode))
+            {
+                keydown_dic.Remove(e.KeyCode);
+            }
+        }
+
+        /// <summary>
+        /// トリガを追加ボタンを押したときに呼ばれる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button5_Click(object sender, EventArgs e)
+        {
+            keydown_dic.Clear();
+            int index = comboBox2.SelectedIndex;
+            
+            if (index < 0)
+            {
+                MessageBox.Show("対象プロセスを選択してください");
+                return;
+            }
+            else if(trigger.Start.ToString() == ""){
+                MessageBox.Show("開始ショートカットキーを入力してください");
+                return;
+            }
+            else if(trigger.End.ToString() == ""){
+                MessageBox.Show("終了ショートカットキーを入力してください");
+            }
+
+            int app_id = ((List<int>)comboBox2.Tag)[index];
+            string app_path = strokeTimeLog.ProcessName.GetPath(app_id);
+            string app_name = strokeTimeLog.ProcessName.GetName(app_id);
+            if (app_id == TriggerController.ALL_PROCESS_ID)
+            {
+                app_path = TriggerController.TARGET_ALL_PROCESS;
+                app_name = TriggerController.TARGET_ALL_PROCESS;
+            }
+
+            Console.WriteLine("プロセスID:{0}, 開始:{1}, 終了:{2}",
+                app_id, trigger.Start.ToString(), trigger.End.ToString());
+
+            trigger.Path = app_path;
+            trigger.Comment = textBox1.Text;
+            if (!strokeTimeLog.TriggerCtrl.Add(trigger))
+            {
+                MessageBox.Show("そのトリガはすでに登録済みです");
+                return;
+            }
+
+            // リストビューに追加する
+            TriggerView.Items.Add(app_id.ToString(), app_name, "");
+            TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(textBox1.Text);
+            TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(trigger.Start.ToString());
+            TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(trigger.End.ToString());
+            TriggerView.Items[TriggerView.Items.Count - 1].Tag = trigger;
+
+            // GUIを初期化
+            textBox1.Text = "";
+            textBox2.Text = "";
+            textBox3.Text = "";
+
+            // 次の入力用に新しいインスタンスを作成する
+            trigger = new DetailTrigger();
+            
+        }
+
+        /// <summary>
+        /// トリガを削除ボタンを押したときに呼ばれる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button6_Click(object sender, EventArgs e)
+        {
+            keydown_dic.Clear();
+            if (TriggerView.SelectedIndices.Count == 0)
+            {
+                return;
+            }
+
+            int index = TriggerView.SelectedIndices[0];
+
+            DetailTrigger trigger = (DetailTrigger)TriggerView.SelectedItems[0].Tag;
+            if (strokeTimeLog.TriggerCtrl.Remove(trigger))
+            {
+                TriggerView.Items.RemoveAt(index);
+            }
+        }
+
+        /// <summary>
+        /// タブコントロールのサイズが変わった時に呼び出される
+        /// 詳細ログトリガのリストビューのサイズを変更する
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void splitContainer1_SizeChanged(object sender, EventArgs e)
+        {
+            // 詳細トリガビューのサイズを変える
+            TriggerView.Width = tabControl1.Width - TRIGGER_VIEW_LMARGIN - TRIGGER_VIEW_RMARGIN;
+            TriggerView.Height = tabControl1.Height - TriggerView.Location.Y - TRIGGER_VIEW_BMARGIN;
+
+            int new_width = TriggerView.Width - LISTVIEW_RMARGIN;
+            ChangeListViewColumnWidth(TriggerView, new_width);
+        }
+
+        /// <summary>
+        /// 詳細ログ表示ビューのサイズが変わった時に呼び出される
+        /// 左のリストビューと右のリストビューのサイズを変更する
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void splitContainer3_SizeChanged(object sender, EventArgs e)
+        {
+            DetailLogSelectView.Width = splitContainer3.Panel1.Width - TRIGGER_VIEW_LMARGIN;
+            DetailLogSelectView.Height = splitContainer3.Panel1.Height - DetailLogSelectView.Location.Y - DETAIL_VIEW_BMARGIN;
+            ChangeListViewColumnWidth(DetailLogSelectView, DetailLogSelectView.Width - LISTVIEW_RMARGIN);
+
+            DetailLogView.Width = splitContainer3.Panel2.Width - TRIGGER_VIEW_RMARGIN;
+            DetailLogView.Height = splitContainer3.Panel2.Height - DetailLogView.Location.Y - DETAIL_VIEW_BMARGIN;
+            ChangeListViewColumnWidth(DetailLogView, DetailLogView.Width - LISTVIEW_RMARGIN);
+        }
+
+        /// <summary>
+        /// リストビューのカラムサイズを今までの比率に合わせて変更する
+        /// </summary>
+        /// <param name="view"></param>
+        /// <param name="new_width"></param>
+        private void ChangeListViewColumnWidth(ListView view, int new_width)
+        {
+            // リストビューのサイズ変更に合わせてカラムの幅も変更する
+            int last_total_width = 0;
+            for (int i = 0; i < view.Columns.Count; i++)
+            {
+                last_total_width += view.Columns[i].Width;
+            }
+
+            float ratio = (float)new_width / last_total_width;
+            for (int i = 0; i < view.Columns.Count; i++)
+            {
+                view.Columns[i].Width = (int)(view.Columns[i].Width * ratio);
+            }
         }
     }
 

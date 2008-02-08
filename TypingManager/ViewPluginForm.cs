@@ -12,18 +12,14 @@ namespace TypingManager
     public partial class ViewPluginForm : Form
     {
         private PluginController controller;
+        private Color INVALID_COLOR = Color.Pink;
+        private Color VALID_COLOR = Color.White;
 
         public ViewPluginForm(PluginController plugin_ctrl)
         {
             InitializeComponent();
 
             controller = plugin_ctrl;
-
-            textBox1.BackColor = Color.White;
-            textBox2.BackColor = Color.White;
-            textBox3.BackColor = Color.White;
-            textBox4.BackColor = Color.White;
-            textBox5.BackColor = Color.White;
 
             listView1.SmallImageList = new ImageList();
             listView1.SmallImageList.ImageSize = new Size(1, Form1.LISTVEW_SMALL_ICON_SIZE);
@@ -41,6 +37,15 @@ namespace TypingManager
                 string access_name = plugin.GetAccessName();
                 listView1.Items.Add(access_name, plugin_name, "");
                 listView1.Items[listView1.Items.Count - 1].Tag = plugin;
+                listView1.Items[listView1.Items.Count - 1].Checked = plugin.Valid;
+                if (plugin.Valid)
+                {
+                    listView1.Items[listView1.Items.Count - 1].BackColor = VALID_COLOR;
+                }
+                else
+                {
+                    listView1.Items[listView1.Items.Count - 1].BackColor = INVALID_COLOR;
+                }
             }
         }
 
@@ -53,7 +58,6 @@ namespace TypingManager
                 textBox2.Text = "";
                 textBox3.Text = "";
                 textBox4.Text = "";
-                checkBox1.Enabled = false;
                 button3.Enabled = false;
             }
             else
@@ -66,8 +70,6 @@ namespace TypingManager
                 textBox2.Text = plugin.GetAuthorName();
                 textBox3.Text = plugin.GetVersion();
                 textBox4.Text = plugin.GetComment();
-                checkBox1.Enabled = true;
-                checkBox1.Checked = plugin.Valid;
                 if (plugin.IsHasConfigForm())
                 {
                     button3.Enabled = true;
@@ -77,16 +79,6 @@ namespace TypingManager
                     button3.Enabled = false;
                 }
             }
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (listView1.SelectedIndices.Count == 0) return;
-
-            int selected = listView1.SelectedIndices[0];
-            ListViewItem item = listView1.SelectedItems[0];
-            IStrokePlugin plugin = (IStrokePlugin)item.Tag;
-            plugin.Valid = checkBox1.Checked;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -115,6 +107,21 @@ namespace TypingManager
             sorter.Column = column;
             view.Sort();
             sorter.ChangeSortOrder();
+        }
+
+        private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            ListViewItem item = e.Item;
+            IStrokePlugin plugin = (IStrokePlugin)item.Tag;
+            plugin.Valid = item.Checked;
+            if (plugin.Valid)
+            {
+                item.BackColor = VALID_COLOR;
+            }
+            else
+            {
+                item.BackColor = INVALID_COLOR;
+            }
         }
     }
 }

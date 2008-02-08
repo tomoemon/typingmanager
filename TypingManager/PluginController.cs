@@ -6,22 +6,24 @@ using System.IO;
 using System.Reflection;
 using Plugin;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace TypingManager
 {
     public class PluginController : IStrokePluginController
     {
         /// <summary>
-        /// プラグインの呼び出し順序はあまり気にしなくてよいので
-        /// 辞書形式で保持しておく
+        /// <プラグインのアクセス名, リスト内のどこにあるか>
+        /// 名前で呼び出せるように辞書形式で保持
         /// </summary>
-        Dictionary<string, IStrokePlugin> plugin_dic;
+        Dictionary<string, int> index_dic = new Dictionary<string, int>();
+
+        List<IStrokePlugin> plugin_list = new List<IStrokePlugin>();
 
         private Form main_form;
 
         public PluginController(Form form)
         {
-            plugin_dic = new Dictionary<string, IStrokePlugin>();
             main_form = form;
         }
 
@@ -45,11 +47,13 @@ namespace TypingManager
                     plugin.Controller = this;
                     plugin.MainForm = main_form;
                     plugin.Valid = true;
-                    plugin_dic[name] = plugin;
+                    plugin_list.Add(plugin);
+                    index_dic[name] = plugin_list.Count - 1;
+                    GetSaveDir(name);   // プラグイン用ディレクトリの作成
                     Console.WriteLine("Plugin[{0}]: {1}", i, name);
                 }
             }
-
+            LoadPluginConfig();
         }
 
         /// <summary>キーが押されたときに呼び出される</summary>
@@ -57,40 +61,55 @@ namespace TypingManager
         /// <param name="militime">キーが押された時間[ミリ秒]（OSが起動してからの経過時間）</param>
         /// <param name="app_path">キーが押されたアプリケーションのフルパス</param>
         /// <param name="app_title">キーが押されたウィンドウのタイトル</param>
-        public void KeyDown(int keycode, int militime, string app_path, string app_title)
+        public void KeyDown(IKeyState key_state, int militime, string app_path, string app_title)
         {
-            foreach (IStrokePlugin plugin in plugin_dic.Values)
+            foreach (IStrokePlugin plugin in plugin_list)
             {
                 if (plugin.Valid == true)
                 {
-                    plugin.KeyDown(keycode, militime, app_path, app_title);
+                    plugin.KeyDown(key_state, militime, app_path, app_title);
                 }
             }
         }
 
         /// <summary>キーが上がったときに呼び出される</summary>
-        public void KeyUp(int keycode, int militime, string app_path, string app_title)
+        public void KeyUp(IKeyState key_state, int militime, string app_path, string app_title)
         {
-            foreach (IStrokePlugin plugin in plugin_dic.Values)
+            foreach (IStrokePlugin plugin in plugin_list)
             {
                 if (plugin.Valid == true)
                 {
-                    plugin.KeyUp(keycode, militime, app_path, app_title);
+                    plugin.KeyUp(key_state, militime, app_path, app_title);
                 }
+            }
+        }
+
+        public void Init()
+        {
+            foreach (IStrokePlugin plugin in plugin_list)
+            {
+                plugin.Init();
             }
         }
 
         public void Close()
         {
-            foreach (IStrokePlugin plugin in plugin_dic.Values)
+            foreach (IStrokePlugin plugin in plugin_list)
             {
                 plugin.Close();
             }
+            SavePluginConfig();
         }
 
-        public void Add(string name, IStrokePlugin plugin)
+        public void Add(IStrokePlugin plugin)
         {
-            plugin_dic[name] = plugin;
+            string name = plugin.GetAccessName();
+            if (name != "")
+            {
+                plugin.Valid = true;
+                plugin_list.Add(plugin);
+                index_dic[name] = plugin_list.Count - 1;
+            }
         }
 
         /// <summary>
@@ -100,8 +119,10 @@ namespace TypingManager
         public void AddMenu(ToolStripMenuItem parent_menu)
         {
             int i = 1;
-            foreach (IStrokePlugin plugin in plugin_dic.Values)
+            foreach (IStrokePlugin plugin in plugin_list)
             {
+                if (plugin.GetToolStripMenu() == null) continue;
+
                 string menu_name;
                 if (i <= 9)
                 {
@@ -123,15 +144,25 @@ namespace TypingManager
 
         public List<IStrokePlugin> GetPluginList()
         {
-            return new List<IStrokePlugin>(plugin_dic.Values);
+            return plugin_list;
         }
 
+        /// <summary>
+        /// プラグインのログを保存するディレクトリを返す
+        /// 基本的にはlogフォルダの中に「プラグイン名」フォルダを作成してその中に
+        /// </summary>
+        /// <param name="plugin_name"></param>
+        /// <returns></returns>
         public string GetSaveDir(string plugin_name)
         {
-            if (plugin_dic.ContainsKey(plugin_name))
+            if (index_dic.ContainsKey(plugin_name))
             {
-                string dir = Path.GetDirectoryName(Application.ExecutablePath);
-                string path = Path.Combine(Path.Combine(dir, LogDir.PLUGIN_DIR), plugin_name);
+                string path = Path.Combine(LogDir.LOG_DIR, plugin_name);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                return path;
             }
             return "";
         }
@@ -143,11 +174,72 @@ namespace TypingManager
         /// <returns></returns>
         public object GetInfo(string name)
         {
-            if (plugin_dic.ContainsKey(name))
+            if (index_dic.ContainsKey(name))
             {
-                return plugin_dic[name].GetInfo();
+                return plugin_list[index_dic[name]].GetInfo();
             }
             return null;
+        }
+
+        private void SavePluginConfig()
+        {
+            string filename = LogDir.PLUGIN_CONFIG_FILE;
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = ("\t");
+            XmlWriter writer = XmlWriter.Create(filename, settings);
+            try
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement("PluginConfig");
+                writer.WriteStartElement("PluginList");
+                foreach (IStrokePlugin plugin in plugin_list)
+                {
+                    writer.WriteStartElement("Plugin");
+                    writer.WriteAttributeString("plugin_name", "", plugin.GetPluginName());
+                    writer.WriteAttributeString("access_name", "", plugin.GetAccessName());
+                    writer.WriteAttributeString("valid", "", plugin.Valid.ToString());
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndElement();
+                writer.WriteEndElement();
+                writer.WriteEndDocument();
+            }
+            finally
+            {
+                writer.Close();
+            }
+        }
+
+        private void LoadPluginConfig()
+        {
+            string filename = LogDir.PLUGIN_CONFIG_FILE;
+
+            if (File.Exists(filename))
+            {
+                string xml = "";
+                using (StreamReader sr = new StreamReader(filename))
+                {
+                    xml = sr.ReadToEnd();
+                }
+
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(xml);
+
+                XmlNodeList node_list = doc.SelectNodes("//Plugin");
+                foreach (XmlNode plugin_node in node_list)
+                {
+                    XmlAttributeCollection plugin_attrs = plugin_node.Attributes;
+                    bool valid = bool.Parse(plugin_attrs["valid"].Value);
+                    string plugin_name = plugin_attrs["plugin_name"].Value;
+                    string access_name = plugin_attrs["access_name"].Value;
+                    if (index_dic.ContainsKey(access_name))
+                    {
+                        plugin_list[index_dic[access_name]].Valid = valid;
+                    }
+                }
+            }
         }
     }
 

@@ -11,6 +11,7 @@ namespace Plugin
         string GetName(int id);
         string GetName(string path);
         int GetID(string path);
+        List<int> GetProcessList();
         int GetTotal(int id);
     }
 }

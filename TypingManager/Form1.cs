@@ -883,8 +883,10 @@ namespace TypingManager
         {
             if (this.WindowState == FormWindowState.Minimized)
             {
+                this.Show();
                 this.WindowState = FormWindowState.Normal;
             }
+            this.Activate();
         }
 
         /// <summary>
@@ -911,6 +913,14 @@ namespace TypingManager
         private void Form1_Load(object sender, EventArgs e)
         {
             notifyIcon1.Icon = new Icon(Properties.Resources.TypingManager, new Size(16, 16));
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                Hide();
+            }
         }
     }
 

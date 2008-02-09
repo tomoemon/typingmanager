@@ -919,7 +919,6 @@
             // notifyIcon1
             // 
             this.notifyIcon1.ContextMenuStrip = this.contextMenuStrip1;
-            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
@@ -930,19 +929,19 @@
             this.開くOToolStripMenuItem,
             this.閉じるCToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(120, 48);
             // 
             // 開くOToolStripMenuItem
             // 
             this.開くOToolStripMenuItem.Name = "開くOToolStripMenuItem";
-            this.開くOToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.開くOToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.開くOToolStripMenuItem.Text = "開く(&O)";
             this.開くOToolStripMenuItem.Click += new System.EventHandler(this.開くOToolStripMenuItem_Click);
             // 
             // 閉じるCToolStripMenuItem
             // 
             this.閉じるCToolStripMenuItem.Name = "閉じるCToolStripMenuItem";
-            this.閉じるCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.閉じるCToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.閉じるCToolStripMenuItem.Text = "終了(&E)";
             this.閉じるCToolStripMenuItem.Click += new System.EventHandler(this.閉じるCToolStripMenuItem_Click);
             // 
@@ -960,6 +959,7 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "TypingManager";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);

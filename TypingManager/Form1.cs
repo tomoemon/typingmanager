@@ -310,18 +310,13 @@ namespace TypingManager
         }
 
         /// <summary>
-        /// 終了時に呼び出される
-        /// </summary>
-        public void AppExit()
-        {
-            Application.Exit();
-        }
-
-        /// <summary>
         /// 終了時のログ保存など
+        /// アプリケーション側から終了処理を行いたい時は
+        /// この関数を直接使わないでthis.Close()を使うこと．
+        /// Form1_FormClosingが呼ばれて，そこからさらにAppFinalize()が呼ばれる．
         /// </summary>
         /// <returns></returns>
-        public bool AppFinalize()
+        private bool AppFinalize()
         {
             DialogResult res = MessageBox.Show("終了しますか？", "終了確認", MessageBoxButtons.OKCancel);
             if (res == DialogResult.Cancel)
@@ -336,9 +331,8 @@ namespace TypingManager
 
         private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // ExitするときにForm1_FormClosingが自動的に呼ばれる
             // FormClosingの中で終了時の処理を行う
-            AppExit();
+            this.Close();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -910,9 +904,14 @@ namespace TypingManager
         /// <param name="e"></param>
         private void 閉じるCToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AppFinalize();
+            this.Close();
         }
         #endregion
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            notifyIcon1.Icon = new Icon(Properties.Resources.TypingManager, new Size(16, 16));
+        }
     }
 
     public class NumSort : System.Collections.IComparer

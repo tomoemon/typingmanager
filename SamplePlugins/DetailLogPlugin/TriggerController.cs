@@ -216,15 +216,11 @@ namespace DetailLogPlugin
 
         public DetailTrigger IsEnd(string app_path, IKeyState key_state)
         {
-            if (LoggingPath == TriggerController.TARGET_ALL_PROCESS)
-            {
-                app_path = TARGET_ALL_PROCESS;
-            }
-            else
+            if (LoggingPath != TriggerController.TARGET_ALL_PROCESS)
             {
                 if (app_path != LoggingPath)
                 {
-                    AllReset();
+                    last_input_path = app_path;
                     return null;
                 }
                 else if (app_path != last_input_path)

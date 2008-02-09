@@ -1,5 +1,18 @@
 2008/02/08
 [NEW] 詳細ログをショートカットキーで開始，終了するための機能を追加
+[CHG] ファイル配置の変更
+      plugins/フォルダを追加
+      config/フォルダを追加
+      config/detail_log/フォルダを追加（プラグインを設定フォルダを作成）
+      log/detail_log/フォルダ（プラグインごとにログフォルダを作成）
+      plugins/DetailLog.dllを追加
+      config/plugin_config.xmlを追加
+      config/detail_log/trigger.xmlを追加
+      comment.txtをconfig/detail_log/comment.txtに移動
+      config.xmlをconfig/config.xmlに移動
+      AnalyzePlugin.dllの名前をPlugin.dllに変更
+[NEW] アプリケーション用のアイコンを作成
+[NEW] アイコンをタスクトレイに格納
 
 2008/02/07
 [NEW] 外部DLLのプラグイン機能とプラグイン一覧表示機能を追加

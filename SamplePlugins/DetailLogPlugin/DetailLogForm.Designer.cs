@@ -502,12 +502,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(526, 413);
             this.Controls.Add(this.splitContainer1);
-            this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(542, 450);
             this.Name = "DetailLogForm";
-            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "詳細ログ設定ウィンドウ";
+            this.Text = "詳細ログ設定";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DetailLogForm_FormClosed);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);

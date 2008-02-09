@@ -131,5 +131,19 @@ namespace TypingManager.Properties {
                 return ResourceManager.GetString("StartupUnregist", resourceCulture);
             }
         }
+        
+        internal static System.Drawing.Icon TypingManager {
+            get {
+                object obj = ResourceManager.GetObject("TypingManager", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon TypingManager_Large {
+            get {
+                object obj = ResourceManager.GetObject("TypingManager_Large", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

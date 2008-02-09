@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -98,6 +99,8 @@
             this.スタートアップに登録ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.スタートアップを解除ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.選択した項目をコピーCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.設定CToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.プラグインPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.プラグイン一覧VToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -106,7 +109,9 @@
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.選択した項目をコピーCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.開くOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.閉じるCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -119,6 +124,7 @@
             this.tabPage3.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -840,10 +846,24 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.選択した項目をコピーCToolStripMenuItem});
+            this.選択した項目をコピーCToolStripMenuItem,
+            this.設定CToolStripMenuItem});
+            this.toolStripMenuItem1.Enabled = false;
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(74, 22);
             this.toolStripMenuItem1.Text = "ツール(&T)";
+            // 
+            // 選択した項目をコピーCToolStripMenuItem
+            // 
+            this.選択した項目をコピーCToolStripMenuItem.Name = "選択した項目をコピーCToolStripMenuItem";
+            this.選択した項目をコピーCToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.選択した項目をコピーCToolStripMenuItem.Text = "選択した項目をコピー(&P)";
+            // 
+            // 設定CToolStripMenuItem
+            // 
+            this.設定CToolStripMenuItem.Name = "設定CToolStripMenuItem";
+            this.設定CToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.設定CToolStripMenuItem.Text = "設定(&C)...";
             // 
             // プラグインPToolStripMenuItem
             // 
@@ -898,15 +918,33 @@
             // 
             // notifyIcon1
             // 
+            this.notifyIcon1.ContextMenuStrip = this.contextMenuStrip1;
+            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
             // 
-            // 選択した項目をコピーCToolStripMenuItem
+            // contextMenuStrip1
             // 
-            this.選択した項目をコピーCToolStripMenuItem.Name = "選択した項目をコピーCToolStripMenuItem";
-            this.選択した項目をコピーCToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
-            this.選択した項目をコピーCToolStripMenuItem.Text = "選択した項目をコピー(&C)";
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.開くOToolStripMenuItem,
+            this.閉じるCToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 70);
+            // 
+            // 開くOToolStripMenuItem
+            // 
+            this.開くOToolStripMenuItem.Name = "開くOToolStripMenuItem";
+            this.開くOToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.開くOToolStripMenuItem.Text = "開く(&O)";
+            this.開くOToolStripMenuItem.Click += new System.EventHandler(this.開くOToolStripMenuItem_Click);
+            // 
+            // 閉じるCToolStripMenuItem
+            // 
+            this.閉じるCToolStripMenuItem.Name = "閉じるCToolStripMenuItem";
+            this.閉じるCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.閉じるCToolStripMenuItem.Text = "終了(&E)";
+            this.閉じるCToolStripMenuItem.Click += new System.EventHandler(this.閉じるCToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -917,6 +955,7 @@
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.Name = "Form1";
@@ -942,6 +981,7 @@
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1027,6 +1067,10 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem 選択した項目をコピーCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 設定CToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem 開くOToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 閉じるCToolStripMenuItem;
     }
 }
 

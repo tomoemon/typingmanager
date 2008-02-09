@@ -13,7 +13,7 @@ namespace Plugin
         public const string DAY_FORMAT = "yyyyMMdd";
         public const string LOG_DIR = "log";
         public const string PLUGIN_DIR = "plugins";
-        public const string CONFIG_FILE = "config.xml";
+        public const string CONFIG_DIR = "config";
         
         public static string TOTAL_FILE
         { get { return Path.Combine(LOG_DIR, "total.xml"); } }
@@ -21,8 +21,10 @@ namespace Plugin
         { get { return Path.Combine(LOG_DIR, "allday.xml"); } }
         public static string PROCESS_FILE
         { get { return Path.Combine(LOG_DIR, "process.xml"); } }
+        public static string CONFIG_FILE
+        { get { return Path.Combine(CONFIG_DIR, "config.xml"); } }
         public static string PLUGIN_CONFIG_FILE
-        { get { return Path.Combine(LOG_DIR, "plugin_config.xml"); } }
+        { get { return Path.Combine(CONFIG_DIR, "plugin_config.xml"); } }
         public static string DAY_LOG_DIR
         { get { return Path.Combine(LOG_DIR, "day_log"); } }
         public static string DAY_LOG_FILE(DateTime date)
@@ -37,6 +39,10 @@ namespace Plugin
             if (!Directory.Exists(PLUGIN_DIR))
             {
                 Directory.CreateDirectory(PLUGIN_DIR);
+            }
+            if (!Directory.Exists(CONFIG_DIR))
+            {
+                Directory.CreateDirectory(CONFIG_DIR);
             }
         }
     }

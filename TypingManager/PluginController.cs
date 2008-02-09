@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Drawing;
 using Plugin;
 using System.Windows.Forms;
 using System.Xml;
@@ -112,6 +113,11 @@ namespace TypingManager
             }
         }
 
+        public Icon GetMainIcon()
+        {
+            return main_form.Icon;
+        }
+
         /// <summary>
         /// メインメニューのプラグイン欄に表示するメニューを返す
         /// </summary>
@@ -149,7 +155,7 @@ namespace TypingManager
 
         /// <summary>
         /// プラグインのログを保存するディレクトリを返す
-        /// 基本的にはlogフォルダの中に「プラグイン名」フォルダを作成してその中に
+        /// 基本的にはlog/フォルダの中に「プラグイン名」フォルダを作成してその中に
         /// </summary>
         /// <param name="plugin_name"></param>
         /// <returns></returns>
@@ -166,6 +172,27 @@ namespace TypingManager
             }
             return "";
         }
+
+        /// <summary>
+        /// プラグインの設定を保存するディレクトリを返す
+        /// 基本的にはconfig/フォルダの中に「プラグイン名」フォルダを作成してその中に
+        /// </summary>
+        /// <param name="plugin_name"></param>
+        /// <returns></returns>
+        public string GetConfigDir(string plugin_name)
+        {
+            if (index_dic.ContainsKey(plugin_name))
+            {
+                string path = Path.Combine(LogDir.CONFIG_DIR, plugin_name);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                return path;
+            }
+            return "";
+        }
+
 
         /// <summary>
         /// 基本的に他のプラグインから，別のプラグインの情報を得るために呼ばれる

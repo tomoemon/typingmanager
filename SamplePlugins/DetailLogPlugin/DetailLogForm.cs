@@ -12,9 +12,11 @@ namespace DetailLogPlugin
 {
     public partial class DetailLogForm : Form
     {
+        public const string WINDOW_TITLE = "詳細ログ設定";
+
         private DetailLogViewer detailLogViewer;
         private StrokeTimeLog strokeTimeLog;
-        private DetailTrigger trigger = new DetailTrigger();
+        private DetailTrigger new_trigger = new DetailTrigger();
         
         // ショートカットキーの登録時に押しっぱなしのキーを
         // 複数回登録しないために，一度押したキーを辞書に登録する
@@ -35,6 +37,9 @@ namespace DetailLogPlugin
 
             detailLogViewer = new DetailLogViewer();
             strokeTimeLog = log;
+
+            // メインウィンドウで使っているアイコンを流用する
+            this.Icon = strokeTimeLog.Controller.GetMainIcon();
 
             // リストビューの幅調整など
             DetailLogSelectView.SmallImageList = new ImageList();
@@ -74,11 +79,16 @@ namespace DetailLogPlugin
             foreach (DetailTrigger trigger in strokeTimeLog.TriggerCtrl.GetAllTrigers())
             {
                 string name = strokeTimeLog.ProcessName.GetName(trigger.Path);
-                TriggerView.Items.Add(name, name, "");
-                TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(trigger.Comment);
-                TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(trigger.Start.ToString());
-                TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(trigger.End.ToString());
-                TriggerView.Items[TriggerView.Items.Count - 1].Tag = trigger;
+                if (trigger.Path == TriggerController.TARGET_ALL_PROCESS)
+                {
+                    name = TriggerController.TARGET_ALL_PROCESS;
+                }
+                ListViewItem item = new ListViewItem(name);
+                item.SubItems.Add(trigger.Comment);
+                item.SubItems.Add(trigger.Start.ToString());
+                item.SubItems.Add(trigger.End.ToString());
+                item.Tag = trigger;
+                TriggerView.Items.Add(item);
             }
 
             // アプリケーションIDを登録しておく
@@ -364,8 +374,8 @@ namespace DetailLogPlugin
             {
                 //Console.WriteLine("{0}:{1}:{2}:{3}",e.KeyCode, e.KeyValue,e.KeyData,e.Modifiers);
                 keydown_dic[e.KeyCode] = 1;
-                trigger.Start.Add(e.KeyCode, e.KeyData);
-                textBox2.Text = trigger.Start.ToString();
+                new_trigger.Start.Add(e.KeyCode, e.KeyData);
+                textBox2.Text = new_trigger.Start.ToString();
             }
         }
 
@@ -395,8 +405,8 @@ namespace DetailLogPlugin
             {
                 //Console.WriteLine("{0}:{1}:{2}:{3}",e.KeyCode, e.KeyValue,e.KeyData,e.Modifiers);
                 keydown_dic[e.KeyCode] = 1;
-                trigger.End.Add(e.KeyCode, e.KeyData);
-                textBox3.Text = trigger.End.ToString();
+                new_trigger.End.Add(e.KeyCode, e.KeyData);
+                textBox3.Text = new_trigger.End.ToString();
             }
         }
 
@@ -423,12 +433,13 @@ namespace DetailLogPlugin
                 MessageBox.Show("対象プロセスを選択してください");
                 return;
             }
-            else if(trigger.Start.ToString() == ""){
+            else if(new_trigger.Start.ToString() == ""){
                 MessageBox.Show("開始ショートカットキーを入力してください");
                 return;
             }
-            else if(trigger.End.ToString() == ""){
+            else if(new_trigger.End.ToString() == ""){
                 MessageBox.Show("終了ショートカットキーを入力してください");
+                return;
             }
 
             int app_id = ((List<int>)comboBox2.Tag)[index];
@@ -440,23 +451,27 @@ namespace DetailLogPlugin
                 app_name = TriggerController.TARGET_ALL_PROCESS;
             }
 
-            Console.WriteLine("プロセスID:{0}, 開始:{1}, 終了:{2}",
-                app_id, trigger.Start.ToString(), trigger.End.ToString());
+            new_trigger.Path = app_path;
+            new_trigger.Comment = textBox1.Text;
+            Console.WriteLine("before regist プロセスID:{0}, プロセス名:{1}, コメント:{2}, 開始:{3}, 終了:{4}",
+                app_id, app_path, new_trigger.Comment, new_trigger.Start.ToString(), new_trigger.End.ToString());
 
-            trigger.Path = app_path;
-            trigger.Comment = textBox1.Text;
-            if (!strokeTimeLog.TriggerCtrl.Add(trigger))
+            if (!strokeTimeLog.TriggerCtrl.Add(new_trigger))
             {
                 MessageBox.Show("そのトリガはすでに登録済みです");
                 return;
             }
 
+            Console.WriteLine("after regist プロセスID:{0}, プロセス名:{1}, コメント:{2}, 開始:{3}, 終了:{4}",
+                app_id, app_path, new_trigger.Comment, new_trigger.Start.ToString(), new_trigger.End.ToString());
+
             // リストビューに追加する
-            TriggerView.Items.Add(app_id.ToString(), app_name, "");
-            TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(textBox1.Text);
-            TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(trigger.Start.ToString());
-            TriggerView.Items[TriggerView.Items.Count - 1].SubItems.Add(trigger.End.ToString());
-            TriggerView.Items[TriggerView.Items.Count - 1].Tag = trigger;
+            ListViewItem item = new ListViewItem(app_name);
+            item.SubItems.Add(new_trigger.Comment);
+            item.SubItems.Add(new_trigger.Start.ToString());
+            item.SubItems.Add(new_trigger.End.ToString());
+            item.Tag = new_trigger;
+            TriggerView.Items.Add(item);
 
             // GUIを初期化
             textBox1.Text = "";
@@ -464,7 +479,7 @@ namespace DetailLogPlugin
             textBox3.Text = "";
 
             // 次の入力用に新しいインスタンスを作成する
-            trigger = new DetailTrigger();
+            new_trigger = new DetailTrigger();
             
         }
 

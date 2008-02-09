@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace Plugin
 {
@@ -16,11 +17,24 @@ namespace Plugin
         object GetInfo(string name);
 
         /// <summary>
-        /// 各プラグインが保存に使っても良いディレクトリを返す．
+        /// 各プラグインがログの保存に使うディレクトリ
         /// プラグインから呼ばれる関数
         /// </summary>
         /// <returns></returns>
         string GetSaveDir(string pluginname);
+
+        /// <summary>
+        /// 各プラグインが設定の保存に使うディレクトリ
+        /// プラグインから呼ばれる関数
+        /// </summary>
+        /// <returns></returns>
+        string GetConfigDir(string pluginname);
+
+        /// <summary>
+        /// メインウィンドウのアイコンを取得する
+        /// </summary>
+        /// <returns></returns>
+        Icon GetMainIcon();
     }
 
     public interface IStrokePlugin

@@ -163,7 +163,7 @@ namespace TypingManager
 
             // 起動時のウィンドウの状態は設定で変えられるようにしよう
             //this.WindowState = FormWindowState.Minimized;
-            //this.ShowInTaskbar = false;
+            this.ShowInTaskbar = false;
 
             // ログ保存用のディレクトリの存在チェックと生成
             Plugin.LogDir.LogDirectoryCheck();
@@ -323,13 +323,11 @@ namespace TypingManager
         /// <returns></returns>
         public bool AppFinalize()
         {
-            /*
             DialogResult res = MessageBox.Show("終了しますか？", "終了確認", MessageBoxButtons.OKCancel);
             if (res == DialogResult.Cancel)
             {
                 return false;
             }
-             * */
             AppConfig.TabIndex = tabControl1.SelectedIndex;
             AppConfig.Save();
             pluginController.Close();
@@ -501,20 +499,6 @@ namespace TypingManager
             sorter.ChangeSortOrder();
         }
         #endregion
-
-        private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
-        {
-            /*
-            if (this.WindowState == FormWindowState.Minimized)
-            {
-                this.WindowState = FormWindowState.Normal;
-            }
-            else
-            {
-                this.WindowState = FormWindowState.Minimized;
-            }
-             * */
-        }
 
         private void スタートアップに登録ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -891,6 +875,44 @@ namespace TypingManager
             ViewPluginForm form = new ViewPluginForm(pluginController);
             form.ShowDialog(this);
         }
+
+        #region タスクトレイ関係...
+        private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                WindowOpen();
+            }
+        }
+
+        private void WindowOpen()
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
+        }
+
+        /// <summary>
+        /// タスクトレイアイコンのコンテキストメニューをクリックしたときに呼び出される
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void 開くOToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            WindowOpen();
+        }
+
+        /// <summary>
+        /// タスクトレイアイコンのコンテキストメニューをクリックしたときに呼び出される
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void 閉じるCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AppFinalize();
+        }
+        #endregion
     }
 
     public class NumSort : System.Collections.IComparer

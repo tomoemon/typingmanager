@@ -117,24 +117,21 @@ namespace DetailLogPlugin
     public class StrokeTimeLog : Plugin.BaseStrokePlugin
     {
         public const string PLUGIN_NAME = "detail_log";
-        public static string PLUGIN_DIR = "";
+        public static string PLUGIN_LOG_DIR = "";
+        public static string PLUGIN_CONFIG_DIR = "";
         public static string DETAIL_XML_FILE(DateTime date)
-            { return Path.Combine(PLUGIN_DIR, date.ToString("yyyyMMdd_HHmmss") + ".xml"); }
+            { return Path.Combine(PLUGIN_LOG_DIR, date.ToString("yyyyMMdd_HHmmss") + ".xml"); }
         public static string TRIGGER_FILE
         {
-            get { return Path.Combine(CONFIG_DIR, "trigger.xml"); }
+            get { return Path.Combine(PLUGIN_CONFIG_DIR, "trigger.xml"); }
         }
         public static string COMMENT_FILE
         {
-            get { return Path.Combine(CONFIG_DIR, "comment.txt"); }
+            get { return Path.Combine(PLUGIN_CONFIG_DIR, "comment.txt"); }
         }
         public static string CSV_DIR
         {
-            get { return Path.Combine(PLUGIN_DIR, "csv"); }
-        }
-        public static string CONFIG_DIR
-        {
-            get { return Path.Combine(PLUGIN_DIR, "config"); }
+            get { return Path.Combine(PLUGIN_LOG_DIR, "csv"); }
         }
 
         // 押されたキーと押された時間を保持する辞書
@@ -223,6 +220,16 @@ namespace DetailLogPlugin
             }
             else
             {
+                if (TriggerCtrl.LoggingPath == TriggerController.TARGET_ALL_PROCESS)
+                {
+                    app_path = TriggerController.TARGET_ALL_PROCESS;
+                }
+                else if (app_path != TriggerCtrl.LoggingPath)
+                {
+                    // 対象プロセスを明示している場合は別のプロセスを対象にした打鍵は
+                    // 記録しない
+                    return;
+                }
                 if (TriggerCtrl.IsEnd(app_path, key_state) != null)
                 {
                     LoggingEnd();
@@ -262,7 +269,8 @@ namespace DetailLogPlugin
 
         public override void Init()
         {
-            PLUGIN_DIR = Controller.GetSaveDir(GetAccessName());
+            PLUGIN_LOG_DIR = Controller.GetSaveDir(GetAccessName());
+            PLUGIN_CONFIG_DIR = Controller.GetConfigDir(GetAccessName());
             LogDirectoryCheck();
             process_name = (IProcessNameData)Controller.GetInfo("process_name");
             TriggerCtrl.Load();
@@ -325,10 +333,6 @@ namespace DetailLogPlugin
             {
                 Directory.CreateDirectory(CSV_DIR);
             }
-            if (!Directory.Exists(CONFIG_DIR))
-            {
-                Directory.CreateDirectory(CONFIG_DIR);
-            }
         }
 
         public void LoggingStart(string path, string comment)
@@ -353,6 +357,7 @@ namespace DetailLogPlugin
             // フォームが表示している場合は開始ボタンを無効にする
             if (FormOpen)
             {
+                form.Text = DetailLogForm.WINDOW_TITLE + string.Format(" 計測中:[{0}]", path);
                 form.StartButton.Enabled = false;
                 form.EndButon.Enabled = true;
             }
@@ -381,6 +386,7 @@ namespace DetailLogPlugin
                 // フォームが表示している場合は開始ボタンを有効にする
                 if (FormOpen)
                 {
+                    form.Text = DetailLogForm.WINDOW_TITLE;
                     form.StartButton.Enabled = true;
                     form.EndButon.Enabled = false;
                 }

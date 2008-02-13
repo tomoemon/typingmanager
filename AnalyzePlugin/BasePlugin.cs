@@ -27,10 +27,10 @@ namespace Plugin
         /// <param name="militime">キーが押された時間[ミリ秒]（OSが起動してからの経過時間）</param>
         /// <param name="app_path">キーが押されたアプリケーションのフルパス</param>
         /// <param name="app_title">キーが押されたウィンドウのタイトル</param>
-        public virtual void KeyDown(IKeyState keycode, int militime, string app_path, string app_title) { }
+        public virtual void KeyDown(IKeyState keycode, uint militime, string app_path, string app_title) { }
 
         /// <summary>キーが上がったときに呼び出される</summary>
-        public virtual void KeyUp(IKeyState keycode, int militime, string app_path, string app_title) { }
+        public virtual void KeyUp(IKeyState keycode, uint militime, string app_path, string app_title) { }
 
         /// <summary>ディレクトリチェックなどの初期化処理</summary>
         public virtual void Init() { }

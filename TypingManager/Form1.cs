@@ -270,7 +270,7 @@ namespace TypingManager
         /// <param name="e"></param>
         private void keyHookProc(object sender, KeyboardHookedEventArgs e)
         {
-            int now = QueryTime.NowMiliSec;
+            uint now = QueryTime.NowMiliSec;
             string app_path = ProcessWindowName.GetFrontProcessName();
             string app_title = ProcessWindowName.GetFrontWindowTitle();
 
@@ -278,6 +278,7 @@ namespace TypingManager
             {
                 keyState.KeyDown((int)e.KeyCode);
                 pluginController.KeyDown(keyState, now, app_path, app_title);
+                keyState.SetDownState();
                 /*
                 if (keyStatePlugin.IsPushKey(e.KeyCode))
                 {

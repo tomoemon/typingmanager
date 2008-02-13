@@ -62,7 +62,7 @@ namespace TypingManager
         /// <param name="militime">キーが押された時間[ミリ秒]（OSが起動してからの経過時間）</param>
         /// <param name="app_path">キーが押されたアプリケーションのフルパス</param>
         /// <param name="app_title">キーが押されたウィンドウのタイトル</param>
-        public void KeyDown(IKeyState key_state, int militime, string app_path, string app_title)
+        public void KeyDown(IKeyState key_state, uint militime, string app_path, string app_title)
         {
             foreach (IStrokePlugin plugin in plugin_list)
             {
@@ -74,7 +74,7 @@ namespace TypingManager
         }
 
         /// <summary>キーが上がったときに呼び出される</summary>
-        public void KeyUp(IKeyState key_state, int militime, string app_path, string app_title)
+        public void KeyUp(IKeyState key_state, uint militime, string app_path, string app_title)
         {
             foreach (IStrokePlugin plugin in plugin_list)
             {

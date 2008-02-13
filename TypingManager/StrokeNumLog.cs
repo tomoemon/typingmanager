@@ -474,7 +474,7 @@ namespace TypingManager
         /// </summary>
         /// <param name="app_path"></param>
         /// <param name="win_title"></param>
-        public override void KeyUp(IKeyState keycode, int militime, string app_path, string app_title)
+        public override void KeyUp(IKeyState keycode, uint militime, string app_path, string app_title)
         {
             if (app_path == "")
             {

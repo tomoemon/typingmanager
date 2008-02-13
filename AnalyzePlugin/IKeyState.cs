@@ -11,9 +11,12 @@ namespace Plugin
         bool IsAlt{get;}
         bool IsControl{get;}
         int KeyCode { get;}
-        bool IsPushKey(Keys key);
-        bool IsPushKey(int keycode);
-        bool GetKeyState(int keycode);
-        bool GetKeyState(Keys key);
+        string KeyName { get;}
+        bool IsLastDown(Keys key);
+        bool IsLastDown(int key);
+        bool IsDown(Keys key);
+        bool IsDown(int keycode);
+        bool IsPush(Keys key);
+        bool IsPush(int keycode);
     }
 }

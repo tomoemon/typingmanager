@@ -571,22 +571,24 @@
             // 
             // textBox18
             // 
+            this.textBox18.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox18.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox18.Location = new System.Drawing.Point(226, 285);
+            this.textBox18.Location = new System.Drawing.Point(226, 288);
             this.textBox18.Name = "textBox18";
             this.textBox18.ReadOnly = true;
-            this.textBox18.Size = new System.Drawing.Size(41, 19);
+            this.textBox18.Size = new System.Drawing.Size(41, 12);
             this.textBox18.TabIndex = 11;
             this.textBox18.Text = "0";
             this.textBox18.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // textBox17
             // 
+            this.textBox17.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox17.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox17.Location = new System.Drawing.Point(144, 285);
+            this.textBox17.Location = new System.Drawing.Point(144, 288);
             this.textBox17.Name = "textBox17";
             this.textBox17.ReadOnly = true;
-            this.textBox17.Size = new System.Drawing.Size(41, 19);
+            this.textBox17.Size = new System.Drawing.Size(41, 12);
             this.textBox17.TabIndex = 10;
             this.textBox17.Text = "0";
             this.textBox17.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -613,11 +615,12 @@
             // 
             // textBox16
             // 
+            this.textBox16.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox16.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox16.Location = new System.Drawing.Point(390, 285);
+            this.textBox16.Location = new System.Drawing.Point(390, 288);
             this.textBox16.Name = "textBox16";
             this.textBox16.ReadOnly = true;
-            this.textBox16.Size = new System.Drawing.Size(33, 19);
+            this.textBox16.Size = new System.Drawing.Size(33, 12);
             this.textBox16.TabIndex = 7;
             this.textBox16.Text = "0";
             this.textBox16.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -634,22 +637,24 @@
             // 
             // textBox15
             // 
+            this.textBox15.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox15.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox15.Location = new System.Drawing.Point(308, 285);
+            this.textBox15.Location = new System.Drawing.Point(308, 288);
             this.textBox15.Name = "textBox15";
             this.textBox15.ReadOnly = true;
-            this.textBox15.Size = new System.Drawing.Size(41, 19);
+            this.textBox15.Size = new System.Drawing.Size(41, 12);
             this.textBox15.TabIndex = 5;
             this.textBox15.Text = "0";
             this.textBox15.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // textBox14
             // 
+            this.textBox14.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox14.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox14.Location = new System.Drawing.Point(42, 285);
+            this.textBox14.Location = new System.Drawing.Point(42, 288);
             this.textBox14.Name = "textBox14";
             this.textBox14.ReadOnly = true;
-            this.textBox14.Size = new System.Drawing.Size(61, 19);
+            this.textBox14.Size = new System.Drawing.Size(61, 12);
             this.textBox14.TabIndex = 4;
             this.textBox14.Text = "0";
             this.textBox14.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;

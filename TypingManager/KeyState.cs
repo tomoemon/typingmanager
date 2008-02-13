@@ -11,6 +11,9 @@ namespace TypingManager
         // 今押されているか <押されているキーコード, 値は使わない>
         private Dictionary<int, int> down_key = new Dictionary<int, int>();
 
+        // 前回押されていたキー
+        private Dictionary<int, int> last_down_key = new Dictionary<int, int>();
+
         // ひとつ前に押されていたキー
         private int down = 0;
 
@@ -20,8 +23,8 @@ namespace TypingManager
         // 直前のKeyDownかKeyUpで呼ばれたキーコード
         private int called_key = 0;
 
-        // 押しっぱなしかどうか
-        private bool pushed = false;
+        // called_keyのキー名
+        private string called_key_name = "";
 
         private int VK_LMENU = (int)Keys.LMenu;
         private int VK_RMENU = (int)Keys.RMenu;
@@ -30,13 +33,13 @@ namespace TypingManager
         private int VK_LCTRL = (int)Keys.LControlKey;
         private int VK_RCTRL = (int)Keys.RControlKey;
 
-        public bool this[int key]
-        {
-            get { return down_key.ContainsKey(key); }
-        }
         public int KeyCode
         {
             get { return called_key; }
+        }
+        public string KeyName
+        {
+            get { return called_key_name; }
         }
         public int UpKey
         {
@@ -49,16 +52,9 @@ namespace TypingManager
 
         public void KeyDown(int keycode)
         {
-            if (down == keycode)
-            {
-                pushed = false;
-            }
-            else
-            {
-                pushed = true;
-            }
             down = keycode;
             called_key = keycode;
+            called_key_name = VirtualKeyName.GetKeyName(keycode);
             down_key[keycode] = 1;
         }
 
@@ -68,43 +64,72 @@ namespace TypingManager
             {
                 down_key.Remove(keycode);
             }
+            if (last_down_key.ContainsKey(keycode))
+            {
+                last_down_key.Remove(keycode);
+            }
             up = keycode;
             called_key = keycode;
+            called_key_name = VirtualKeyName.GetKeyName(keycode);
         }
 
-        public bool GetKeyState(Keys key)
+        /// <summary>
+        /// 次回押された際に続けて押されているのか，新しく押されたのかを
+        /// 正しく返すために，各キーの処理が終わってから呼ばれる
+        /// 前回の押されたキーの状態を保存する
+        /// </summary>
+        public void SetDownState()
         {
-            return this[(int)key];
+            foreach (int key in down_key.Keys)
+            {
+                last_down_key[key] = down_key[key];
+            }
+            down_key.Clear();
         }
 
-        public bool GetKeyState(int keycode)
+        public bool IsDown(Keys key)
         {
-            return this[keycode];
+            return down_key.ContainsKey((int)key);
         }
 
-        public bool IsPushKey(Keys key)
+        public bool IsDown(int keycode)
         {
-            return this[(int)key] && pushed;
+            return down_key.ContainsKey(keycode);
         }
 
-        public bool IsPushKey(int keycode)
+        public bool IsLastDown(Keys key)
         {
-            return this[keycode] && pushed;
+            return last_down_key.ContainsKey((int)key);
+        }
+
+        public bool IsLastDown(int keycode)
+        {
+            return last_down_key.ContainsKey(keycode);
+        }
+
+        public bool IsPush(Keys key)
+        {
+            return IsDown(key) && !IsLastDown(key);
+        }
+
+        public bool IsPush(int keycode)
+        {
+            return IsDown(keycode) && !IsLastDown(keycode);
         }
 
         public bool IsAlt
         {
-            get { return this[VK_LMENU] || this[VK_RMENU]; }
+            get { return IsDown(VK_LMENU) || IsDown(VK_RMENU); }
         }
 
         public bool IsControl
         {
-            get { return this[VK_LCTRL] || this[VK_RCTRL]; }
+            get { return IsDown(VK_LCTRL) || IsDown(VK_RCTRL); }
         }
 
         public bool IsShift
         {
-            get { return this[VK_LSHIFT] || this[VK_RSHIFT]; }
+            get { return IsDown(VK_LSHIFT) || IsDown(VK_RSHIFT); }
         }
     }
 }

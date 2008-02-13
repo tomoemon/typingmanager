@@ -134,7 +134,7 @@ namespace DetailLogPlugin
             get { return Path.Combine(PLUGIN_LOG_DIR, "csv"); }
         }
 
-        // 押されたキーと押された時間を保持する辞書
+        // <押されたキー,押された時間>
         // そのキーが上がった時に二つを組み合わせてStrokeインスタンスを作る
         private Dictionary<int, int> down_dic = new Dictionary<int, int>();
 
@@ -142,7 +142,7 @@ namespace DetailLogPlugin
         private List<Stroke> stroke_list = new List<Stroke>();
 
         // 詳細ロギングを開始してから最初の打鍵が行われた時間
-        private int start_time;
+        private uint start_time;
 
         private DetailLogInfo info;
 
@@ -157,6 +157,7 @@ namespace DetailLogPlugin
         // 詳細ログのトリガコントローラ
         private TriggerController trigger_controller = new TriggerController();
 
+        // 詳細ログ取得対象とするプロセス名を取得するため
         private IProcessNameData process_name;
 
         #region プロパティ...
@@ -203,8 +204,12 @@ namespace DetailLogPlugin
         /// <summary>プラグインのバージョンを書くこと</summary>
         public override string GetVersion() { return "0.0.1"; }
 
-        public override void KeyDown(IKeyState key_state, int militime, string app_path, string app_title)
+        public override void KeyDown(IKeyState key_state, uint militime, string app_path, string app_title)
         {
+            if (FormOpen)
+            {
+                form.KeyStrokeDown(key_state, militime);
+            }
             app_path = app_path.ToLower();
             //Console.WriteLine("StrokeTimeLog.KeyDown: {0}", app_path);
             if (!Logging)
@@ -251,18 +256,22 @@ namespace DetailLogPlugin
                         down_dic[key_state.KeyCode]));
             }
             //Console.WriteLine("DetailLog keydown:{0}", key_state.KeyCode);
-            down_dic[key_state.KeyCode] = militime - start_time;
+            down_dic[key_state.KeyCode] = (int)(militime - start_time);
         }
 
-        public override void KeyUp(IKeyState key_state, int militime, string app_path, string app_title)
+        public override void KeyUp(IKeyState key_state, uint militime, string app_path, string app_title)
         {
+            if (FormOpen)
+            {
+                form.KeyStrokeUp(key_state, militime);
+            }
             if (!Logging) return;
 
             if (down_dic.ContainsKey(key_state.KeyCode))
             {
                 stroke_list.Add(
                     new Stroke(key_state.KeyCode, down_dic[key_state.KeyCode],
-                    militime - start_time));
+                    (int)(militime - start_time)));
                 down_dic.Remove(key_state.KeyCode);
             }
         }

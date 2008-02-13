@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="StrokeTimeLog.cs" />
     <Compile Include="TriggerController.cs" />
+    <Compile Include="ViewStroke.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DetailLogForm.resx">

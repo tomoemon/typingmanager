@@ -17,17 +17,17 @@ namespace TypingManager
         const int ZERO_TIME = 20000; // 20•b
 
         private int sample_num;
-        private List<int> sample_data;
+        private List<uint> sample_data;
         private List<float> speed_per_sec;
 
         public TypingSpeed(int sample_num)
         {
             this.sample_num = sample_num;
-            sample_data = new List<int>(SAMPLE_MAX);
+            sample_data = new List<uint>(SAMPLE_MAX);
             speed_per_sec = new List<float>(SAMPLE_MAX);
         }
 
-        public void Stroke(int mili_sec)
+        public void Stroke(uint mili_sec)
         {
             sample_data.Add(mili_sec);
 
@@ -77,7 +77,7 @@ namespace TypingManager
             return GetSpeed(sample_data[sample_data.Count-1]);
         }
 
-        public float GetSpeed(int now)
+        public float GetSpeed(uint now)
         {
             int length = sample_data.Count; 
             if (sample_data.Count < sample_num ||
@@ -86,7 +86,7 @@ namespace TypingManager
                 RecordAverageSpeed(0);
                 return 0;
             }
-            int diff_sum = now - sample_data[length - 20];
+            uint diff_sum = now - sample_data[length - 20];
             float average = (float)sample_num / diff_sum * 1000 * 60;
             RecordAverageSpeed(average);
             return average;

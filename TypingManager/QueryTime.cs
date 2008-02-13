@@ -24,11 +24,11 @@ namespace TypingManager
             }
         }
 
-        public static int NowMiliSec
+        public static uint NowMiliSec
         {
             get
             {
-                return (int)(QueryTime.Now * 1000);
+                return (uint)(QueryTime.Now * 1000);
             }
         }
     }

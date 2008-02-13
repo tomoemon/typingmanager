@@ -17,7 +17,8 @@ namespace DetailLogPlugin
         private DetailLogViewer detailLogViewer;
         private StrokeTimeLog strokeTimeLog;
         private DetailTrigger new_trigger = new DetailTrigger();
-        
+        private ViewStroke viewStroke;
+
         // ショートカットキーの登録時に押しっぱなしのキーを
         // 複数回登録しないために，一度押したキーを辞書に登録する
         // そのキーが離されたら辞書から消す
@@ -35,6 +36,7 @@ namespace DetailLogPlugin
         {
             InitializeComponent();
 
+            viewStroke = new ViewStroke(textBox5, textBox4, (int)numericUpDown1.Value);
             detailLogViewer = new DetailLogViewer();
             strokeTimeLog = log;
 
@@ -557,6 +559,26 @@ namespace DetailLogPlugin
             {
                 view.Columns[i].Width = (int)(view.Columns[i].Width * ratio);
             }
+        }
+
+        public void KeyStrokeDown(IKeyState key_state, uint militime)
+        {
+            viewStroke.KeyDown(key_state, militime);
+        }
+
+        public void KeyStrokeUp(IKeyState key_state, uint militime)
+        {
+            viewStroke.KeyUp(key_state, militime);
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            viewStroke.MaxLogNum = (int)numericUpDown1.Value;
+        }
+
+        private void numericUpDown1_KeyDown(object sender, KeyEventArgs e)
+        {
+            viewStroke.MaxLogNum = (int)numericUpDown1.Value;
         }
     }
 

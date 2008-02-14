@@ -47,6 +47,24 @@ namespace TypingManager
         /// <summary>選択していたタブ番号</summary>
         public int tabIndex;
 
+        /// <summary>定期的にログを保存するか</summary>
+        public bool scheduleLogging;
+
+        /// <summary>ログを保存する間隔（分）</summary>
+        public int scheduleTiming;
+
+        /// <summary>打鍵速度履歴グラフで打鍵が続いていると認識して描画する時間（秒）</summary>
+        public int noStrokeLimitTime;
+
+        /// <summary>終了時に確認メッセージを出すか</summary>
+        public bool showExitMessage;
+
+        /// <summary>「選択した項目をコピー」する形式</summary>
+        public string selectedItemCopyFormat;
+
+        /// <summary>打鍵数リストビューを右クリックしたときのコピーする形式</summary>
+        public string rightClickCopyFormat;
+
         private static AppConfig __instance;
 
         #region プロパティ...
@@ -80,6 +98,36 @@ namespace TypingManager
             get { return __instance.tabIndex; }
             set { __instance.tabIndex = value; }
         }
+        public static bool ScheduleLogging
+        {
+            get { return __instance.scheduleLogging; }
+            set { __instance.scheduleLogging = value; }
+        }
+        public static int ScheduleTiming
+        {
+            get { return __instance.scheduleTiming; }
+            set { __instance.scheduleTiming = value; }
+        }
+        public static int NoStrokeLimitTime
+        {
+            get { return __instance.noStrokeLimitTime; }
+            set { __instance.noStrokeLimitTime = value; }
+        }
+        public static bool ShowExitMessage
+        {
+            get { return __instance.showExitMessage; }
+            set { __instance.showExitMessage = value; }
+        }
+        public static string SelectedItemCopyFormat
+        {
+            get { return __instance.selectedItemCopyFormat; }
+            set { __instance.selectedItemCopyFormat = value; }
+        }
+        public static string RightClickCopyFormat
+        {
+            get { return __instance.rightClickCopyFormat; }
+            set { __instance.rightClickCopyFormat = value; }
+        }
         #endregion
 
         private AppConfig()
@@ -93,6 +141,12 @@ namespace TypingManager
             markType = LineGraphMarkType.None;
             saveTitleStroke = false;
             tabIndex = 0;
+            scheduleLogging = true;
+            scheduleTiming = 10;
+            noStrokeLimitTime = 10;
+            showExitMessage = false;
+            selectedItemCopyFormat = "%1, %2, %3";
+            rightClickCopyFormat = "%1 - [%2]";
         }
 
         public static void Load(string filename)

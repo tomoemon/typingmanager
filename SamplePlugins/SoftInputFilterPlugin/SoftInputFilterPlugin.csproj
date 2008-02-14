@@ -4,11 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4AC2AD87-B5B4-4B32-8CE1-3F327ACD9FE3}</ProjectGuid>
+    <ProjectGuid>{DA41CDAB-0F01-4500-9017-51546DF052F4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DetailLogPlugin</RootNamespace>
-    <AssemblyName>DetailLogPlugin</AssemblyName>
+    <RootNamespace>SoftInputFilterPlugin</RootNamespace>
+    <AssemblyName>SoftInputFilterPlugin</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,42 +34,12 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DetailLogForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DetailLogForm.Designer.cs">
-      <DependentUpon>DetailLogForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DetailLogViewer.cs" />
-    <Compile Include="DetailTrigger.cs" />
+    <Compile Include="InputFilterPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="ReadOnlyComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="StrokeTimeLog.cs" />
-    <Compile Include="TriggerController.cs" />
-    <Compile Include="ViewStroke.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="DetailLogForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>DetailLogForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

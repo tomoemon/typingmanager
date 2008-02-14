@@ -54,7 +54,7 @@ namespace Plugin
         /// <summary>メインメニューに加えるメニューを返す</summary>
         public virtual List<ToolStripMenuItem> GetToolStripMenu() { return null; }
 
-        public IStrokePluginController Controller
+        public IPluginController Controller
         {
             get { return _controller; }
             set { _controller = value; }
@@ -72,7 +72,7 @@ namespace Plugin
             set { _mainform = value; }
         }
 
-        private IStrokePluginController _controller;
+        private IPluginController _controller;
         private bool _valid;
         private Form _mainform;
     }

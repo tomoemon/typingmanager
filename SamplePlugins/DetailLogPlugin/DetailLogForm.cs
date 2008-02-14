@@ -41,7 +41,7 @@ namespace DetailLogPlugin
             strokeTimeLog = log;
 
             // メインウィンドウで使っているアイコンを流用する
-            this.Icon = strokeTimeLog.Controller.GetMainIcon();
+            this.Icon = strokeTimeLog.MainForm.Icon;
 
             // リストビューの幅調整など
             DetailLogSelectView.SmallImageList = new ImageList();
@@ -455,8 +455,8 @@ namespace DetailLogPlugin
 
             new_trigger.Path = app_path;
             new_trigger.Comment = textBox1.Text;
-            Console.WriteLine("before regist プロセスID:{0}, プロセス名:{1}, コメント:{2}, 開始:{3}, 終了:{4}",
-                app_id, app_path, new_trigger.Comment, new_trigger.Start.ToString(), new_trigger.End.ToString());
+            //Console.WriteLine("before regist プロセスID:{0}, プロセス名:{1}, コメント:{2}, 開始:{3}, 終了:{4}",
+            //    app_id, app_path, new_trigger.Comment, new_trigger.Start.ToString(), new_trigger.End.ToString());
 
             if (!strokeTimeLog.TriggerCtrl.Add(new_trigger))
             {
@@ -464,8 +464,8 @@ namespace DetailLogPlugin
                 return;
             }
 
-            Console.WriteLine("after regist プロセスID:{0}, プロセス名:{1}, コメント:{2}, 開始:{3}, 終了:{4}",
-                app_id, app_path, new_trigger.Comment, new_trigger.Start.ToString(), new_trigger.End.ToString());
+            //Console.WriteLine("after regist プロセスID:{0}, プロセス名:{1}, コメント:{2}, 開始:{3}, 終了:{4}",
+            //    app_id, app_path, new_trigger.Comment, new_trigger.Start.ToString(), new_trigger.End.ToString());
 
             // リストビューに追加する
             ListViewItem item = new ListViewItem(app_name);
@@ -579,6 +579,11 @@ namespace DetailLogPlugin
         private void numericUpDown1_KeyDown(object sender, KeyEventArgs e)
         {
             viewStroke.MaxLogNum = (int)numericUpDown1.Value;
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            viewStroke.Clear();
         }
     }
 

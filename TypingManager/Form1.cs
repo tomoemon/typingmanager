@@ -20,6 +20,7 @@ namespace TypingManager
         private TypingSpeed typingSpeed;
         private GraphChanger graphChanger;
         private TimerTaskController timerTaskController;
+        private ConfigForm configForm = new ConfigForm();
 
         /// <summary>
         /// 日付別打鍵リストビューとプロセス別打鍵リストビューの
@@ -205,10 +206,9 @@ namespace TypingManager
             
             // プラグインコントローラの作成とプラグインの読み込み
             pluginController = new PluginController(this);
-            pluginController.Add(strokeNumLog);
-            pluginController.Add(strokeNumLog.ProcessName);
+            pluginController.AddStrokePlugin(strokeNumLog);
+            pluginController.AddStrokePlugin(strokeNumLog.ProcessName);
             pluginController.Load();
-            pluginController.Init();
             pluginController.AddMenu(PluginMenu);
             
             // 打鍵速度を計算するクラスを作成（サンプル数20）
@@ -259,7 +259,7 @@ namespace TypingManager
             // Timerを使用するタスクの登録
             timerTaskController = new TimerTaskController();
             timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_NEWDAY, 1, 0, 0);
-            timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_SAVE, 0, 10, 0);
+            timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_SAVE, 0, AppConfig.ScheduleTiming, 0);
             timerTaskController.AddTask(graphChanger, GraphChanger.TIMER_ID_UPDATE, 0, 0, 1);
         }
 
@@ -319,10 +319,14 @@ namespace TypingManager
         /// <returns></returns>
         private bool AppFinalize()
         {
-            DialogResult res = MessageBox.Show("終了しますか？", "終了確認", MessageBoxButtons.OKCancel);
-            if (res == DialogResult.Cancel)
+            if (AppConfig.ShowExitMessage)
             {
-                return false;
+                DialogResult res = MessageBox.Show("終了しますか？", "終了確認",
+                    MessageBoxButtons.OKCancel);
+                if (res == DialogResult.Cancel)
+                {
+                    return false;
+                }
             }
             AppConfig.TabIndex = tabControl1.SelectedIndex;
             AppConfig.Save();
@@ -628,8 +632,11 @@ namespace TypingManager
             List<int> order_list = Misc.SortOrder(title_total, true);
             for (int i = 0; i < descend_title.Count; i++)
             {
-                menu.MenuItems.Add(string.Format("{0} - [{1}]",
-                    title_total[order_list[i]], descend_title[order_list[i]]));
+                string format = (string)AppConfig.RightClickCopyFormat.Clone();
+                format = format.Replace("%1", title_total[order_list[i]].ToString());
+                format = format.Replace("%2", descend_title[order_list[i]]);
+                format = format.Replace("\\t", "\t");
+                menu.MenuItems.Add(format);
             }
             menu.MenuItems.Add("-");
             menu.MenuItems.Add("クリップボードにコピーする(&C)");
@@ -654,12 +661,9 @@ namespace TypingManager
             ContextMenu menu = (ContextMenu)sender_item.Tag;
             
             string copy_text = "";
-            foreach (MenuItem item in menu.MenuItems)
+            for (int i = 0; i < menu.MenuItems.Count - 2; i++)
             {
-                if (item.Text.EndsWith("]"))
-                {
-                    copy_text += item.Text + Environment.NewLine;
-                }
+                copy_text += menu.MenuItems[i].Text + Environment.NewLine;
             }
             if (copy_text != "")
             {
@@ -753,7 +757,12 @@ namespace TypingManager
                     Console.WriteLine("id:{0}, name:{1}, path:{2}",
                         app_list[order_list[i]].AppID,app_name,app_path);
                     int app_total = num_list[order_list[i]];
-                    menu.MenuItems.Add(string.Format("{0} - [{1}]",app_total,app_name));
+
+                    string format = (string)AppConfig.RightClickCopyFormat.Clone();
+                    format = format.Replace("%1", app_total.ToString());
+                    format = format.Replace("%2", app_name);
+                    format = format.Replace("\\t", "\t");
+                    menu.MenuItems.Add(format);
                     ContextMenu sub_menu = MakeTitleListContextMenu(num_log, app_path);
                     
                     if (sub_menu.MenuItems.Count > 2)
@@ -921,6 +930,77 @@ namespace TypingManager
             if (WindowState == FormWindowState.Minimized)
             {
                 Hide();
+            }
+        }
+
+        private void 設定CToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            configForm.ScheduledLogging = AppConfig.ScheduleLogging;
+            configForm.ScheduleLogTiming = AppConfig.ScheduleTiming;
+            configForm.ShowExitMessage = AppConfig.ShowExitMessage;
+            configForm.NoStrokeLimitTime = AppConfig.NoStrokeLimitTime;
+            configForm.SelectedItemCopyFormat = AppConfig.SelectedItemCopyFormat;
+            configForm.RightClickCopyFormat = AppConfig.RightClickCopyFormat;
+            DialogResult result = configForm.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                AppConfig.ScheduleLogging = configForm.ScheduledLogging;
+                AppConfig.ScheduleTiming = configForm.ScheduleLogTiming;
+                AppConfig.ShowExitMessage = configForm.ShowExitMessage;
+                AppConfig.NoStrokeLimitTime = configForm.NoStrokeLimitTime;
+                timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_SAVE, 0, AppConfig.ScheduleTiming, 0);
+                AppConfig.SelectedItemCopyFormat = configForm.SelectedItemCopyFormat;
+                AppConfig.RightClickCopyFormat = configForm.RightClickCopyFormat;
+            }
+        }
+
+        /// <summary>
+        /// プロセス別打鍵数ビューで項目上をドラッグしたときに呼ばれる
+        /// 左ボタンを押しながらマウスが移動した部分の項目を選択する
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void listView1_MouseMove(object sender, MouseEventArgs e)
+        {
+            ListViewHitTestInfo info = listView1.HitTest(e.X, e.Y);
+            if (info.SubItem != null && e.Button == MouseButtons.Left)
+            {
+                info.Item.Selected = true;
+            }
+        }
+
+        private void 選択した項目をコピーCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListView view = null;
+            StringBuilder copy_text = new StringBuilder();
+            switch (tabControl1.SelectedIndex)
+            {
+                case 1:
+                    view = ProcessStrokeView;
+                    break;
+                case 2:
+                    view = DayStrokeView;
+                    break;
+            }
+            if (view != null)
+            {
+                foreach (ListViewItem item in view.SelectedItems)
+                {
+                    string line_format = (string)AppConfig.SelectedItemCopyFormat.Clone();
+                    for (int i = 0; i < item.SubItems.Count; i++)
+                    {
+                        string replace_mark = string.Format("%{0}",i+1);
+                        line_format = line_format.Replace(replace_mark, item.SubItems[i].Text);
+                    }
+                    line_format = line_format.Replace("\\t", "\t");
+                    copy_text.AppendLine(line_format);
+                }
+            }
+            if (copy_text.Length != 0)
+            {
+                // クリップボードに文字列をコピーする
+                // アプリケーション終了後もクリップボードに残る
+                Clipboard.SetText(copy_text.ToString());
             }
         }
     }

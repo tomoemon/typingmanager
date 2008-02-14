@@ -448,7 +448,7 @@ namespace DetailLogPlugin
         {
             using (StreamWriter sw = new StreamWriter(COMMENT_FILE))
             {
-                Console.WriteLine("Comment Save");
+                //Console.WriteLine("Comment Save");
                 foreach (string text in comment_history)
                 {
                     Console.WriteLine(text);
@@ -466,11 +466,11 @@ namespace DetailLogPlugin
             {
                 using (StreamReader sr = new StreamReader(COMMENT_FILE))
                 {
-                    Console.WriteLine("Comment Load");
+                    //Console.WriteLine("Comment Load");
                     string line;
                     while ((line = sr.ReadLine()) != null) // 1çsÇ∏Ç¬ì«Ç›èoÇµÅB
                     {
-                        Console.WriteLine(line);
+                        //Console.WriteLine(line);
                         comment_history.Add(line);
                     }
                 }

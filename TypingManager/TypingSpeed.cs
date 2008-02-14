@@ -13,9 +13,6 @@ namespace TypingManager
         // 打鍵速度を計算するためのサンプルを保持する数
         const int SAMPLE_MAX = 1024;
 
-        // この時間で一つも入力が無ければ打鍵速度0とする
-        const int ZERO_TIME = 20000; // 20秒
-
         private int sample_num;
         private List<uint> sample_data;
         private List<float> speed_per_sec;
@@ -81,7 +78,7 @@ namespace TypingManager
         {
             int length = sample_data.Count; 
             if (sample_data.Count < sample_num ||
-                now - sample_data[length - 1] > ZERO_TIME)
+                now - sample_data[length - 1] > AppConfig.NoStrokeLimitTime * 1000)
             {
                 RecordAverageSpeed(0);
                 return 0;

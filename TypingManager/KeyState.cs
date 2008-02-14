@@ -12,7 +12,7 @@ namespace TypingManager
         private Dictionary<int, int> down_key = new Dictionary<int, int>();
 
         // 前回押されていたキー
-        private Dictionary<int, int> last_down_key = new Dictionary<int, int>();
+        private int last_down = 0;
 
         // ひとつ前に押されていたキー
         private int down = 0;
@@ -64,9 +64,9 @@ namespace TypingManager
             {
                 down_key.Remove(keycode);
             }
-            if (last_down_key.ContainsKey(keycode))
+            if (keycode == last_down)
             {
-                last_down_key.Remove(keycode);
+                last_down = 0;
             }
             up = keycode;
             called_key = keycode;
@@ -80,11 +80,7 @@ namespace TypingManager
         /// </summary>
         public void SetDownState()
         {
-            foreach (int key in down_key.Keys)
-            {
-                last_down_key[key] = down_key[key];
-            }
-            down_key.Clear();
+            last_down = down;   
         }
 
         public bool IsDown(Keys key)
@@ -99,12 +95,12 @@ namespace TypingManager
 
         public bool IsLastDown(Keys key)
         {
-            return last_down_key.ContainsKey((int)key);
+            return (int)key == last_down;
         }
 
         public bool IsLastDown(int keycode)
         {
-            return last_down_key.ContainsKey(keycode);
+            return keycode == last_down;
         }
 
         public bool IsPush(Keys key)

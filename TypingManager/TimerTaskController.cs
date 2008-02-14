@@ -46,7 +46,7 @@ namespace TypingManager
             {
                 int now_sec = date.Hour * 60 * 60 + date.Minute * 60 + date.Second;
                 int task_sec = Hour * 60 * 60 + Min * 60 + Sec;
-                if (now_sec % task_sec == 0)
+                if (task_sec > 0 && now_sec % task_sec == 0)
                 {
                     Task.TimerTask(date, id);
                 }
@@ -80,12 +80,23 @@ namespace TypingManager
         /// <param name="sec"></param>
         public void AddTask(ITimerTask task, int id, int hour, int min, int sec)
         {
-            if (hour == 0 && min == 0 && sec == 0)
-            {
-                throw new TimerTaskException("TimerTaskを呼び出す間隔を0にすることはできません");
-            }
             TaskBase task_base = new TaskBase(task, id, hour, min, sec);
+            //Console.WriteLine("TimerHandler::AddTask");
+            for (int i = 0; i < timer_task.Count; i++)
+            {
+                TaskBase t_task = timer_task[i];
+                if (ITimerTask.ReferenceEquals(task, t_task.Task))
+                {
+                    if (id == t_task.TaskID)
+                    {
+                        timer_task.RemoveAt(i);
+                        //Console.WriteLine("タスクを一つ削除しました");
+                        break;
+                    }
+                }
+            }
             timer_task.Add(task_base);
+            //Console.WriteLine("TimerTask Num={0}", timer_task.Count);
         }
     }
 }

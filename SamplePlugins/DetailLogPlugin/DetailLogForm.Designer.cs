@@ -74,6 +74,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.button7 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.splitContainer2.Panel1.SuspendLayout();
@@ -105,7 +106,7 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.BackColor = System.Drawing.Color.Transparent;
+            this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage1.Controls.Add(this.splitContainer2);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
@@ -113,7 +114,6 @@
             this.tabPage1.Size = new System.Drawing.Size(518, 323);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "詳細ログ";
-            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // splitContainer2
             // 
@@ -290,7 +290,7 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.BackColor = System.Drawing.Color.Transparent;
+            this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage2.Controls.Add(this.label6);
             this.tabPage2.Controls.Add(this.textBox3);
             this.tabPage2.Controls.Add(this.listView1);
@@ -308,7 +308,6 @@
             this.tabPage2.Size = new System.Drawing.Size(518, 323);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "詳細ログトリガ";
-            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // label6
             // 
@@ -445,6 +444,8 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage3.Controls.Add(this.button7);
             this.tabPage3.Controls.Add(this.label9);
             this.tabPage3.Controls.Add(this.label8);
             this.tabPage3.Controls.Add(this.textBox5);
@@ -456,7 +457,6 @@
             this.tabPage3.Size = new System.Drawing.Size(518, 323);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "詳細入力";
-            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // label9
             // 
@@ -595,6 +595,17 @@
             this.splitContainer1.TabIndex = 11;
             this.splitContainer1.SizeChanged += new System.EventHandler(this.splitContainer1_SizeChanged);
             // 
+            // button7
+            // 
+            this.button7.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.button7.Location = new System.Drawing.Point(274, 8);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(101, 31);
+            this.button7.TabIndex = 6;
+            this.button7.Text = "ログのクリア";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
             // DetailLogForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -679,5 +690,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.Button button7;
     }
 }

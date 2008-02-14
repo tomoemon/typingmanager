@@ -140,5 +140,13 @@ namespace DetailLogPlugin
             down_text.SelectionStart = down_text.Text.Length - 1;
             down_text.ScrollToCaret();
         }
+
+        public void Clear()
+        {
+            down_list.Clear();
+            up_list.Clear();
+            down_text.Text = "";
+            up_text.Text = "";
+        }
     }
 }

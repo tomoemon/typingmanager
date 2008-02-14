@@ -11,60 +11,237 @@ using System.Xml;
 
 namespace TypingManager
 {
+    /// <summary>
+    /// フィルタリングを行うプラグインを管理する
+    /// KeyDownやKeyUpが呼び出された時に，それぞれの入力情報を
+    /// 順番にすべてのフィルターに適用していく
+    /// </summary>
+    public class FilterController : IFilterPluginController
+    {
+        List<IFilterPlugin> filter_plugin_list = new List<IFilterPlugin>();
+        Dictionary<string, int> plugin_order = new Dictionary<string, int>();
+        private PluginController controller;
+
+        public FilterController(PluginController _controller)
+        {
+            controller = _controller;
+        }
+
+        #region プロパティ...
+        public int Count
+        {
+            get { return filter_plugin_list.Count; }
+        }
+        #endregion
+
+        public List<IFilterPlugin> GetFilterPluginList()
+        {
+            return filter_plugin_list;
+        }
+
+        public void AddFilterPlugin(IFilterPlugin plugin)
+        {
+            plugin.FilterController = this;
+            plugin_order[plugin.GetAccessName()] = filter_plugin_list.Count;
+            filter_plugin_list.Add(plugin);
+        }
+
+        /// <summary>
+        /// PluginControllerから呼ばれる関数
+        /// 最初のフィルタープラグインを起動させる
+        /// </summary>
+        /// <param name="key_state"></param>
+        /// <param name="militime"></param>
+        /// <param name="app_path"></param>
+        /// <param name="app_title"></param>
+        public void KeyDown(IKeyState key_state, uint militime, string app_path, string app_title)
+        {
+            if (Count > 0)
+            {
+                filter_plugin_list[0].KeyDown(key_state, militime, app_path, app_title);
+            }
+            else
+            {
+                controller.FilteredKeyDown(key_state, militime, app_path, app_title);
+            }
+        }
+        
+        /// <summary>
+        /// PluginControllerから呼ばれる関数
+        /// 最初のフィルタープラグインを起動させる
+        /// </summary>
+        /// <param name="key_state"></param>
+        /// <param name="militime"></param>
+        /// <param name="app_path"></param>
+        /// <param name="app_title"></param>
+        public void KeyUp(IKeyState key_state, uint militime, string app_path, string app_title)
+        {
+            if (Count > 0)
+            {
+                filter_plugin_list[0].KeyUp(key_state, militime, app_path, app_title);
+            }
+            else
+            {
+                controller.FilteredKeyUp(key_state, militime, app_path, app_title);
+            }
+        }
+
+        /// <summary>
+        /// 各フィルタープラグインから呼ばれる
+        /// 受け取ったデータは次のフィルターか実際のデータ記録プラグインに渡す
+        /// </summary>
+        /// <param name="plugin"></param>
+        /// <param name="key_state"></param>
+        /// <param name="militime"></param>
+        /// <param name="app_path"></param>
+        /// <param name="app_title"></param>
+        public void FilteredKeyDown(IFilterPlugin plugin, IKeyState key_state, uint militime,
+            string app_path, string app_title)
+        {
+            int next_order = plugin_order[plugin.GetAccessName()] + 1;
+            if (next_order < filter_plugin_list.Count)
+            {
+                Console.WriteLine("Next Filter[{0}]:{1}", next_order, filter_plugin_list[next_order].GetAccessName());
+                filter_plugin_list[next_order].KeyDown(key_state, militime, app_path, app_title);
+            }
+            else
+            {
+                controller.FilteredKeyDown(key_state, militime, app_path, app_title);
+            }
+        }
+
+        /// <summary>
+        /// 各フィルタープラグインから呼ばれる
+        /// 受け取ったデータは次のフィルターか実際のデータ記録プラグインに渡す
+        /// </summary>
+        /// <param name="plugin"></param>
+        /// <param name="key_state"></param>
+        /// <param name="militime"></param>
+        /// <param name="app_path"></param>
+        /// <param name="app_title"></param>
+        public void FilteredKeyUp(IFilterPlugin plugin, IKeyState key_state, uint militime,
+            string app_path, string app_title)
+        {
+            int next_order = plugin_order[plugin.GetAccessName()] + 1;
+            if (next_order < filter_plugin_list.Count)
+            {
+                filter_plugin_list[next_order].KeyUp(key_state, militime, app_path, app_title);
+            }
+            else
+            {
+                controller.FilteredKeyUp(key_state, militime, app_path, app_title);
+            }
+        }
+    }
+
     public class PluginController : IStrokePluginController
     {
         /// <summary>
-        /// <プラグインのアクセス名, リスト内のどこにあるか>
+        /// ＜プラグインのアクセス名, リスト内のどこにあるか＞
         /// 名前で呼び出せるように辞書形式で保持
         /// </summary>
-        Dictionary<string, int> index_dic = new Dictionary<string, int>();
-
-        List<IStrokePlugin> plugin_list = new List<IStrokePlugin>();
-
+        Dictionary<string, IPluginBase> index_dic = new Dictionary<string, IPluginBase>();
+        List<IStrokePlugin> stroke_plugin_list = new List<IStrokePlugin>();
+        FilterController filter_controller;
+        
         private Form main_form;
 
         public PluginController(Form form)
         {
             main_form = form;
+            filter_controller = new FilterController(this);
         }
+
 
         public void Load()
         {
-            //IPlugin型の名前を取得
-            string ipluginName = typeof(IStrokePlugin).FullName;
+            LoadFilterPlugin();
+            LoadStrokePlugin();
+            LoadPluginConfig();
+            Init();
+        }
 
-            //インストールされているプラグインを調べる
+        private void LoadFilterPlugin()
+        {
+            // IFilterPlugin型の名前を取得
+            string ipluginName = typeof(IFilterPlugin).FullName;
+
+            // インストールされているプラグインを調べる
             PluginInfo[] pis = PluginInfo.FindPlugins(ipluginName);
 
-            //すべてのプラグインのインスタンスを作成する
+            // すべてのプラグインのインスタンスを作成する
+            for (int i = 0; i < pis.Length; i++)
+            {
+                IFilterPlugin plugin = (IFilterPlugin)pis[i].CreateInstance();
+                string name = plugin.GetAccessName();
+                string author = plugin.GetAuthorName();
+                string version = plugin.GetVersion();
+                if (name != "" && !index_dic.ContainsKey(name))
+                {
+                    plugin.Controller = this;
+                    plugin.MainForm = main_form;
+                    plugin.Valid = false;
+                    filter_controller.AddFilterPlugin(plugin);
+                    index_dic[name] = plugin;
+                    GetSaveDir(name);   // プラグイン用ディレクトリの作成
+                    Console.WriteLine("FilterPlugin: {0}", name);
+                }
+            }
+        }
+
+        private void LoadStrokePlugin()
+        {
+            // IStrokePlugin型の名前を取得
+            string ipluginName = typeof(IStrokePlugin).FullName;
+
+            // インストールされているプラグインを調べる
+            PluginInfo[] pis = PluginInfo.FindPlugins(ipluginName);
+
+            // すべてのプラグインのインスタンスを作成する
             for (int i = 0; i < pis.Length; i++)
             {
                 IStrokePlugin plugin = (IStrokePlugin)pis[i].CreateInstance();
                 string name = plugin.GetAccessName();
                 string author = plugin.GetAuthorName();
                 string version = plugin.GetVersion();
-                if (name != "" && author != "" && version != "")
+                if (name != "" && !index_dic.ContainsKey(name))
                 {
                     plugin.Controller = this;
                     plugin.MainForm = main_form;
                     plugin.Valid = true;
-                    plugin_list.Add(plugin);
-                    index_dic[name] = plugin_list.Count - 1;
+                    stroke_plugin_list.Add(plugin);
+                    index_dic[name] = plugin;
                     GetSaveDir(name);   // プラグイン用ディレクトリの作成
-                    Console.WriteLine("Plugin[{0}]: {1}", i, name);
+                    Console.WriteLine("StrokePlugin[{0}]: {1}", i, name);
                 }
             }
-            LoadPluginConfig();
         }
 
         /// <summary>キーが押されたときに呼び出される</summary>
-        /// <param name="keycode">押されたキーの仮想キーコード</param>
+        /// <param name="key_state">押されたキーの仮想キーコード</param>
         /// <param name="militime">キーが押された時間[ミリ秒]（OSが起動してからの経過時間）</param>
         /// <param name="app_path">キーが押されたアプリケーションのフルパス</param>
         /// <param name="app_title">キーが押されたウィンドウのタイトル</param>
         public void KeyDown(IKeyState key_state, uint militime, string app_path, string app_title)
         {
-            foreach (IStrokePlugin plugin in plugin_list)
+            filter_controller.KeyDown(key_state, militime, app_path, app_title);
+        }
+
+        /// <summary>
+        /// キーが上がったときに呼び出される
+        /// </summary>
+        /// <param name="key_state"></param>
+        /// <param name="militime"></param>
+        /// <param name="app_path"></param>
+        /// <param name="app_title"></param>
+        public void KeyUp(IKeyState key_state, uint militime, string app_path, string app_title)
+        {
+            filter_controller.KeyUp(key_state, militime, app_path, app_title);
+        }
+
+        public void FilteredKeyDown(IKeyState key_state, uint militime, string app_path, string app_title)
+        {
+            foreach (IStrokePlugin plugin in stroke_plugin_list)
             {
                 if (plugin.Valid == true)
                 {
@@ -73,10 +250,9 @@ namespace TypingManager
             }
         }
 
-        /// <summary>キーが上がったときに呼び出される</summary>
-        public void KeyUp(IKeyState key_state, uint militime, string app_path, string app_title)
+        public void FilteredKeyUp(IKeyState key_state, uint militime, string app_path, string app_title)
         {
-            foreach (IStrokePlugin plugin in plugin_list)
+            foreach (IStrokePlugin plugin in stroke_plugin_list)
             {
                 if (plugin.Valid == true)
                 {
@@ -87,7 +263,7 @@ namespace TypingManager
 
         public void Init()
         {
-            foreach (IStrokePlugin plugin in plugin_list)
+            foreach (IPluginBase plugin in index_dic.Values)
             {
                 plugin.Init();
             }
@@ -95,27 +271,22 @@ namespace TypingManager
 
         public void Close()
         {
-            foreach (IStrokePlugin plugin in plugin_list)
+            foreach (IPluginBase plugin in index_dic.Values)
             {
                 plugin.Close();
             }
             SavePluginConfig();
         }
 
-        public void Add(IStrokePlugin plugin)
+        public void AddStrokePlugin(IStrokePlugin plugin)
         {
             string name = plugin.GetAccessName();
             if (name != "")
             {
                 plugin.Valid = true;
-                plugin_list.Add(plugin);
-                index_dic[name] = plugin_list.Count - 1;
+                stroke_plugin_list.Add(plugin);
+                index_dic[name] = plugin;
             }
-        }
-
-        public Icon GetMainIcon()
-        {
-            return main_form.Icon;
         }
 
         /// <summary>
@@ -125,7 +296,7 @@ namespace TypingManager
         public void AddMenu(ToolStripMenuItem parent_menu)
         {
             int i = 1;
-            foreach (IStrokePlugin plugin in plugin_list)
+            foreach (IPluginBase plugin in stroke_plugin_list)
             {
                 if (plugin.GetToolStripMenu() == null) continue;
 
@@ -148,9 +319,14 @@ namespace TypingManager
             }
         }
 
-        public List<IStrokePlugin> GetPluginList()
+        public List<IStrokePlugin> GetStrokePluginList()
         {
-            return plugin_list;
+            return stroke_plugin_list;
+        }
+
+        public List<IFilterPlugin> GetFilterPluginList()
+        {
+            return filter_controller.GetFilterPluginList();
         }
 
         /// <summary>
@@ -203,7 +379,7 @@ namespace TypingManager
         {
             if (index_dic.ContainsKey(name))
             {
-                return plugin_list[index_dic[name]].GetInfo();
+                return index_dic[name].GetInfo();
             }
             return null;
         }
@@ -220,8 +396,18 @@ namespace TypingManager
             {
                 writer.WriteStartDocument();
                 writer.WriteStartElement("PluginConfig");
-                writer.WriteStartElement("PluginList");
-                foreach (IStrokePlugin plugin in plugin_list)
+                writer.WriteStartElement("StrokePluginList");
+                foreach (IPluginBase plugin in stroke_plugin_list)
+                {
+                    writer.WriteStartElement("Plugin");
+                    writer.WriteAttributeString("plugin_name", "", plugin.GetPluginName());
+                    writer.WriteAttributeString("access_name", "", plugin.GetAccessName());
+                    writer.WriteAttributeString("valid", "", plugin.Valid.ToString());
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndElement();
+                writer.WriteStartElement("FilterPluginList");
+                foreach (IPluginBase plugin in filter_controller.GetFilterPluginList())
                 {
                     writer.WriteStartElement("Plugin");
                     writer.WriteAttributeString("plugin_name", "", plugin.GetPluginName());
@@ -254,16 +440,71 @@ namespace TypingManager
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(xml);
 
-                XmlNodeList node_list = doc.SelectNodes("//Plugin");
-                foreach (XmlNode plugin_node in node_list)
+                // 現在のStrokePluginの順番を読み出し
+                Dictionary<string, int> plugin_order = new Dictionary<string, int>();
+                for (int i = 0; i < stroke_plugin_list.Count; i++)
                 {
+                    plugin_order[stroke_plugin_list[i].GetAccessName()] = i;
+                }
+
+                // StrokePluginに関する設定の読み込み
+                XmlNodeList node_list = doc.SelectNodes("PluginConfig/StrokePluginList/Plugin");
+                Console.WriteLine("StrokePluginList ノード数:{0}", node_list.Count);
+                for(int i=0; i<node_list.Count; i++)
+                {
+                    XmlNode plugin_node = node_list[i];
                     XmlAttributeCollection plugin_attrs = plugin_node.Attributes;
                     bool valid = bool.Parse(plugin_attrs["valid"].Value);
                     string plugin_name = plugin_attrs["plugin_name"].Value;
                     string access_name = plugin_attrs["access_name"].Value;
+                    
                     if (index_dic.ContainsKey(access_name))
                     {
-                        plugin_list[index_dic[access_name]].Valid = valid;
+                        index_dic[access_name].Valid = valid;
+                        if (i < plugin_order[access_name])
+                        {
+                            IStrokePlugin temp = stroke_plugin_list[i];
+                            stroke_plugin_list[i] = stroke_plugin_list[plugin_order[access_name]];
+                            stroke_plugin_list[plugin_order[access_name]] = temp;
+                            /*
+                            Console.WriteLine("{0}と{1}の交換", i, plugin_order[access_name]);
+                            foreach (IStrokePlugin p in stroke_plugin_list)
+                            {
+                                Console.WriteLine(p.GetAccessName());
+                            }
+                             */
+                        }
+                    }
+                }
+                plugin_order.Clear();
+
+                // 現在のFilterPluginの順番を読み出し
+                List<IFilterPlugin> filter_plugin_list = filter_controller.GetFilterPluginList();
+                for (int i = 0; i < filter_plugin_list.Count; i++)
+                {
+                    plugin_order[filter_plugin_list[i].GetAccessName()] = i;
+                }
+
+                // FilterPluginに関する設定の読み込み
+                node_list = doc.SelectNodes("PluginConfig/FilterPluginList/Plugin");
+                Console.WriteLine("FilterPluginList ノード数:{0}", node_list.Count);
+                for (int i = 0; i < node_list.Count; i++)
+                {
+                    XmlNode plugin_node = node_list[i];
+                    XmlAttributeCollection plugin_attrs = plugin_node.Attributes;
+                    bool valid = bool.Parse(plugin_attrs["valid"].Value);
+                    string plugin_name = plugin_attrs["plugin_name"].Value;
+                    string access_name = plugin_attrs["access_name"].Value;
+
+                    if (index_dic.ContainsKey(access_name))
+                    {
+                        index_dic[access_name].Valid = valid;
+                        if (i < plugin_order[access_name])
+                        {
+                            IFilterPlugin temp = filter_plugin_list[i];
+                            filter_plugin_list[i] = filter_plugin_list[plugin_order[access_name]];
+                            filter_plugin_list[plugin_order[access_name]] = temp;
+                        }
                     }
                 }
             }

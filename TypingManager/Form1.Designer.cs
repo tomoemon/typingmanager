@@ -100,6 +100,7 @@
             this.スタートアップを解除ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.選択した項目をコピーCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.設定CToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.プラグインPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.プラグイン一覧VToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -530,6 +531,7 @@
             this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
             this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
             this.listView1.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
+            this.listView1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseMove);
             this.listView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView1_KeyDown);
             // 
             // columnHeader1_0
@@ -852,8 +854,8 @@
             // 
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.選択した項目をコピーCToolStripMenuItem,
+            this.toolStripSeparator3,
             this.設定CToolStripMenuItem});
-            this.toolStripMenuItem1.Enabled = false;
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(74, 22);
             this.toolStripMenuItem1.Text = "ツール(&T)";
@@ -861,14 +863,22 @@
             // 選択した項目をコピーCToolStripMenuItem
             // 
             this.選択した項目をコピーCToolStripMenuItem.Name = "選択した項目をコピーCToolStripMenuItem";
-            this.選択した項目をコピーCToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.選択した項目をコピーCToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.選択した項目をコピーCToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.選択した項目をコピーCToolStripMenuItem.Text = "選択した項目をコピー(&P)";
+            this.選択した項目をコピーCToolStripMenuItem.Click += new System.EventHandler(this.選択した項目をコピーCToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(257, 6);
             // 
             // 設定CToolStripMenuItem
             // 
             this.設定CToolStripMenuItem.Name = "設定CToolStripMenuItem";
-            this.設定CToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.設定CToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.設定CToolStripMenuItem.Text = "設定(&C)...";
+            this.設定CToolStripMenuItem.Click += new System.EventHandler(this.設定CToolStripMenuItem_Click);
             // 
             // プラグインPToolStripMenuItem
             // 
@@ -1077,6 +1087,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 開くOToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 閉じるCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 

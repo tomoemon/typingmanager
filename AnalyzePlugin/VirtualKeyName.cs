@@ -44,6 +44,9 @@ namespace Plugin
             key_name[0x08] = "BackSpace";
             key_name[0x09] = "Tab";
             key_name[0x0d] = "Enter";
+            key_name[0x10] = "Shift";
+            key_name[0x11] = "Ctrl";
+            key_name[0x12] = "Alt";
             key_name[0x13] = "Pause";
             key_name[0x1b] = "Esc";
             key_name[0x1c] = "•ÏŠ·";

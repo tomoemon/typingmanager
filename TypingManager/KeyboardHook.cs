@@ -9,6 +9,11 @@ using System.Windows.Forms;
 
 namespace TypingManager
 {
+    public interface IKeyboardHookBase : IDisposable
+    {
+        event KeyboardHookedEventHandler KeyboardHooked;
+    }
+
     ///<summary>キーボードが操作されたときに実行されるメソッドを表すイベントハンドラ。</summary>
     public delegate void KeyboardHookedEventHandler(object sender, KeyboardHookedEventArgs e);
 
@@ -118,7 +123,7 @@ namespace TypingManager
 
     ///<summary>キーボードの操作をフックし、任意のメソッドを挿入する。</summary>
     [DefaultEvent("KeyboardHooked")]
-    public class KeyboardHook : Component
+    public class KeyboardHook : Component, IKeyboardHookBase
     {
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr SetWindowsHookEx(int hookType, KeyboardHookDelegate hookDelegate, IntPtr hInstance, uint threadId);

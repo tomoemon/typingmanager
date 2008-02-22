@@ -65,6 +65,9 @@ namespace TypingManager
         /// <summary>打鍵数リストビューを右クリックしたときのコピーする形式</summary>
         public string rightClickCopyFormat;
 
+        /// <summary>低水準フックを使うか（falseの場合は_proxy.exeを使うフック）</summary>
+        public bool hookLowLevel;
+
         private static AppConfig __instance;
 
         #region プロパティ...
@@ -128,6 +131,11 @@ namespace TypingManager
             get { return __instance.rightClickCopyFormat; }
             set { __instance.rightClickCopyFormat = value; }
         }
+        public static bool HookLowLevel
+        {
+            get { return __instance.hookLowLevel; }
+            set { __instance.hookLowLevel = value; }
+        }
         #endregion
 
         private AppConfig()
@@ -147,6 +155,7 @@ namespace TypingManager
             showExitMessage = false;
             selectedItemCopyFormat = "%1, %2, %3";
             rightClickCopyFormat = "%1 - [%2]";
+            hookLowLevel = true;
         }
 
         public static void Load(string filename)

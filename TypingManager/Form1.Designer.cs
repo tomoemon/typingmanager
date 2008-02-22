@@ -893,7 +893,7 @@
             // 
             this.プラグイン一覧VToolStripMenuItem.Name = "プラグイン一覧VToolStripMenuItem";
             this.プラグイン一覧VToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.プラグイン一覧VToolStripMenuItem.Text = "プラグイン一覧...(&V)";
+            this.プラグイン一覧VToolStripMenuItem.Text = "プラグイン一覧(&V)...";
             this.プラグイン一覧VToolStripMenuItem.Click += new System.EventHandler(this.プラグイン一覧VToolStripMenuItem_Click);
             // 
             // toolStripSeparator1

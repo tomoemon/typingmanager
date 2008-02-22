@@ -290,5 +290,15 @@ namespace TypingManager
             }
         }
 
+        private void listView1_Enter(object sender, EventArgs e)
+        {
+            ListViewSelectChanged(listView1);
+        }
+
+        private void listView2_Enter(object sender, EventArgs e)
+        {
+            ListViewSelectChanged(listView2);
+        }
+
     }
 }

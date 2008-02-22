@@ -12,6 +12,8 @@ namespace TypingManager
     {
         private static Mutex _mutex;
 
+
+
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>
@@ -44,7 +46,18 @@ namespace TypingManager
                 MessageBox.Show(string.Format("{0}は同じディレクトリですでに起動中です",txt), txt);
                 return;
             }
-            
+
+            try
+            {
+                MessageFilter.ChangeWindowMessageFilter(WinMessage.WM_KEYDOWN, FilterType.MSGFLT_ADD);
+                MessageFilter.ChangeWindowMessageFilter(WinMessage.WM_KEYUP, FilterType.MSGFLT_ADD);
+            }
+            catch
+            {
+                MessageBox.Show("ERROR");
+            }
+
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

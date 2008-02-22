@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ViewPluginForm));
             this.listView1 = new System.Windows.Forms.ListView();
+            this.columnHeader0 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -43,11 +45,10 @@
             this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.listView2 = new System.Windows.Forms.ListView();
+            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.columnHeader0 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.button2 = new System.Windows.Forms.Button();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
@@ -71,8 +72,14 @@
             this.listView1.View = System.Windows.Forms.View.Details;
             this.listView1.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listView1_ItemChecked);
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            this.listView1.Enter += new System.EventHandler(this.listView1_Enter);
             this.listView1.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
             this.listView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView1_KeyDown);
+            // 
+            // columnHeader0
+            // 
+            this.columnHeader0.Text = "順番";
+            this.columnHeader0.Width = 40;
             // 
             // columnHeader1
             // 
@@ -225,8 +232,14 @@
             this.listView2.View = System.Windows.Forms.View.Details;
             this.listView2.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listView2_ItemChecked);
             this.listView2.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
+            this.listView2.Enter += new System.EventHandler(this.listView2_Enter);
             this.listView2.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView2_ColumnClick);
             this.listView2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView2_KeyDown);
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "順番";
+            this.columnHeader2.Width = 41;
             // 
             // columnHeader3
             // 
@@ -250,16 +263,6 @@
             this.label7.Size = new System.Drawing.Size(97, 12);
             this.label7.TabIndex = 7;
             this.label7.Text = "入力処理プラグイン";
-            // 
-            // columnHeader0
-            // 
-            this.columnHeader0.Text = "順番";
-            this.columnHeader0.Width = 40;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "順番";
-            this.columnHeader2.Width = 41;
             // 
             // button2
             // 
@@ -298,6 +301,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.listView1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ViewPluginForm";

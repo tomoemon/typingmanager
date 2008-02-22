@@ -12,7 +12,7 @@ namespace TypingManager
 {
     public partial class Form1 : Form
     {
-        private KeyboardHook keyHook;
+        private IKeyboardHookBase keyHook;
         private StrokeNumLog strokeNumLog;
         private PluginController pluginController;
         private KeyStrokeView keyStrokeView;
@@ -21,7 +21,7 @@ namespace TypingManager
         private GraphChanger graphChanger;
         private TimerTaskController timerTaskController;
         private ConfigForm configForm = new ConfigForm();
-
+        
         /// <summary>
         /// 日付別打鍵リストビューとプロセス別打鍵リストビューの
         /// いちばん右の項目から見て右側の余白部分の幅
@@ -179,6 +179,18 @@ namespace TypingManager
             tabControl1.TabIndex = AppConfig.TabIndex;
             this.Text = Properties.Resources.ApplicationName;
 
+            // キーボードフックの開始
+            if (AppConfig.HookLowLevel)
+            {
+                keyHook = new KeyboardHook();
+                keyHook.KeyboardHooked += new KeyboardHookedEventHandler(keyHookProc);
+            }
+            else
+            {
+                keyHook = new KeyboardProxyHook();
+                keyHook.KeyboardHooked += new KeyboardHookedEventHandler(keyHookProc);
+            }
+
             // 各リストビューの幅調整など
             ProcessStrokeView.SmallImageList = new ImageList();
             ProcessStrokeView.SmallImageList.ImageSize = new Size(LISTVEW_SMALL_ICON_SIZE, LISTVEW_SMALL_ICON_SIZE);
@@ -193,10 +205,6 @@ namespace TypingManager
             
             // ステータスバーに現在時刻を反映
             DateTimeStatus.Text = DateTime.Now.ToString();
-
-            // キーボードフックの開始
-            keyHook = new KeyboardHook();
-            keyHook.KeyboardHooked += new KeyboardHookedEventHandler(keyHookProc);
 
             // 打鍵数カウントを担当するクラス
             strokeNumLog = new StrokeNumLog();
@@ -331,6 +339,7 @@ namespace TypingManager
             AppConfig.TabIndex = tabControl1.SelectedIndex;
             AppConfig.Save();
             pluginController.Close();
+            keyHook.Dispose();
             return true;
         }
 
@@ -801,6 +810,16 @@ namespace TypingManager
             if (info.SubItem != null && e.Button == MouseButtons.Left)
             {
                 info.Item.Selected = true;
+                // 24はリストビューヘッダーの高さ，17はアイテムの高さ
+                // 定数にするのもなんかあれだったので．．
+                if (info.Item.Position.Y < 24 + 17 && info.Item.Index > 1)
+                {
+                    listView2.EnsureVisible(info.Item.Index - 1);
+                }
+                else if (info.Item.Position.Y > listView2.Height - 24 && info.Item.Index < listView2.Items.Count - 1)
+                {
+                    listView2.EnsureVisible(info.Item.Index);
+                }
             }
         }
 
@@ -814,6 +833,13 @@ namespace TypingManager
             if (e.KeyCode == Keys.A && e.Modifiers == Keys.Control)
             {
                 SelectAllListViewItem(listView1);
+            }
+            else if (e.KeyCode == Keys.F2 && listView1.SelectedItems.Count > 0)
+            {
+                ListViewItem item = listView1.SelectedItems[0];
+                ListViewInputBox input = new ListViewInputBox(listView1, item, 1);
+                input.FinishInput += new ListViewInputBox.InputEventHandler(input_FinishInput);
+                input.Show();
             }
         }
 
@@ -937,6 +963,7 @@ namespace TypingManager
         {
             configForm.ScheduledLogging = AppConfig.ScheduleLogging;
             configForm.ScheduleLogTiming = AppConfig.ScheduleTiming;
+            configForm.UseLowLevelHook = AppConfig.HookLowLevel;
             configForm.ShowExitMessage = AppConfig.ShowExitMessage;
             configForm.NoStrokeLimitTime = AppConfig.NoStrokeLimitTime;
             configForm.SelectedItemCopyFormat = AppConfig.SelectedItemCopyFormat;
@@ -951,6 +978,13 @@ namespace TypingManager
                 timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_SAVE, 0, AppConfig.ScheduleTiming, 0);
                 AppConfig.SelectedItemCopyFormat = configForm.SelectedItemCopyFormat;
                 AppConfig.RightClickCopyFormat = configForm.RightClickCopyFormat;
+                if (AppConfig.HookLowLevel != configForm.UseLowLevelHook)
+                {
+                    AppConfig.HookLowLevel = configForm.UseLowLevelHook;
+                    MessageBox.Show(this,
+                        "キー入力監視方法の設定が変更されました。\n" +
+                        "設定は再起動後に有効になります。");
+                }
             }
         }
 
@@ -963,9 +997,19 @@ namespace TypingManager
         private void listView1_MouseMove(object sender, MouseEventArgs e)
         {
             ListViewHitTestInfo info = listView1.HitTest(e.X, e.Y);
-            if (info.SubItem != null && e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left && info.SubItem != null)
             {
                 info.Item.Selected = true;
+                // 24はリストビューヘッダーの高さ，17はアイテムの高さ
+                // 定数にするのもなんかあれだったので．．
+                if (info.Item.Position.Y < 24 + 17 && info.Item.Index > 1)
+                {
+                    listView1.EnsureVisible(info.Item.Index - 1);
+                }
+                else if (info.Item.Position.Y > listView1.Height - 24 && info.Item.Index < listView1.Items.Count - 1)
+                {
+                    listView1.EnsureVisible(info.Item.Index);
+                }
             }
         }
 

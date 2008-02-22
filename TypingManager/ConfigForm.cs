@@ -31,10 +31,15 @@ namespace TypingManager
             get { return (int)numericUpDown2.Value; }
             set { numericUpDown2.Value = value; }
         }
-        public bool ShowExitMessage
+        public bool UseLowLevelHook
         {
             get { return checkBox2.Checked; }
             set { checkBox2.Checked = value; }
+        }
+        public bool ShowExitMessage
+        {
+            get { return checkBox3.Checked; }
+            set { checkBox3.Checked = value; }
         }
         public string SelectedItemCopyFormat
         {

@@ -56,9 +56,14 @@ namespace TypingManager
         /// <param name="app_title"></param>
         public void KeyDown(IKeyState key_state, uint militime, string app_path, string app_title)
         {
-            if (Count > 0)
+            int first_order = 0;
+            while (first_order < Count && !filter_plugin_list[first_order].Valid)
             {
-                filter_plugin_list[0].KeyDown(key_state, militime, app_path, app_title);
+                ++first_order;
+            }
+            if (first_order < Count)
+            {
+                filter_plugin_list[first_order].KeyDown(key_state, militime, app_path, app_title);
             }
             else
             {
@@ -76,9 +81,14 @@ namespace TypingManager
         /// <param name="app_title"></param>
         public void KeyUp(IKeyState key_state, uint militime, string app_path, string app_title)
         {
-            if (Count > 0)
+            int first_order = 0;
+            while (first_order < Count && !filter_plugin_list[first_order].Valid)
             {
-                filter_plugin_list[0].KeyUp(key_state, militime, app_path, app_title);
+                ++first_order;
+            }
+            if (first_order < Count)
+            {
+                filter_plugin_list[first_order].KeyUp(key_state, militime, app_path, app_title);
             }
             else
             {
@@ -99,9 +109,12 @@ namespace TypingManager
             string app_path, string app_title)
         {
             int next_order = plugin_order[plugin.GetAccessName()] + 1;
-            if (next_order < filter_plugin_list.Count)
+            while (next_order < Count && !filter_plugin_list[next_order].Valid)
             {
-                Console.WriteLine("Next Filter[{0}]:{1}", next_order, filter_plugin_list[next_order].GetAccessName());
+                ++next_order;
+            }
+            if (next_order < Count)
+            {
                 filter_plugin_list[next_order].KeyDown(key_state, militime, app_path, app_title);
             }
             else
@@ -123,7 +136,11 @@ namespace TypingManager
             string app_path, string app_title)
         {
             int next_order = plugin_order[plugin.GetAccessName()] + 1;
-            if (next_order < filter_plugin_list.Count)
+            while (next_order < Count && !filter_plugin_list[next_order].Valid)
+            {
+                ++next_order;
+            }
+            if (next_order < Count)
             {
                 filter_plugin_list[next_order].KeyUp(key_state, militime, app_path, app_title);
             }

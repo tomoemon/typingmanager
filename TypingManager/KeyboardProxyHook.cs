@@ -18,7 +18,7 @@ namespace TypingManager
             if (((int)e.Message.LParam & 0x80000000) > 0)
             {
                 message = KeyboardMessage.KeyUp;
-                Console.WriteLine((int)e.Message.WParam);
+                Debug.WriteLine((int)e.Message.WParam);
             }
             else
             {
@@ -41,7 +41,7 @@ namespace TypingManager
             MessageEvents.WatchMessage(WinMessage.WM_KEYUP);
 
             MessageEvents.MessageReceived += new EventHandler<MessageReceivedEventArgs>(KeyHook);
-            Console.WriteLine(watch_window);
+            Debug.WriteLine(watch_window);
 
             // キーボードフックを行う別プロセスを起動
             string program = "_proxy.exe";

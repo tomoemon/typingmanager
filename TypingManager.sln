@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypingManager", "TypingManager\TypingManager.csproj", "{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD} = {A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin", "AnalyzePlugin\Plugin.csproj", "{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Debug|Win32.Build.0 = Debug|Any CPU
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Release|Win32.ActiveCfg = Release|Any CPU
+		{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}.Release|Win32.Build.0 = Release|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Debug|Win32.Build.0 = Debug|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Release|Win32.ActiveCfg = Release|Any CPU
+		{A26ACEEB-1EF0-47A4-80DB-DF0B4FCD49DD}.Release|Win32.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

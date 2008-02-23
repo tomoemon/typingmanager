@@ -21,7 +21,12 @@ namespace TypingManager
         private GraphChanger graphChanger;
         private TimerTaskController timerTaskController;
         private ConfigForm configForm = new ConfigForm();
-        
+
+        // 前回取得したウィンドウタイトル
+        // タイトルが違う場合のみプロセス名を取得しなおす
+        private string lastAppTitle = "";
+        private string lastAppPath = "";
+
         /// <summary>
         /// 日付別打鍵リストビューとプロセス別打鍵リストビューの
         /// いちばん右の項目から見て右側の余白部分の幅
@@ -39,10 +44,6 @@ namespace TypingManager
         public TextBox LastKeyCode
         {
             get { return textBox2; }
-        }
-        public TextBox LastScanCode
-        {
-            get { return textBox3; }
         }
         public TextBox LastAppPath
         {
@@ -180,7 +181,7 @@ namespace TypingManager
             this.Text = Properties.Resources.ApplicationName;
 
             // キーボードフックの開始
-            if (AppConfig.HookLowLevel)
+            if (AppConfig.StandardHook)
             {
                 keyHook = new KeyboardHook();
                 keyHook.KeyboardHooked += new KeyboardHookedEventHandler(keyHookProc);
@@ -279,8 +280,14 @@ namespace TypingManager
         private void keyHookProc(object sender, KeyboardHookedEventArgs e)
         {
             uint now = QueryTime.NowMiliSec;
-            string app_path = ProcessWindowName.GetFrontProcessName();
             string app_title = ProcessWindowName.GetFrontWindowTitle();
+            string app_path = lastAppPath;
+            if (!AppConfig.GetAppPathByTitleChange || app_title != lastAppTitle)
+            {
+                lastAppTitle = app_title;
+                lastAppPath = app_path = ProcessWindowName.GetFrontProcessName();
+            }
+            
 
             if (e.UpDown == KeyboardUpDown.Down)
             {
@@ -314,7 +321,6 @@ namespace TypingManager
         {
             LastEventType.Text = updown.ToString();
             LastKeyCode.Text = vkey.ToString();
-            LastScanCode.Text = scan.ToString();
             LastAppPath.Text = Path.GetFileName(app_path);
         }
 
@@ -768,9 +774,9 @@ namespace TypingManager
                     int app_total = num_list[order_list[i]];
 
                     string format = (string)AppConfig.RightClickCopyFormat.Clone();
+                    format = format.Replace("\\t", "\t");
                     format = format.Replace("%1", app_total.ToString());
                     format = format.Replace("%2", app_name);
-                    format = format.Replace("\\t", "\t");
                     menu.MenuItems.Add(format);
                     ContextMenu sub_menu = MakeTitleListContextMenu(num_log, app_path);
                     
@@ -963,7 +969,8 @@ namespace TypingManager
         {
             configForm.ScheduledLogging = AppConfig.ScheduleLogging;
             configForm.ScheduleLogTiming = AppConfig.ScheduleTiming;
-            configForm.UseLowLevelHook = AppConfig.HookLowLevel;
+            configForm.UseStandardHook = AppConfig.StandardHook;
+            configForm.GetAppPathByTitleChange = AppConfig.GetAppPathByTitleChange;
             configForm.ShowExitMessage = AppConfig.ShowExitMessage;
             configForm.NoStrokeLimitTime = AppConfig.NoStrokeLimitTime;
             configForm.SelectedItemCopyFormat = AppConfig.SelectedItemCopyFormat;
@@ -973,14 +980,15 @@ namespace TypingManager
             {
                 AppConfig.ScheduleLogging = configForm.ScheduledLogging;
                 AppConfig.ScheduleTiming = configForm.ScheduleLogTiming;
+                AppConfig.GetAppPathByTitleChange = configForm.GetAppPathByTitleChange;
                 AppConfig.ShowExitMessage = configForm.ShowExitMessage;
                 AppConfig.NoStrokeLimitTime = configForm.NoStrokeLimitTime;
                 timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_SAVE, 0, AppConfig.ScheduleTiming, 0);
                 AppConfig.SelectedItemCopyFormat = configForm.SelectedItemCopyFormat;
                 AppConfig.RightClickCopyFormat = configForm.RightClickCopyFormat;
-                if (AppConfig.HookLowLevel != configForm.UseLowLevelHook)
+                if (AppConfig.StandardHook != configForm.UseStandardHook)
                 {
-                    AppConfig.HookLowLevel = configForm.UseLowLevelHook;
+                    AppConfig.StandardHook = configForm.UseStandardHook;
                     MessageBox.Show(this,
                         "キー入力監視方法の設定が変更されました。\n" +
                         "設定は再起動後に有効になります。");
@@ -1031,12 +1039,12 @@ namespace TypingManager
                 foreach (ListViewItem item in view.SelectedItems)
                 {
                     string line_format = (string)AppConfig.SelectedItemCopyFormat.Clone();
+                    line_format = line_format.Replace("\\t", "\t");
                     for (int i = 0; i < item.SubItems.Count; i++)
                     {
                         string replace_mark = string.Format("%{0}",i+1);
                         line_format = line_format.Replace(replace_mark, item.SubItems[i].Text);
                     }
-                    line_format = line_format.Replace("\\t", "\t");
                     copy_text.AppendLine(line_format);
                 }
             }

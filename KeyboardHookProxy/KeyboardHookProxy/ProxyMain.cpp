@@ -2,6 +2,7 @@
 // Windows ヘッダー ファイル:
 #include <windows.h>
 #include <tchar.h>
+#include "dprintf.h"
 
 // フック用ヘッダーファイル
 #include "../KeyboardHookDll/Main.h"
@@ -11,8 +12,6 @@ typedef BOOL (__stdcall *FUNCTYPE)(UINT, DWORD);
 #define MSGFLT_REMOVE 2
 
 static HWND target_window = NULL;
-
-#define trace OutputDebugString
 
 #ifdef _DEBUG
 #pragma comment(lib,"../debug/KeyboardHookDll.lib")
@@ -66,21 +65,33 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		int cmd_index = -1;
 		int length = 0;
 		bool last_space = false;
+		bool quote = false;
+		dprintf(L"%s\n", lpCmdLine);
 		for(int i=0; i < cmd_length && i < 256; i++)
 		{
-			if(lpCmdLine[i] == L' '){
+			if(!quote && lpCmdLine[i] == L' '){
 				last_space = true;
+				continue;
 			}
-			else{
-				if(last_space || i==0){
+			if(lpCmdLine[i] == L'"'){
+				if(!quote){
 					length = 0;
 					cmd_index++;
-					if(cmd_index >= 2) break;
 				}
-				cmd[cmd_index][length++] = lpCmdLine[i];
+				quote = !quote;
 				last_space = false;
+				continue;
 			}
+			if(last_space || i==0){
+				length = 0;
+				cmd_index++;
+			}
+			if(cmd_index >= 2) break;
+			cmd[cmd_index][length++] = lpCmdLine[i];
+			last_space = false;
 		}
+		dprintf(L"%s\n", cmd[0]);
+		dprintf(L"%s\n", cmd[1]);
 		if(lstrlen(cmd[1]) > 0){
 			if(lstrcmp(cmd[0], L"/proxy") == 0 || lstrcmp(cmd[0], L"/proxydebug") == 0)
 			{

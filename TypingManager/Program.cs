@@ -12,8 +12,6 @@ namespace TypingManager
     {
         private static Mutex _mutex;
 
-
-
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>
@@ -54,7 +52,8 @@ namespace TypingManager
             }
             catch
             {
-                MessageBox.Show("ERROR");
+                // WindowsVista以外だとChangeWindowMessageFilter関数が見つからないので例外が発生
+                // でも，Vista以外ではこの関数は呼び出さなくていいので問題なし．
             }
 
 

@@ -2,6 +2,7 @@
 #define WIN32_LEAN_AND_MEAN		// Windows ヘッダーから使用されていない部分を除外します。
 #include <windows.h>
 #include "Main.h"
+#include "../KeyboardHookProxy/dprintf.h"
 
 /* フックプロシージャで使用する変数は共有メモリにおく */
 /*                                                    */
@@ -12,6 +13,22 @@
 HHOOK _hHook = NULL;
 HWND  _hWnd  = NULL;
 #pragma data_seg()
+
+#ifdef _DEBUG
+void printlp(TCHAR *type, LONG_PTR p){
+	long j = 1;
+	long ptr = (long)p;
+	TCHAR mes[128];
+	for(int i=0; i<(int)sizeof(LONG_PTR) * 8; i++, j = j << 1){
+		if(j & p) mes[i] = L'1';
+		else      mes[i] = L'0';
+	}
+	mes[sizeof(LONG_PTR) * 8] = L'\0';
+	dprintf(L"%s%s\n", type, mes);
+}
+#else
+#define printlp __noop
+#endif
 
 /* DLL のインスタンス ハンドル */
 static HINSTANCE _hInstance;
@@ -34,6 +51,8 @@ LRESULT CALLBACK HookProc(int nCode, WPARAM wParam, LPARAM lParam)
 	if(nCode == HC_ACTION){
 		if(lParam & 0x80000000){
 			//MessageBox(NULL, L"dll up",L"",MB_OK);
+			printlp(L"wParam:", wParam);
+			printlp(L"lParam:", lParam);
 			PostMessage(_hWnd, WM_KEYUP, wParam, lParam);
 		}
 		else{

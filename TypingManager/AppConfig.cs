@@ -65,8 +65,11 @@ namespace TypingManager
         /// <summary>打鍵数リストビューを右クリックしたときのコピーする形式</summary>
         public string rightClickCopyFormat;
 
-        /// <summary>低水準フックを使うか（falseの場合は_proxy.exeを使うフック）</summary>
-        public bool hookLowLevel;
+        /// <summary>標準的なフックを使うか（trueの場合は_proxy.exeを使うフック）</summary>
+        public bool standardHook;
+
+        /// <summary>ターゲットウィンドウのタイトルが違う場合のみプロセス名を取得する</summary>
+        public bool getAppPathByTitleChange;
 
         private static AppConfig __instance;
 
@@ -131,10 +134,15 @@ namespace TypingManager
             get { return __instance.rightClickCopyFormat; }
             set { __instance.rightClickCopyFormat = value; }
         }
-        public static bool HookLowLevel
+        public static bool StandardHook
         {
-            get { return __instance.hookLowLevel; }
-            set { __instance.hookLowLevel = value; }
+            get { return __instance.standardHook; }
+            set { __instance.standardHook = value; }
+        }
+        public static bool GetAppPathByTitleChange
+        {
+            get { return __instance.getAppPathByTitleChange; }
+            set { __instance.getAppPathByTitleChange = value; }
         }
         #endregion
 
@@ -155,7 +163,8 @@ namespace TypingManager
             showExitMessage = false;
             selectedItemCopyFormat = "%1, %2, %3";
             rightClickCopyFormat = "%1 - [%2]";
-            hookLowLevel = true;
+            standardHook = true;
+            getAppPathByTitleChange = true;
         }
 
         public static void Load(string filename)

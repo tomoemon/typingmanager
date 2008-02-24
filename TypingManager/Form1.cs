@@ -183,12 +183,12 @@ namespace TypingManager
             // キーボードフックの開始
             if (AppConfig.StandardHook)
             {
-                keyHook = new KeyboardHook();
+                keyHook = new KeyboardProxyHook();
                 keyHook.KeyboardHooked += new KeyboardHookedEventHandler(keyHookProc);
             }
             else
             {
-                keyHook = new KeyboardProxyHook();
+                keyHook = new KeyboardHook();
                 keyHook.KeyboardHooked += new KeyboardHookedEventHandler(keyHookProc);
             }
 

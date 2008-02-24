@@ -24,7 +24,6 @@ namespace TypingManager
             Console.WriteLine("template:{0}", plugin.GetInputTemplate());
             Console.WriteLine("analyze result:{0}", plugin.Run());
              */
-            
             //Mutexクラスの作成
             string asm_name = Assembly.GetExecutingAssembly().GetName().Name;
             string cur_dir = Path.GetDirectoryName(Application.ExecutablePath);

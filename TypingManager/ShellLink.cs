@@ -19,7 +19,7 @@ namespace TypingManager
         ///  ShortCut.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup),
         ///                                                 "test.lnk"), "TypingManager.pbm", "test");
         /// </code>
-        public static void Save(string link_path, string link_to, string description)
+        public static void Save(string link_path, string link_to, string work_dir, string description)
         {
             // リンク先が絶対パス指定じゃない場合はなぜかデスクトップからの相対パス
             // としてショートカットが作成されるので，カレントディレクトリからの相対パスに
@@ -32,6 +32,7 @@ namespace TypingManager
             ShellLink shortcut = new ShellLink();
             shortcut.Description = description;
             shortcut.TargetPath = link_to;
+            shortcut.WorkingDirectory = work_dir;
             shortcut.DisplayMode = ShellLink.ShellLinkDisplayMode.Normal;
 
             shortcut.Save(link_path);

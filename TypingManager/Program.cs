@@ -54,7 +54,8 @@ namespace TypingManager
                 // WindowsVista以外だとChangeWindowMessageFilter関数が見つからないので例外が発生
                 // でも，Vista以外ではこの関数は呼び出さなくていいので問題なし．
             }
-
+            // カレントディレクトリの設定
+            Directory.SetCurrentDirectory(cur_dir);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

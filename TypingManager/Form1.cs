@@ -517,7 +517,8 @@ namespace TypingManager
         private void スタートアップに登録ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ShortCut.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup),
-                "打鍵のtomo 2.0.lnk"), "TypingManager.exe", "打鍵のtomo 2.0へのショートカット");
+                "打鍵のtomo 2.0.lnk"), Application.ExecutablePath,
+                Path.GetDirectoryName(Application.ExecutablePath), "打鍵のtomo 2.0へのショートカット");
             MessageBox.Show(Properties.Resources.StartupRegist);
         }
 

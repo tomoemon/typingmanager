@@ -136,8 +136,10 @@ namespace TypingManager
 
         public KeyboardProxyHook()
         {
-            // イベントを取得
-            string watch_window = Application.ExecutablePath.Replace(" ", "");
+            // イベントを取得するウィンドウタイトルの作成
+            // 実行パスだけだと一意に決められないので秒まで利用する
+            string now = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string watch_window = Application.ExecutablePath.Replace(" ", "") + now;
             MessageEvents.WindowTitle = watch_window;
             MessageEvents.WatchMessage(WinMessage.WM_KEYDOWN);
             MessageEvents.WatchMessage(WinMessage.WM_KEYUP);

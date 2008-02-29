@@ -14,6 +14,7 @@ namespace TypingManager
         /// </summary>
         /// <param name="link_path"></param>
         /// <param name="link_to"></param>
+        /// <param name="work_dir"></param>
         /// <param name="description"></param>
         /// <code>
         ///  ShortCut.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup),
@@ -43,13 +44,13 @@ namespace TypingManager
         {
             // ショートカットを読み込み
             ShellLink shortcut = new ShellLink(link_path);
-
+            string target_path = shortcut.TargetPath;
             //Console.WriteLine("{0}を読み込みます。", shortcut.CurrentFile);
             //Console.WriteLine("ターゲット: {0}", shortcut.TargetPath);
             //Console.WriteLine("説明: {0}", shortcut.Description);
             shortcut.Dispose();
 
-            return shortcut.TargetPath;
+            return target_path;
         }
     }
 

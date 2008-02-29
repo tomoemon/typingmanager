@@ -24,6 +24,22 @@ namespace TypingManager
         All,
     }
 
+    public class RequiredDll
+    {
+        public const string IRON_PYTHON = "IronPython.dll";
+        public const string IRON_MATH = "IronMath.dll";
+        public const string PLUGIN = "Plugin.dll";
+
+        public static bool IsExists()
+        {
+            if (!File.Exists(IRON_PYTHON) || !File.Exists(IRON_MATH) || !File.Exists(PLUGIN))
+            {
+                return false;
+            }
+            return true;
+        }
+    }
+
     /// <summary>
     /// アプリケーション全体の設定を保存するクラス
     /// </summary>

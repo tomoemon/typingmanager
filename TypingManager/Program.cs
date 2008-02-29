@@ -18,6 +18,34 @@ namespace TypingManager
         [STAThread]
         static void Main()
         {
+            //MessageBox.Show(Directory.GetCurrentDirectory());
+            //MessageBox.Show(Environment.CurrentDirectory);
+            //DirectoryInfo info = Directory.CreateDirectory("タイマネ");
+            //MessageBox.Show(Directory.Exists("タイマネ").ToString());
+            
+            // カレントディレクトリの設定
+            string cur_dir = Path.GetDirectoryName(Application.ExecutablePath);
+            Directory.SetCurrentDirectory(cur_dir);
+
+            if (!KeyboardProxyHook.IsExists())
+            {
+                string msg = string.Format(
+                    "{0}または{1}が見つかりません。{2}実行ディレクトリ：{3}",
+                    KeyboardProxyHook.PROXY_EXE, KeyboardProxyHook.PROXY_DLL,
+                    Environment.NewLine, cur_dir);
+                MessageBox.Show(msg,"プログラムを終了します");
+                return;
+            }
+            else if (!RequiredDll.IsExists())
+            {
+                string msg = string.Format(
+                    "{0}または{1}，{2}が見つかりません。{3}実行ディレクトリ：{4}",
+                    RequiredDll.IRON_PYTHON, RequiredDll.IRON_MATH, RequiredDll.PLUGIN,
+                    Environment.NewLine, cur_dir);
+                MessageBox.Show(msg, "プログラムを終了します");
+                return;
+            }
+
             /*
             AnalyzeTool plugin = PythonTool.Create();
             Console.WriteLine("author name:{0}", plugin.GetAuthorName());
@@ -26,7 +54,6 @@ namespace TypingManager
              */
             //Mutexクラスの作成
             string asm_name = Assembly.GetExecutingAssembly().GetName().Name;
-            string cur_dir = Path.GetDirectoryName(Application.ExecutablePath);
 
             // Mutexの名前には'\'が入っているとダメなのでパス名に使えない'/'に置換
             string mutex_name = asm_name + "_" + cur_dir.Replace('\\', '/');
@@ -54,9 +81,6 @@ namespace TypingManager
                 // WindowsVista以外だとChangeWindowMessageFilter関数が見つからないので例外が発生
                 // でも，Vista以外ではこの関数は呼び出さなくていいので問題なし．
             }
-            // カレントディレクトリの設定
-            Directory.SetCurrentDirectory(cur_dir);
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

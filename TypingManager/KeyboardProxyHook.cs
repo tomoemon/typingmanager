@@ -4,15 +4,29 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.IO;
 using Plugin;
 
 namespace TypingManager
 {
     public class KeyboardProxyHook : IDisposable, IKeyboardHookBase
     {
+        public const string PROXY_EXE = "_proxy.exe";
+        public const string PROXY_DLL = "_proxy.dll";
+        private const string PROXY_BOOT_ARG = "/proxy ";
+
         private Process proxyProcess;
 
         public event KeyboardHookedEventHandler KeyboardHooked;
+
+        public static bool IsExists()
+        {
+            if (!File.Exists(PROXY_EXE) || !File.Exists(PROXY_DLL))
+            {
+                return false;
+            }
+            return true;
+        }
 
         /*
         [DllImport("user32.dll", SetLastError = true)]
@@ -158,11 +172,10 @@ namespace TypingManager
             */
 
             // キーボードフックを行う別プロセスを起動
-            string program = "_proxy.exe";
-            string argument = "/proxy " + watch_window;
+            string argument = PROXY_BOOT_ARG + watch_window;
 
             proxyProcess = new Process();
-            proxyProcess.StartInfo.FileName = program;	//起動するファイル名
+            proxyProcess.StartInfo.FileName = PROXY_EXE;	//起動するファイル名
             proxyProcess.StartInfo.Arguments = argument;	//起動時の引数
             proxyProcess.Start();
         }

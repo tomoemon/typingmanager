@@ -191,9 +191,7 @@ namespace TypingManager
         public void MainTabLoad()
         {
             main_form.TodayStrokeNum.Text = stroke_num.TodayTotalType.ToString();
-            main_form.TodayAppNum.Text = stroke_num.TodayTotalApp.ToString();
             main_form.YesterdayStrokeNum.Text = stroke_num.YesterdayTotalType.ToString();
-            main_form.YesterdayAppNum.Text = stroke_num.YesterdayTotalApp.ToString();
             main_form.TotalNum.Text = stroke_num.TotalType.ToString();
             main_form.TotalAppNum.Text = stroke_num.TotalApp.ToString();
         }

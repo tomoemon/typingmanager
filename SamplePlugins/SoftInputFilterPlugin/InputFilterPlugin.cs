@@ -15,6 +15,16 @@ namespace SoftInputFilterPlugin
         private IPluginController plugin_controller;
         private bool valid = false;
         private Form main_form = null;
+        private bool form_open = false;
+        private InputFilterPluginForm form;
+
+        #region プロパティ...
+        public bool FormOpen
+        {
+            get { return form_open; }
+            set { form_open = value; }
+        }
+        #endregion
 
         #region IFilterPlugin メンバ
         public IFilterPluginController FilterController
@@ -63,12 +73,21 @@ namespace SoftInputFilterPlugin
 
         public string GetVersion()
         {
-            return "";
+            return "0.0.1";
         }
 
         public List<ToolStripMenuItem> GetToolStripMenu()
         {
-            return null;
+            List<ToolStripMenuItem> menu_item = new List<ToolStripMenuItem>();
+            ToolStripMenuItem item = new ToolStripMenuItem("設定(&C)...");
+            item.Click += new EventHandler(item_Click);
+            menu_item.Add(item);
+            return menu_item;
+        }
+
+        void item_Click(object sender, EventArgs e)
+        {
+            ShowConfigForm();
         }
 
         public void Init()
@@ -79,7 +98,7 @@ namespace SoftInputFilterPlugin
 
         public bool IsHasConfigForm()
         {
-            return false;
+            return true;
         }
 
         public void KeyDown(IKeyState keystate, uint militime, string app_path, string app_title)
@@ -107,7 +126,14 @@ namespace SoftInputFilterPlugin
 
         public void ShowConfigForm()
         {
-            
+            if (!FormOpen)
+            {
+                FormOpen = true;
+                form = new InputFilterPluginForm(this);
+                //Console.WriteLine("x={0}, y={1}", MainForm.Location.X, MainForm.Location.Y);
+                form.Location = MainForm.Location;
+                form.Show();
+            }
         }
 
         public bool Valid

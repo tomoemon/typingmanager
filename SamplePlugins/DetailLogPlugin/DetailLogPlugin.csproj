@@ -80,7 +80,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\..\TypingManager\bin\Release\plugins"</PostBuildEvent>
   </PropertyGroup>
 </Project>

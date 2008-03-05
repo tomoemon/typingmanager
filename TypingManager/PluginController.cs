@@ -197,7 +197,7 @@ namespace TypingManager
                 {
                     plugin.Controller = this;
                     plugin.MainForm = main_form;
-                    plugin.Valid = false;
+                    //plugin.Valid = false; // 起動時の有効・無効はプラグイン内部の設定に任せる
                     filter_controller.AddFilterPlugin(plugin);
                     index_dic[name] = plugin;
                     GetSaveDir(name);   // プラグイン用ディレクトリの作成
@@ -225,7 +225,7 @@ namespace TypingManager
                 {
                     plugin.Controller = this;
                     plugin.MainForm = main_form;
-                    plugin.Valid = true;
+                    //plugin.Valid = true; // 起動時の有効・無効はプラグイン内部の設定に任せる
                     stroke_plugin_list.Add(plugin);
                     index_dic[name] = plugin;
                     GetSaveDir(name);   // プラグイン用ディレクトリの作成
@@ -314,6 +314,27 @@ namespace TypingManager
         {
             int i = 1;
             foreach (IPluginBase plugin in stroke_plugin_list)
+            {
+                if (plugin.GetToolStripMenu() == null) continue;
+
+                string menu_name;
+                if (i <= 9)
+                {
+                    menu_name = string.Format("{0}(&{1})", plugin.GetPluginName(), i);
+                }
+                else
+                {
+                    menu_name = plugin.GetPluginName();
+                }
+                ToolStripMenuItem item = new ToolStripMenuItem(menu_name);
+                foreach (ToolStripMenuItem menu_item in plugin.GetToolStripMenu())
+                {
+                    item.DropDownItems.Add(menu_item);
+                }
+                parent_menu.DropDownItems.Add(item);
+                i++;
+            }
+            foreach (IPluginBase plugin in filter_controller.GetFilterPluginList())
             {
                 if (plugin.GetToolStripMenu() == null) continue;
 

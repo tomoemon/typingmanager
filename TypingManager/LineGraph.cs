@@ -21,6 +21,8 @@ namespace TypingManager
 
         const float DEFAULT_MARK_SIZE = 3;
 
+        const int CONTROL_BORDER_SIZE = 2;
+
         // グラフで表現する最大値と最小値
         private float value_min;
         private float value_max;
@@ -43,6 +45,7 @@ namespace TypingManager
         private Color grid_color;
         private Color line_color;
         private Color mark_color;
+        private Color mark_strong_color;
 
         private float[] data_list;
 
@@ -99,6 +102,11 @@ namespace TypingManager
             get { return mark_color; }
             set { mark_color = value; }
         }
+        public Color MarkStrongColor
+        {
+            get { return mark_strong_color; }
+            set { mark_strong_color = value; }
+        }
         #endregion
 
         public LineGraph(int width, int height) : base(width, height)
@@ -122,6 +130,7 @@ namespace TypingManager
             grid_color = Color.Green;
             line_color = Color.Lime;
             mark_color = Color.Aqua;
+            mark_strong_color = Color.Red;
             foreach (LineGraphMarkType type in Enum.GetValues(typeof(LineGraphMarkType)))
             {
                 mark_size[type] = DEFAULT_MARK_SIZE;
@@ -160,6 +169,11 @@ namespace TypingManager
             pen.Dispose();
         }
 
+        /// <summary>
+        /// 実際の値から縦軸の位置を決める
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public float ValueToPos(float value)
         {
             // maxとminの中で今の値は何％になっているかを調べる
@@ -170,9 +184,36 @@ namespace TypingManager
                 percent = percent > 1.0f ? 1.0f : percent;
             }
 
-            // 離散化したゲージの中で何個目まで達しているか
             float pos = DrawRect.Height * percent;
             return pos;
+        }
+
+        /// <summary>
+        /// グラフ上のX座標から最も近いプロットしているindexの値を返す
+        /// indexは右端が0で左に向かう方向が正
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public int CursorPosToIndex(float pos_x)
+        {
+            for (int i = 0; i < PlotNum; i++)
+            {
+                float x = DrawRect.Left + DrawRect.Width - plot_interval * i;
+                if (pos_x > x)
+                {
+                    return i - 1;
+                }
+            }
+            return PlotNum - 1;
+        }
+
+        public float GetValue(int index)
+        {
+            if (0 <= index && index < data_list.Length)
+            {
+                return data_list[index];
+            }
+            return 0;
         }
 
         /// <summary>
@@ -196,6 +237,18 @@ namespace TypingManager
                 border_max += MaxValueAdder;
             }
             return border_max;
+        }
+
+        public void PlotMark(Graphics g, int index, Color color)
+        {
+            float value = ValueMin;
+            if (index < data_list.Length)
+            {
+                value = data_list[index];
+            }
+            float x = DrawRect.Left + DrawRect.Width - plot_interval * index;
+            float y = DrawRect.Bottom - ValueToPos(value) - CONTROL_BORDER_SIZE;
+            PlotMark(g, x, y, color);
         }
 
         public void PlotMark(Graphics g, float x, float y, Color color)

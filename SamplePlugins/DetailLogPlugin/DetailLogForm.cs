@@ -31,6 +31,7 @@ namespace DetailLogPlugin
         private const int TRIGGER_VIEW_RMARGIN = 21;
         private const int TRIGGER_VIEW_BMARGIN = 35;
         private const int DETAIL_VIEW_BMARGIN = 10;
+        private const int DETAIL_VIEW_TEXT_MARGIN = 5;
 
         public DetailLogForm(StrokeTimeLog log)
         {
@@ -584,6 +585,19 @@ namespace DetailLogPlugin
         private void button7_Click(object sender, EventArgs e)
         {
             viewStroke.Clear();
+        }
+
+        private void splitContainer5_SizeChanged(object sender, EventArgs e)
+        {
+            textBox4.Left = DETAIL_VIEW_TEXT_MARGIN;
+            textBox4.Width = splitContainer5.Panel1.Width - DETAIL_VIEW_TEXT_MARGIN * 2;
+            textBox4.Height = splitContainer5.Panel1.Height - textBox4.Top - DETAIL_VIEW_TEXT_MARGIN;
+
+            textBox5.Left = DETAIL_VIEW_TEXT_MARGIN;
+            textBox5.Width = splitContainer5.Panel2.Width - DETAIL_VIEW_TEXT_MARGIN * 2;
+            textBox5.Height = splitContainer5.Panel2.Height - textBox5.Top - DETAIL_VIEW_TEXT_MARGIN;
+
+
         }
     }
 

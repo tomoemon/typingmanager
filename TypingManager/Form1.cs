@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
+using Plugin;
 
 namespace TypingManager
 {
@@ -45,6 +46,10 @@ namespace TypingManager
         {
             get { return textBox2; }
         }
+        public TextBox LastKeyName
+        {
+            get { return textBox3; }
+        }
         public TextBox LastAppPath
         {
             get { return textBox4; }
@@ -53,17 +58,9 @@ namespace TypingManager
         {
             get { return textBox5; }
         }
-        public TextBox TodayAppNum
-        {
-            get { return textBox6; }
-        }
         public TextBox YesterdayStrokeNum
         {
             get { return textBox7; }
-        }
-        public TextBox YesterdayAppNum
-        {
-            get { return textBox8; }
         }
         public TextBox TotalNum
         {
@@ -244,12 +241,12 @@ namespace TypingManager
 
             // 履歴グラフに関する設定
             graphChanger = new GraphChanger(HistoryPicture, HistoryMaxValue, HistoryMinValue,
-                TypeSpeedPicture, TypeSpeedText);
+                TypeSpeedPicture, TypeSpeedText, textBox6);
             graphChanger.SetMargin(HistoryMaxValue.Width+3, 1, 5, 3);
-            graphChanger.SetGraph(LineGraphType.StrokeNumPerMinute, "打鍵数の履歴(1分ごと)", 60, 200);
-            graphChanger.SetGraph(LineGraphType.StrokeNumPerHour, "打鍵数の履歴(1時間ごと)", 24, 5000);
-            graphChanger.SetGraph(LineGraphType.StrokeNumPerDay, "打鍵数の履歴(1日ごと)", 30, 5000);
-            graphChanger.SetGraph(LineGraphType.TypeSpeedPerStroke, "打鍵速度の履歴（打/分）", 60, 200);
+            graphChanger.SetGraph(LineGraphType.StrokeNumPerMinute, "打鍵数の履歴(1分ごと)", 60, 200, "{1} ({0}分前)");
+            graphChanger.SetGraph(LineGraphType.StrokeNumPerHour, "打鍵数の履歴(1時間ごと)", 24, 5000, "{1} ({0}時間前)");
+            graphChanger.SetGraph(LineGraphType.StrokeNumPerDay, "打鍵数の履歴(1日ごと)", 30, 5000, "{1} ({0}日前)");
+            graphChanger.SetGraph(LineGraphType.TypeSpeedPerStroke, "打鍵速度の履歴（打/分）", 60, 200, "{1:f0}打/分");
             graphChanger.SetMarkSize(LineGraphMarkType.Plus, 4);
             graphChanger.SetMarkSize(LineGraphMarkType.Square, 3);
             graphChanger.SetMarkSize(LineGraphMarkType.VerticalBar, 4);
@@ -314,13 +311,14 @@ namespace TypingManager
                 strokeNumLog.TodayTotalType, Environment.NewLine,
                 strokeNumLog.YesterdayTotalType, Environment.NewLine,
                 strokeNumLog.TotalType);
-            UpdateKeyEventInfo(e.UpDown, (int)e.KeyCode, e.ScanCode, app_path);
+            UpdateKeyEventInfo(e.UpDown, (int)e.KeyCode, app_path);
         }
 
-        private void UpdateKeyEventInfo(KeyboardUpDown updown, int vkey, int scan, string app_path)
+        private void UpdateKeyEventInfo(KeyboardUpDown updown, int vkey, string app_path)
         {
             LastEventType.Text = updown.ToString();
             LastKeyCode.Text = vkey.ToString();
+            LastKeyName.Text = VirtualKeyName.GetKeyName(vkey);
             LastAppPath.Text = Path.GetFileName(app_path);
         }
 
@@ -391,15 +389,18 @@ namespace TypingManager
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void pictureBox2_Click(object sender, EventArgs e)
+        private void pictureBox2_MouseClick(object sender, MouseEventArgs e)
         {
-            Array type_array = Enum.GetValues(typeof(LineGraphType));
-            int next = (int)AppConfig.LineGraphType + 1;
-            next = next >= type_array.Length ? 0 : next;
-            AppConfig.LineGraphType = (LineGraphType)type_array.GetValue(next);
-            
-            HistoryGraphName.Text = graphChanger[AppConfig.LineGraphType].GraphName;
-            graphChanger.SetGraphValue();
+            if (e.Button == MouseButtons.Left)
+            {
+                Array type_array = Enum.GetValues(typeof(LineGraphType));
+                int next = (int)AppConfig.LineGraphType + 1;
+                next = next >= type_array.Length ? 0 : next;
+                AppConfig.LineGraphType = (LineGraphType)type_array.GetValue(next);
+
+                HistoryGraphName.Text = graphChanger[AppConfig.LineGraphType].GraphName;
+                graphChanger.SetGraphValue();
+            }
         }
 
         private void pictureBox2_Paint(object sender, PaintEventArgs e)
@@ -1056,81 +1057,25 @@ namespace TypingManager
                 Clipboard.SetText(copy_text.ToString());
             }
         }
-    }
 
-    public class NumSort : System.Collections.IComparer
-    {
-        private SortOrder sort_order = SortOrder.Ascending;	// ソート順(昇順・降順)
-        private int column = 0;	// ソート列
-        private List<int> num_column; // 数値で比較する列
-
-        #region プロパティ...
-        public SortOrder Order
+        private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
         {
-            get { return sort_order; }
-            set { sort_order = value; }
-        }
-        public int Column
-        {
-            get { return column; }
-            set { column = value; }
-        }
-        #endregion
-
-        public NumSort(params int[] list)
-        {
-            num_column = new List<int>(list);
-        }
-        // 比較結果を返す
-        public int Compare(object x, object y)
-        {
-            int ret = 0;
-            // 比較用リストアイテム格納変数
-            ListViewItem sx = (ListViewItem)x;
-            ListViewItem sy = (ListViewItem)y;
-
-            // 文字列を比較し、値を格納
-            if (num_column.Contains(column))
-            {
-                // この条件をつけておかないとcolumnが範囲外だと怒られてしまうことがある
-                // 再現条件：
-                // 「詳細ログ」タブの左のリストビューで「数が2以上の項目」を選択し，
-                // 右のリストビューで2列目以降のどれかの列についてソートを行った後に
-                // 左のリストビューの「数が2以上の項目」を選択しようとすると落ちる．
-                // 解決：アイテムの追加の仕方に注意
-                if (column < sx.SubItems.Count && column < sy.SubItems.Count)
-                {
-                    ret = int.Parse(sx.SubItems[column].Text) - int.Parse(sy.SubItems[column].Text);
-                }
-            }
-            else
-            {
-                if (column < sx.SubItems.Count && column < sy.SubItems.Count)
-                {
-                    ret = string.Compare(sx.SubItems[column].Text, sy.SubItems[column].Text);
-                }
-            }
-
-            // 降順のときは結果を逆転
-            if (sort_order == SortOrder.Descending)
-            {
-                ret = -ret;
-            }
-
-            //結果を返す
-            return ret;
+            //Console.WriteLine("pictureBox2_MouseMove");
+            Point p = Cursor.Position;
+            graphChanger.MoveText(p.X, p.Y);
         }
 
-        public void ChangeSortOrder()
+        private void pictureBox2_MouseEnter(object sender, EventArgs e)
         {
-            if (Order == SortOrder.Descending)
-            {
-                Order = SortOrder.Ascending;
-            }
-            else
-            {
-                Order = SortOrder.Descending;
-            }
+            //Console.WriteLine("pictureBox2_MouseEnter");
+            Point p = Cursor.Position;
+            graphChanger.ShowText(p.X, p.Y);
+        }
+
+        private void pictureBox2_MouseLeave(object sender, EventArgs e)
+        {
+            //Console.WriteLine("pictureBox2_MouseLeave");
+            graphChanger.HideText();
         }
     }
 }

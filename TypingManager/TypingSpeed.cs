@@ -28,6 +28,9 @@ namespace TypingManager
         /// <summary>1打鍵あたりの平均打鍵間隔[sec]</summary>
         private float average_stroke_time = DEFAULT_AVERAGE_TIME;
 
+        /// <summary>1秒おきの前回の最後の打鍵時間[msec]</summary>
+        private uint last_sample_data = 0;
+
         public TypingSpeed(int sample_num)
         {
             this.sample_num = sample_num;
@@ -86,34 +89,54 @@ namespace TypingManager
             return speed_per_sec[speed_per_sec.Count - 1];
         }
 
+        /// <summary>
+        /// 現在タイピング中か
+        /// </summary>
+        /// <returns></returns>
+        public bool IsTyping()
+        {
+            if (GetSpeed() == 0.0f)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public void SetLastSpeed(uint now)
         {
             int length = sample_data.Count;
+            uint no_stroke_time = (uint)(average_stroke_time * 1000 * AppConfig.NoStrokeLimitTime);
 
-            if (length == 0)
-            {
-                // 打鍵データがなければ平均打鍵速度は0
-                RecordAverageSpeed(0);
-                return;
-            }
-            else if (now - sample_data[length - 1] > AppConfig.NoStrokeLimitTime * 1000)
+            // no_stroke_timeが例えば0.01秒とかになると新しい打鍵をしても
+            // 最後の打鍵から今の時間までの差の方が大きくなってしまうため
+            // 常に下の条件が成り立ってsample_dataが消えてしまう
+            // よってno_stroke_timeがDEFAULTよりも小さいときはDEFAULTに設定しなおす
+            no_stroke_time = no_stroke_time < DEFAULT_AVERAGE_TIME ? DEFAULT_AVERAGE_TIME : no_stroke_time;
+            
+            if (length == 0 || now - sample_data[length - 1] > no_stroke_time)
             {
                 // 最後の打鍵から設定した時間以上経過したら打鍵が無くなったものとする
                 RecordAverageSpeed(0);
                 sample_data.Clear();
                 return;
             }
+
             // 平均打鍵速度算出に用いるサンプル数を決める
             int sample = length < sample_num ? length : sample_num;
             
             uint diff_sum = now - sample_data[length - sample];
-            if (diff_sum <= DEFAULT_AVERAGE_TIME && length == 1)
+            if (length == 1 && diff_sum <= DEFAULT_AVERAGE_TIME)
             {
-                // 1打鍵しかない場合
+                // 1打鍵しかない場合で打ってからDEFAULT_AVERAGE_TIMEしか経過していない場合
                 diff_sum = DEFAULT_AVERAGE_TIME;
             }
-            average_stroke_time = diff_sum / 1000.0f / sample;
-            Console.WriteLine("平均打鍵間隔：{0:f3}sec", average_stroke_time);
+            // 前回計算したときから新たな打鍵が発生していない場合は計算しない
+            if (last_sample_data != sample_data[length - 1])
+            {
+                average_stroke_time = diff_sum / 1000.0f / sample;
+                last_sample_data = sample_data[length - 1];
+            }
+            //Debug.WriteLine(string.Format("平均打鍵間隔：{0:f3}sec", average_stroke_time));
             float average_speed = (float)sample / diff_sum * 1000 * 60;
             RecordAverageSpeed(average_speed);
             return;

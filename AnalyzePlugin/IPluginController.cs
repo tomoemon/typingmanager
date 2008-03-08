@@ -21,14 +21,14 @@ namespace Plugin
         /// プラグインから呼ばれる関数
         /// </summary>
         /// <returns></returns>
-        string GetSaveDir(string pluginname);
+        string GetSaveDir(string access_name);
 
         /// <summary>
         /// 各プラグインが設定の保存に使うディレクトリ
         /// プラグインから呼ばれる関数
         /// </summary>
         /// <returns></returns>
-        string GetConfigDir(string pluginname);
+        string GetConfigDir(string access_name);
     }
 
     public interface IStrokePluginController : IPluginController

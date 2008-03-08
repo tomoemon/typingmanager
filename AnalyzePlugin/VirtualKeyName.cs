@@ -9,11 +9,11 @@ namespace Plugin
         // <キーコード, キーの名前>
         static Dictionary<int, string> key_name;
 
-        public static string GetKeyName(int index)
+        public static string GetKeyName(int keycode)
         {
-            if (key_name.ContainsKey(index))
+            if (key_name.ContainsKey(keycode))
             {
-                return key_name[index];
+                return key_name[keycode];
             }
             return "";
         }

@@ -87,6 +87,13 @@ namespace TypingManager
         /// <summary>ターゲットウィンドウのタイトルが違う場合のみプロセス名を取得する</summary>
         public bool getAppPathByTitleChange;
 
+        /// <summary>打鍵時間を記録する際の最低打鍵速度（打/分）</summary>
+        public int minStrokeTimeSpeed;
+
+        /// <summary>打鍵時間を記録する際の最高打鍵速度（打/分）</summary>
+        public int maxStrokeTimeSpeed;
+
+
         private static AppConfig __instance;
 
         #region プロパティ...
@@ -160,6 +167,16 @@ namespace TypingManager
             get { return __instance.getAppPathByTitleChange; }
             set { __instance.getAppPathByTitleChange = value; }
         }
+        public static int MinStrokeTimeSpeed
+        {
+            get { return __instance.minStrokeTimeSpeed; }
+            set { __instance.minStrokeTimeSpeed = value; }
+        }
+        public static int MaxStrokeTimeSpeed
+        {
+            get { return __instance.maxStrokeTimeSpeed; }
+            set { __instance.maxStrokeTimeSpeed = value; }
+        }
         #endregion
 
         private AppConfig()
@@ -175,12 +192,14 @@ namespace TypingManager
             tabIndex = 0;
             scheduleLogging = true;
             scheduleTiming = 10;
-            noStrokeLimitTime = 10;
+            noStrokeLimitTime = 3;
             showExitMessage = false;
             selectedItemCopyFormat = "%1, %2, %3";
             rightClickCopyFormat = "%1 - [%2]";
             standardHook = true;
             getAppPathByTitleChange = true;
+            minStrokeTimeSpeed = 100;
+            maxStrokeTimeSpeed = 2000;
         }
 
         public static void Load(string filename)

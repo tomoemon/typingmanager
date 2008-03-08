@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppConfig.cs" />
+    <Compile Include="AppKeyLog.cs" />
     <Compile Include="ConfigForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,6 +116,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="QueryTime.cs" />
+    <Compile Include="StrokeTimeLog.cs" />
     <Compile Include="TimerTaskController.cs" />
     <Compile Include="TotalLog.cs" />
     <Compile Include="TypingSpeed.cs" />

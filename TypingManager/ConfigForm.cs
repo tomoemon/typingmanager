@@ -24,12 +24,22 @@ namespace TypingManager
         public int ScheduleLogTiming
         {
             get { return (int)numericUpDown1.Value; }
-            set { numericUpDown1.Value = value; }
+            set { NumericValueSet(numericUpDown1, value); }
         }
         public int NoStrokeLimitTime
         {
             get { return (int)numericUpDown2.Value; }
-            set { numericUpDown2.Value = value; }
+            set { NumericValueSet(numericUpDown2, value); }
+        }
+        public int MinStrokeTimeSpeed
+        {
+            get { return (int)numericUpDown3.Value; }
+            set { NumericValueSet(numericUpDown3, value); }
+        }
+        public int MaxStrokeTimeSpeed
+        {
+            get { return (int)numericUpDown4.Value; }
+            set { NumericValueSet(numericUpDown4, value); }
         }
         public bool UseStandardHook
         {
@@ -57,5 +67,21 @@ namespace TypingManager
             set { textBox2.Text = value; }
         }
         #endregion
+
+        private void NumericValueSet(NumericUpDown updown, int value)
+        {
+            if (updown.Maximum < value)
+            {
+                updown.Value = updown.Maximum;
+            }
+            else if (updown.Minimum > value)
+            {
+                updown.Value = updown.Minimum;
+            }
+            else
+            {
+                updown.Value = value;
+            }
+        }
     }
 }

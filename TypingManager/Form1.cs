@@ -15,6 +15,8 @@ namespace TypingManager
     {
         private IKeyboardHookBase keyHook;
         private StrokeNumLog strokeNumLog;
+        private StrokeTimeLog strokeTimeLog;
+        private StrokeTimeView strokeTimeView;
         private PluginController pluginController;
         private KeyStrokeView keyStrokeView;
         private KeyState keyState;
@@ -38,6 +40,10 @@ namespace TypingManager
         public const int LISTVEW_SMALL_ICON_SIZE = 16;
 
         #region プロパティ...
+        public TextBox TodayStrokeTime { get { return textBox8; } }
+        public TextBox HourStrokeTime { get { return textBox20; } }
+        public TextBox TodaySpecificStrokeTime { get { return textBox25; } }
+        public TextBox HourSpecificStrokeTime { get { return textBox23; } }
         public TextBox LastEventType
         {
             get { return textBox1; }
@@ -206,7 +212,13 @@ namespace TypingManager
 
             // 打鍵数カウントを担当するクラス
             strokeNumLog = new StrokeNumLog();
+
+            // 打鍵速度を計算するクラスを作成（サンプル数20）
+            typingSpeed = new TypingSpeed(20);
             
+            // 打鍵時間のカウントを担当するクラス
+            strokeTimeLog = new StrokeTimeLog(typingSpeed);
+
             // キーの状態を保存するクラス
             keyState = new KeyState();
             
@@ -214,15 +226,10 @@ namespace TypingManager
             pluginController = new PluginController(this);
             pluginController.AddStrokePlugin(strokeNumLog);
             pluginController.AddStrokePlugin(strokeNumLog.ProcessName);
+            pluginController.AddStrokePlugin(strokeTimeLog);
             pluginController.Load();
             pluginController.AddMenu(PluginMenu);
             
-            // 打鍵速度を計算するクラスを作成（サンプル数20）
-            typingSpeed = new TypingSpeed(20);
-
-            // キー入力に応じてGUIの値を更新するクラス
-            keyStrokeView = new KeyStrokeView(this, strokeNumLog);
-
             // 読み込んだAppConfigからGUIに反映させる
             SetProcessViewType();       // プロセス別打鍵数の表示タイプのチェック
             SetSaveTitleStrokeMenu();   // タイトル別の打鍵数を保存するかのチェック
@@ -234,10 +241,15 @@ namespace TypingManager
                 strokeNumLog.YesterdayTotalType, Environment.NewLine,
                 strokeNumLog.TotalType);
 
-            // 打鍵ログをGUIに反映させる
+            // キー入力に応じて打鍵ログをGUIに反映させるクラス
+            keyStrokeView = new KeyStrokeView(this, strokeNumLog);
             keyStrokeView.DayStrokeViewLoad();
             keyStrokeView.ProcessViewLoad();
             keyStrokeView.MainTabLoad();
+
+            // 打鍵時間をフォームに反映させる
+            strokeTimeView = new StrokeTimeView(strokeTimeLog, TodayStrokeTime, HourStrokeTime,
+                TodaySpecificStrokeTime, HourSpecificStrokeTime);
 
             // 履歴グラフに関する設定
             graphChanger = new GraphChanger(HistoryPicture, HistoryMaxValue, HistoryMinValue,
@@ -267,6 +279,8 @@ namespace TypingManager
             timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_NEWDAY, 1, 0, 0);
             timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_SAVE, 0, AppConfig.ScheduleTiming, 0);
             timerTaskController.AddTask(graphChanger, GraphChanger.TIMER_ID_UPDATE, 0, 0, 1);
+            timerTaskController.AddTask(strokeTimeLog, StrokeTimeLog.TIMER_ID_COUNT, 0, 0, 1);
+            timerTaskController.AddTask(strokeTimeView, StrokeTimeView.TIMER_ID_UPDATE, 0, 0, 1);
         }
 
         /// <summary>
@@ -977,6 +991,8 @@ namespace TypingManager
             configForm.NoStrokeLimitTime = AppConfig.NoStrokeLimitTime;
             configForm.SelectedItemCopyFormat = AppConfig.SelectedItemCopyFormat;
             configForm.RightClickCopyFormat = AppConfig.RightClickCopyFormat;
+            configForm.MinStrokeTimeSpeed = AppConfig.MinStrokeTimeSpeed;
+            configForm.MaxStrokeTimeSpeed = AppConfig.MaxStrokeTimeSpeed;
             DialogResult result = configForm.ShowDialog(this);
             if (result == DialogResult.OK)
             {
@@ -988,6 +1004,8 @@ namespace TypingManager
                 timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_SAVE, 0, AppConfig.ScheduleTiming, 0);
                 AppConfig.SelectedItemCopyFormat = configForm.SelectedItemCopyFormat;
                 AppConfig.RightClickCopyFormat = configForm.RightClickCopyFormat;
+                AppConfig.MinStrokeTimeSpeed = configForm.MinStrokeTimeSpeed;
+                AppConfig.MaxStrokeTimeSpeed = configForm.MaxStrokeTimeSpeed;
                 if (AppConfig.StandardHook != configForm.UseStandardHook)
                 {
                     AppConfig.StandardHook = configForm.UseStandardHook;

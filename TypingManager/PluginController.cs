@@ -8,6 +8,7 @@ using System.Drawing;
 using Plugin;
 using System.Windows.Forms;
 using System.Xml;
+using System.Diagnostics;
 
 namespace TypingManager
 {
@@ -190,19 +191,7 @@ namespace TypingManager
             for (int i = 0; i < pis.Length; i++)
             {
                 IFilterPlugin plugin = (IFilterPlugin)pis[i].CreateInstance();
-                string name = plugin.GetAccessName();
-                string author = plugin.GetAuthorName();
-                string version = plugin.GetVersion();
-                if (name != "" && !index_dic.ContainsKey(name))
-                {
-                    plugin.Controller = this;
-                    plugin.MainForm = main_form;
-                    //plugin.Valid = false; // 起動時の有効・無効はプラグイン内部の設定に任せる
-                    filter_controller.AddFilterPlugin(plugin);
-                    index_dic[name] = plugin;
-                    GetSaveDir(name);   // プラグイン用ディレクトリの作成
-                    Console.WriteLine("FilterPlugin: {0}", name);
-                }
+                AddFilterPlugin(plugin);
             }
         }
 
@@ -218,19 +207,7 @@ namespace TypingManager
             for (int i = 0; i < pis.Length; i++)
             {
                 IStrokePlugin plugin = (IStrokePlugin)pis[i].CreateInstance();
-                string name = plugin.GetAccessName();
-                string author = plugin.GetAuthorName();
-                string version = plugin.GetVersion();
-                if (name != "" && !index_dic.ContainsKey(name))
-                {
-                    plugin.Controller = this;
-                    plugin.MainForm = main_form;
-                    //plugin.Valid = true; // 起動時の有効・無効はプラグイン内部の設定に任せる
-                    stroke_plugin_list.Add(plugin);
-                    index_dic[name] = plugin;
-                    GetSaveDir(name);   // プラグイン用ディレクトリの作成
-                    Console.WriteLine("StrokePlugin[{0}]: {1}", i, name);
-                }
+                AddStrokePlugin(plugin);
             }
         }
 
@@ -295,14 +272,31 @@ namespace TypingManager
             SavePluginConfig();
         }
 
+        public void AddFilterPlugin(IFilterPlugin plugin)
+        {
+            string name = plugin.GetAccessName();
+            if (name != "" && !index_dic.ContainsKey(name))
+            {
+                plugin.Controller = this;
+                plugin.MainForm = main_form;
+                //plugin.Valid = false; // 起動時の有効・無効はプラグイン内部の設定に任せる
+                filter_controller.AddFilterPlugin(plugin);
+                index_dic[name] = plugin;
+                Debug.WriteLine(string.Format("FilterPlugin: {0}", name));
+            }
+        }
+
         public void AddStrokePlugin(IStrokePlugin plugin)
         {
             string name = plugin.GetAccessName();
-            if (name != "")
+            if (name != "" && !index_dic.ContainsKey(name))
             {
-                plugin.Valid = true;
+                plugin.Controller = this;
+                plugin.MainForm = main_form;
+                //plugin.Valid = true; // 起動時の有効・無効はプラグイン内部の設定に任せる
                 stroke_plugin_list.Add(plugin);
                 index_dic[name] = plugin;
+                Debug.WriteLine(string.Format("StrokePlugin: {0}", name));
             }
         }
 

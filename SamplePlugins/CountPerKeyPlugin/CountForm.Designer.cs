@@ -64,16 +64,19 @@
             // columnHeader2
             // 
             this.columnHeader2.Text = "合計打鍵数";
+            this.columnHeader2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeader2.Width = 79;
             // 
             // columnHeader3
             // 
             this.columnHeader3.Text = "今日の打鍵数";
+            this.columnHeader3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeader3.Width = 88;
             // 
             // columnHeader4
             // 
             this.columnHeader4.Text = "打鍵数／日";
+            this.columnHeader4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeader4.Width = 99;
             // 
             // button1

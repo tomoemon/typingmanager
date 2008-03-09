@@ -12,6 +12,8 @@ namespace CountPerKey
     public partial class CountForm : Form
     {
         private CountMain count;
+        private int total_other = 0;
+        private int today_other = 0;
 
         public CountForm(CountMain _count)
         {
@@ -26,22 +28,29 @@ namespace CountPerKey
         public void FormDataUpdate(int keycode)
         {
             string keyname = VirtualKeyName.GetKeyName(keycode);
+
+            string total = count.TotalKey[keycode].ToString();
+            string today = count.TodayKey[keycode].ToString();
+            string average = (count.TotalKey[keycode] / count.TotalDay).ToString();
             if (keyname == "")
             {
                 keyname = "‚»‚Ì‘¼";
+                total = (++total_other).ToString();
+                today = (++today_other).ToString();
+                average = (total_other / count.TotalDay).ToString();
             }
             if (listView1.Items.ContainsKey(keyname))
             {
-                listView1.Items[keyname].SubItems[1].Text = count.TotalKey[keycode].ToString();
-                listView1.Items[keyname].SubItems[2].Text = count.TodayKey[keycode].ToString();
-                listView1.Items[keyname].SubItems[3].Text = (count.TotalKey[keycode] / count.TotalDay).ToString();
+                listView1.Items[keyname].SubItems[1].Text = total;
+                listView1.Items[keyname].SubItems[2].Text = today;
+                listView1.Items[keyname].SubItems[3].Text = average;
             }
             else
             {
                 listView1.Items.Add(keyname, keyname, "");
-                listView1.Items[keyname].SubItems.Add(count.TotalKey[keycode].ToString());
-                listView1.Items[keyname].SubItems.Add(count.TodayKey[keycode].ToString());
-                listView1.Items[keyname].SubItems.Add((count.TotalKey[keycode] / count.TotalDay).ToString());
+                listView1.Items[keyname].SubItems.Add(total);
+                listView1.Items[keyname].SubItems.Add(today);
+                listView1.Items[keyname].SubItems.Add(average);
             }
         }
 
@@ -55,18 +64,39 @@ namespace CountPerKey
                 if (keyname == "")
                 {
                     keyname = "‚»‚Ì‘¼";
-                }
-                listView1.Items.Add(keyname, keyname, "");
-                listView1.Items[keyname].SubItems.Add(count.TotalKey[keycode].ToString());
-                if (count.TodayKey.ContainsKey(keycode))
-                {
-                    listView1.Items[keyname].SubItems.Add(count.TodayKey[keycode].ToString());
+                    total_other += count.TotalKey[keycode];
+                    if (count.TodayKey.ContainsKey(keycode))
+                    {
+                        today_other += count.TodayKey[keycode];
+                    }
+                    if (listView1.Items.ContainsKey(keyname))
+                    {
+                        listView1.Items[keyname].SubItems[1].Text = total_other.ToString();
+                        listView1.Items[keyname].SubItems[2].Text = today_other.ToString();
+                        listView1.Items[keyname].SubItems[3].Text = (total_other / count.TotalDay).ToString();
+                    }
+                    else
+                    {
+                        listView1.Items.Add(keyname, keyname, "");
+                        listView1.Items[keyname].SubItems.Add(total_other.ToString());
+                        listView1.Items[keyname].SubItems.Add(today_other.ToString());
+                        listView1.Items[keyname].SubItems.Add((total_other / count.TotalDay).ToString());
+                    }
                 }
                 else
                 {
-                    listView1.Items[keyname].SubItems.Add("0");
+                    listView1.Items.Add(keyname, keyname, "");
+                    listView1.Items[keyname].SubItems.Add(count.TotalKey[keycode].ToString());
+                    if (count.TodayKey.ContainsKey(keycode))
+                    {
+                        listView1.Items[keyname].SubItems.Add(count.TodayKey[keycode].ToString());
+                    }
+                    else
+                    {
+                        listView1.Items[keyname].SubItems.Add("0");
+                    }
+                    listView1.Items[keyname].SubItems.Add((count.TotalKey[keycode] / count.TotalDay).ToString());
                 }
-                listView1.Items[keyname].SubItems.Add((count.TotalKey[keycode] / count.TotalDay).ToString());
             }
         }
 

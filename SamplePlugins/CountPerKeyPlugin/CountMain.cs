@@ -152,8 +152,6 @@ namespace CountPerKey
                     form.FormDataLoad();
                 }
             }
-            Console.WriteLine("TotalDay:{0}", TotalDay);
-
             if (!total_key_count.ContainsKey(keystate.KeyCode))
             {
                 total_key_count[keystate.KeyCode] = 0;
@@ -217,10 +215,14 @@ namespace CountPerKey
                 doc.LoadXml(xml);
 
                 start_date = DateTime.Parse(doc.SelectSingleNode("/CountKeyLog/StartDate").InnerText);
-                last_update = DateTime.Parse(doc.SelectSingleNode("CountKeyLog/LastUpdate").InnerText);
+                DateTime log_update = DateTime.Parse(doc.SelectSingleNode("CountKeyLog/LastUpdate").InnerText);
 
-                XmlNode today_node = doc.SelectSingleNode("/CountKeyLog/TodayLog");
-                LoadKeyLog(today_node, today_key_count);
+                if (last_update.Year == log_update.Year && last_update.Month == log_update.Month
+                    && last_update.Day == log_update.Day)
+                {
+                    XmlNode today_node = doc.SelectSingleNode("/CountKeyLog/TodayLog");
+                    LoadKeyLog(today_node, today_key_count);
+                }
                 XmlNode total_node = doc.SelectSingleNode("/CountKeyLog/TotalLog");
                 LoadKeyLog(total_node, total_key_count);
             }

@@ -72,6 +72,15 @@ namespace TypingManager
         {
             return (Plugin.IProcessNameData)this;
         }
+
+        public override void AutoSave()
+        {
+            Save();
+        }
+        public override void Close()
+        {
+            Save();
+        }
         #endregion
 
 
@@ -245,10 +254,9 @@ namespace TypingManager
             if (File.Exists(filename))
             {
                 string xml = "";
-                using (StreamReader sr = new StreamReader(filename))
-                {
-                    xml = sr.ReadToEnd();
-                }
+                StreamReader sr = new StreamReader(filename);
+                xml = sr.ReadToEnd();
+                sr.Dispose();
 
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(xml);

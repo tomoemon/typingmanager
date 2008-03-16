@@ -83,7 +83,11 @@ namespace TypingManager
             }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Form form = new Form1();
+            if (form.Enabled)
+            {
+                Application.Run(form);
+            }
         }
     }
 }

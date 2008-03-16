@@ -114,7 +114,7 @@ namespace DetailLogPlugin
         }
     }
 
-    public class StrokeTimeLog : Plugin.BaseStrokePlugin
+    public class DetailLog : Plugin.BaseStrokePlugin
     {
         public const string PLUGIN_NAME = "detail_log";
         public static string PLUGIN_LOG_DIR = "";
@@ -325,7 +325,7 @@ namespace DetailLogPlugin
         }
         #endregion
 
-        public StrokeTimeLog()
+        public DetailLog()
         {
             form_open = false;
             start_time = 0;

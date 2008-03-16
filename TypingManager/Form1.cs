@@ -22,7 +22,7 @@ namespace TypingManager
         private KeyState keyState;
         private TypingSpeed typingSpeed;
         private GraphChanger graphChanger;
-        private TimerTaskController timerTaskController;
+        private TimerTaskController timerTaskController = null;
         private ConfigForm configForm = new ConfigForm();
 
         // 前回取得したウィンドウタイトル
@@ -174,9 +174,19 @@ namespace TypingManager
             Plugin.LogDir.LogDirectoryCheck();
 
             // アプリケーションの設定ファイル読み込み
-            AppConfig.Load();
+            try
+            {
+                AppConfig.Load();
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("設定ファイルの読み込みに失敗しました。" + Environment.NewLine +
+                        "設定ファイルを編集しているプロセスがある場合は終了させてください。", Properties.Resources.ApplicationName);
+                this.Close();
+                return;
+            }
             IsTopMostMenu.Checked = AppConfig.TopMost;
-            if (AppConfig.TabIndex >= tabControl1.TabCount)
+            if (AppConfig.TabIndex >= tabControl1.TabCount || AppConfig.TabIndex < 0)
             {
                 AppConfig.TabIndex = 0;
             }
@@ -227,20 +237,20 @@ namespace TypingManager
             pluginController.AddStrokePlugin(strokeNumLog);
             pluginController.AddStrokePlugin(strokeNumLog.ProcessName);
             pluginController.AddStrokePlugin(strokeTimeLog);
-            pluginController.Load();
+            try
+            {
+                pluginController.Load();
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("ログファイルの読み込みに失敗しました。" + Environment.NewLine +
+                        "ログファイルを編集しているプロセスがある場合は終了させてください。", Properties.Resources.ApplicationName);
+                keyHook.Dispose();
+                this.Enabled = false;
+                return;
+            }
             pluginController.AddMenu(PluginMenu);
             
-            // 読み込んだAppConfigからGUIに反映させる
-            SetProcessViewType();       // プロセス別打鍵数の表示タイプのチェック
-            SetSaveTitleStrokeMenu();   // タイトル別の打鍵数を保存するかのチェック
-            SetGraphMarkCheck(AppConfig.MarkType); // グラフにつけるマーク
-
-            // NotifyIcon（タスクトレイアイコン）のテキストを変更する
-            notifyIcon1.Text = string.Format("今日:{0}{1}昨日:{2}{3}合計:{4}",
-                strokeNumLog.TodayTotalType, Environment.NewLine, 
-                strokeNumLog.YesterdayTotalType, Environment.NewLine,
-                strokeNumLog.TotalType);
-
             // キー入力に応じて打鍵ログをGUIに反映させるクラス
             keyStrokeView = new KeyStrokeView(this, strokeNumLog);
             keyStrokeView.DayStrokeViewLoad();
@@ -250,6 +260,17 @@ namespace TypingManager
             // 打鍵時間をフォームに反映させる
             strokeTimeView = new StrokeTimeView(strokeTimeLog, TodayStrokeTime, HourStrokeTime,
                 TodaySpecificStrokeTime, HourSpecificStrokeTime);
+
+            // NotifyIcon（タスクトレイアイコン）のテキストを変更する
+            notifyIcon1.Text = string.Format("今日:{0}{1}昨日:{2}{3}合計:{4}",
+                strokeNumLog.TodayTotalType, Environment.NewLine,
+                strokeNumLog.YesterdayTotalType, Environment.NewLine,
+                strokeNumLog.TotalType);
+
+            // 読み込んだAppConfigからGUIに反映させる
+            SetProcessViewType();       // プロセス別打鍵数の表示タイプのチェック
+            SetSaveTitleStrokeMenu();   // タイトル別の打鍵数を保存するかのチェック
+            SetGraphMarkCheck(AppConfig.MarkType); // グラフにつけるマーク
 
             // 履歴グラフに関する設定
             graphChanger = new GraphChanger(HistoryPicture, HistoryMaxValue, HistoryMinValue,
@@ -277,7 +298,7 @@ namespace TypingManager
             // Timerを使用するタスクの登録
             timerTaskController = new TimerTaskController();
             timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_NEWDAY, 1, 0, 0);
-            timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_SAVE, 0, AppConfig.ScheduleTiming, 0);
+            timerTaskController.AddTask(pluginController, PluginController.TIMER_ID_AUTOSAVE, 0, AppConfig.ScheduleTiming, 0);
             timerTaskController.AddTask(graphChanger, GraphChanger.TIMER_ID_UPDATE, 0, 0, 1);
             timerTaskController.AddTask(strokeTimeLog, StrokeTimeLog.TIMER_ID_COUNT, 0, 0, 1);
             timerTaskController.AddTask(strokeTimeView, StrokeTimeView.TIMER_ID_UPDATE, 0, 0, 1);
@@ -356,7 +377,20 @@ namespace TypingManager
             }
             AppConfig.TabIndex = tabControl1.SelectedIndex;
             AppConfig.Save();
-            pluginController.Close();
+            try
+            {
+                pluginController.Close();
+            }
+            catch (IOException)
+            {
+                DialogResult result = MessageBox.Show("ログの保存に失敗しました。" + Environment.NewLine +
+                    "ログファイルを編集しているプロセスがある場合は終了させてください。" +
+                    "このまま強制終了する場合は「はい」，終了しない場合は「いいえ」をクリックしてください。", Properties.Resources.ApplicationName, MessageBoxButtons.YesNo);
+                if (result == DialogResult.No)
+                {
+                    return false;
+                }
+            }
             keyHook.Dispose();
             return true;
         }
@@ -383,7 +417,18 @@ namespace TypingManager
         /// <param name="e"></param>
         private void timer1_Tick(object sender, EventArgs e)
         {
-            timerTaskController.CallTask(DateTime.Now);
+            if (timerTaskController != null)
+            {
+                try
+                {
+                    timerTaskController.CallTask(DateTime.Now);
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("ログの保存に失敗しました。" + Environment.NewLine +
+                        "ログファイルを編集しているプロセスがある場合は終了させてください。", Properties.Resources.ApplicationName);
+                }
+            }
             DateTimeStatus.Text = DateTime.Now.ToString();
         }
 
@@ -1001,7 +1046,7 @@ namespace TypingManager
                 AppConfig.GetAppPathByTitleChange = configForm.GetAppPathByTitleChange;
                 AppConfig.ShowExitMessage = configForm.ShowExitMessage;
                 AppConfig.NoStrokeLimitTime = configForm.NoStrokeLimitTime;
-                timerTaskController.AddTask(strokeNumLog, StrokeNumLog.TIMER_ID_SAVE, 0, AppConfig.ScheduleTiming, 0);
+                timerTaskController.AddTask(pluginController, PluginController.TIMER_ID_AUTOSAVE, 0, AppConfig.ScheduleTiming, 0);
                 AppConfig.SelectedItemCopyFormat = configForm.SelectedItemCopyFormat;
                 AppConfig.RightClickCopyFormat = configForm.RightClickCopyFormat;
                 AppConfig.MinStrokeTimeSpeed = configForm.MinStrokeTimeSpeed;

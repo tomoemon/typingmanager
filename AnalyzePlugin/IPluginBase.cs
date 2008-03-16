@@ -51,6 +51,9 @@ namespace Plugin
         /// <summary>プラグイン設定用のフォームを表示</summary>
         void ShowConfigForm();
 
+        /// <summary>ユーザが設定した自動保存時のタイミングに呼ばれる</summary>
+        void AutoSave();
+
         /// <summary>
         /// 他のプラグインでも使える情報を渡したいときに使う
         /// IStrokePluginControllerから呼ばれる

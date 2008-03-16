@@ -260,7 +260,7 @@ namespace DetailLogPlugin
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.IndentChars = ("\t");
-            XmlWriter writer = XmlWriter.Create(StrokeTimeLog.TRIGGER_FILE, settings);
+            XmlWriter writer = XmlWriter.Create(DetailLog.TRIGGER_FILE, settings);
             try
             {
                 writer.WriteStartDocument();
@@ -292,10 +292,10 @@ namespace DetailLogPlugin
 
         public void Load()
         {
-            if (File.Exists(StrokeTimeLog.TRIGGER_FILE))
+            if (File.Exists(DetailLog.TRIGGER_FILE))
             {
                 string xml = "";
-                using (StreamReader sr = new StreamReader(StrokeTimeLog.TRIGGER_FILE))
+                using (StreamReader sr = new StreamReader(DetailLog.TRIGGER_FILE))
                 {
                     xml = sr.ReadToEnd();
                 }

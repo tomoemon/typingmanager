@@ -115,6 +115,11 @@ namespace TypingManager
             last_date = DateTime.Now;
         }
 
+        public void AutoSave()
+        {
+            Save();
+        }
+
         public void Save()
         {
             SaveDayLog(last_date);

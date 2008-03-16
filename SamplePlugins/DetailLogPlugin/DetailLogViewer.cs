@@ -71,7 +71,7 @@ namespace DetailLogPlugin
         /// </summary>
         public void LoadInfo()
         {
-            string plugin_dir = Path.Combine(LogDir.LOG_DIR, StrokeTimeLog.PLUGIN_NAME);
+            string plugin_dir = Path.Combine(LogDir.LOG_DIR, DetailLog.PLUGIN_NAME);
             string [] files = Directory.GetFiles(plugin_dir, "*.xml");
 
             tag_log.Clear();

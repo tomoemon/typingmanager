@@ -56,7 +56,7 @@
     <Compile Include="ReadOnlyComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="StrokeTimeLog.cs" />
+    <Compile Include="DetailLog.cs" />
     <Compile Include="TriggerController.cs" />
     <Compile Include="ViewStroke.cs" />
   </ItemGroup>

@@ -41,6 +41,10 @@ namespace TypingManager
 
                     string app_path = stroke_num.ProcessName.GetPath(log.AppID);
                     string app_name = stroke_num.ProcessName.GetName(log.AppID);
+                    if (app_name == "")
+                    {
+                        continue;
+                    }
                     view.Items.Add(app_path, app_path, "");
                     view.Items[app_path].ToolTipText = app_path;
                     view.Items[app_path].SubItems.Add(app_name);

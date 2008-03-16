@@ -40,6 +40,11 @@ namespace SoftInputFilterPlugin
             
         }
 
+        public void AutoSave()
+        {
+
+        }
+
         public IPluginController Controller
         {
             get { return plugin_controller; }

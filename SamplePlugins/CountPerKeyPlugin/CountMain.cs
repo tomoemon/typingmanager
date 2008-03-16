@@ -179,6 +179,11 @@ namespace CountPerKey
                 form.Show();
             }
         }
+
+        public void AutoSave()
+        {
+            Save();
+        }
         #endregion
 
         public void Reset()
@@ -234,7 +239,7 @@ namespace CountPerKey
 
         private void LoadKeyLog(XmlNode parent, Dictionary<int,int> data)
         {
-            XmlNodeList node_list = parent.SelectNodes("//Key");
+            XmlNodeList node_list = parent.SelectNodes("Key");
             foreach (XmlNode key_node in node_list)
             {
                 XmlAttributeCollection attrs = key_node.Attributes;

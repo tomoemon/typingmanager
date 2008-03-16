@@ -42,8 +42,7 @@ namespace TypingManager
 
     public class StrokeNumLog : Plugin.BaseStrokePlugin, Plugin.IStrokeNumData, ITimerTask
     {
-        public const int TIMER_ID_SAVE = 0;
-        public const int TIMER_ID_NEWDAY = 1;
+        public const int TIMER_ID_NEWDAY = 0;
 
         private StrokeProcessName processName;
 
@@ -111,6 +110,17 @@ namespace TypingManager
         }
         #endregion
 
+        public override void Init()
+        {
+            base.Valid = true;
+            processName = new StrokeProcessName();
+            today_app_log = new Dictionary<int, AppKeyLog>();
+            today_app_log[0] = new AppKeyLog(0); // "null" ‚Ì•ª
+            yesterday_app_log = new Dictionary<int, AppKeyLog>();
+            yesterday_app_log[0] = new AppKeyLog(0); // "null" ‚Ì•ª
+            Load();
+        }
+
         /// <summary>
         /// Œ»İ‚Ì“ú•t‚ÌƒƒO‚ğæ“¾‚µ‚½‚¢ê‡‚É—˜—p‚·‚é
         /// </summary>
@@ -122,7 +132,6 @@ namespace TypingManager
             today_app_log[0] = new AppKeyLog(0); // "null" ‚Ì•ª
             yesterday_app_log = new Dictionary<int, AppKeyLog>();
             yesterday_app_log[0] = new AppKeyLog(0); // "null" ‚Ì•ª
-            Load();
         }
 
         /// <summary>
@@ -164,6 +173,14 @@ namespace TypingManager
         {
             Save();
         }
+        public override void AutoSave()
+        {
+            DateTime date = DateTime.Now;
+            if (!IsNewDay(date))
+            {
+                Save();
+            }
+        }
         #endregion
 
         #region ITimerTask‚ÌÀ‘•
@@ -173,14 +190,7 @@ namespace TypingManager
         /// <param name="date"></param>
         public void TimerTask(DateTime date, int id)
         {
-            if (id == TIMER_ID_SAVE)
-            {
-                if (!IsNewDay(date))
-                {
-                    Save();
-                }
-            }
-            else if (id == TIMER_ID_NEWDAY)
+            if (id == TIMER_ID_NEWDAY)
             {
                 if (IsNewDay(date))
                 {

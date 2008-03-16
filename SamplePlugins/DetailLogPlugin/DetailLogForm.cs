@@ -15,7 +15,7 @@ namespace DetailLogPlugin
         public const string WINDOW_TITLE = "è⁄ç◊ÉçÉOê›íË";
 
         private DetailLogViewer detailLogViewer;
-        private StrokeTimeLog strokeTimeLog;
+        private DetailLog strokeTimeLog;
         private DetailTrigger new_trigger = new DetailTrigger();
         private ViewStroke viewStroke;
 
@@ -33,7 +33,7 @@ namespace DetailLogPlugin
         private const int DETAIL_VIEW_BMARGIN = 10;
         private const int DETAIL_VIEW_TEXT_MARGIN = 5;
 
-        public DetailLogForm(StrokeTimeLog log)
+        public DetailLogForm(DetailLog log)
         {
             InitializeComponent();
 
@@ -248,11 +248,11 @@ namespace DetailLogPlugin
             foreach (ListViewItem item in DetailLogView.SelectedItems)
             {
                 DetailLogInfo info = (DetailLogInfo)item.Tag;
-                StrokeTimeLog log = new StrokeTimeLog();
+                DetailLog log = new DetailLog();
                 log.Load(info.FileName);
 
-                string plugin_dir = Path.Combine(LogDir.LOG_DIR,StrokeTimeLog.PLUGIN_NAME);
-                string csv_dir = Path.Combine(plugin_dir, StrokeTimeLog.CSV_DIR);
+                string plugin_dir = Path.Combine(LogDir.LOG_DIR,DetailLog.PLUGIN_NAME);
+                string csv_dir = Path.Combine(plugin_dir, DetailLog.CSV_DIR);
                 string filename = Path.Combine(csv_dir, 
                     Path.GetFileNameWithoutExtension(info.FileName) + ".csv");
                 if (!log.SaveCSV(filename))

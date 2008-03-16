@@ -152,8 +152,9 @@ namespace TypingManager
         }
     }
 
-    public class PluginController : IStrokePluginController
+    public class PluginController : IStrokePluginController, ITimerTask
     {
+        public const int TIMER_ID_AUTOSAVE = 0;
         /// <summary>
         /// ＜プラグインのアクセス名, リスト内のどこにあるか＞
         /// 名前で呼び出せるように辞書形式で保持
@@ -541,6 +542,18 @@ namespace TypingManager
                 }
             }
         }
+
+        #region ITimerTask メンバ
+
+        public void TimerTask(DateTime date, int id)
+        {
+            foreach (IPluginBase plugin in index_dic.Values)
+            {
+                plugin.AutoSave();
+            }
+        }
+
+        #endregion
     }
 
     /// <summary>

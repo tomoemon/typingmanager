@@ -447,7 +447,7 @@
             // 
             this.numericUpDown1.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.numericUpDown1.Increment = new decimal(new int[] {
-            5,
+            10,
             0,
             0,
             0});
@@ -458,7 +458,7 @@
             0,
             0});
             this.numericUpDown1.Minimum = new decimal(new int[] {
-            5,
+            10,
             0,
             0,
             0});

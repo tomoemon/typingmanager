@@ -112,12 +112,6 @@ namespace TypingManager
 
         public override void Init()
         {
-            base.Valid = true;
-            processName = new StrokeProcessName();
-            today_app_log = new Dictionary<int, AppKeyLog>();
-            today_app_log[0] = new AppKeyLog(0); // "null" ‚Ì•ª
-            yesterday_app_log = new Dictionary<int, AppKeyLog>();
-            yesterday_app_log[0] = new AppKeyLog(0); // "null" ‚Ì•ª
             Load();
         }
 
@@ -132,21 +126,6 @@ namespace TypingManager
             today_app_log[0] = new AppKeyLog(0); // "null" ‚Ì•ª
             yesterday_app_log = new Dictionary<int, AppKeyLog>();
             yesterday_app_log[0] = new AppKeyLog(0); // "null" ‚Ì•ª
-        }
-
-        /// <summary>
-        /// “Á’è‚Ì“ú•t‚ÌƒƒO‚ğ‚·‚×‚Äæ“¾‚µ‚½‚¢ê‡‚É—˜—p‚·‚é
-        /// </summary>
-        /// <param name="date"></param>
-        public StrokeNumLog(DateTime date)
-        {
-            base.Valid = true;
-            processName = new StrokeProcessName();
-            today_app_log = new Dictionary<int, AppKeyLog>();
-            today_app_log[0] = new AppKeyLog(0); // "null" ‚Ì•ª
-            yesterday_app_log = new Dictionary<int, AppKeyLog>();
-            yesterday_app_log[0] = new AppKeyLog(0); // "null" ‚Ì•ª
-            Load(date);
         }
 
         #region BaseStrokePlugin‚ÌÀ‘•ã‘‚«
@@ -414,11 +393,11 @@ namespace TypingManager
         public void Load()
         {
             DateTime today = DateTime.Now;
-            processName.Load();
+            //processName.Load();
             allday_log = AllDayLog.Load(today);
             Load(today);
 
-            Console.WriteLine("today hour log");
+            Debug.WriteLine("today hour log");
             for (int i = 0; i < 24; i++)
             {
                 int total = 0;
@@ -426,9 +405,9 @@ namespace TypingManager
                 {
                     total += log.GetHourTotal(i);
                 }
-                Console.Write("{0},", total);
+                Debug.Write(string.Format("{0},", total));
             }
-            Console.WriteLine("\nyesterday hour log");
+            Debug.WriteLine("\nyesterday hour log");
             for (int i = 0; i < 24; i++)
             {
                 int total = 0;
@@ -436,9 +415,9 @@ namespace TypingManager
                 {
                     total += log.GetHourTotal(i);
                 }
-                Console.Write("{0},", total);
+                Debug.Write(string.Format("{0},", total));
             }
-            Console.WriteLine("");
+            Debug.WriteLine("");
 
         }
 

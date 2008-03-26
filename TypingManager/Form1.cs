@@ -240,6 +240,7 @@ namespace TypingManager
             try
             {
                 pluginController.Load();
+                pluginController.Init();
             }
             catch (IOException)
             {
@@ -713,6 +714,8 @@ namespace TypingManager
                 format = format.Replace("%2", descend_title[order_list[i]]);
                 format = format.Replace("\\t", "\t");
                 menu.MenuItems.Add(format);
+                // 各項目をクリックしたときにそのテキストをコピーする
+                menu.MenuItems[menu.MenuItems.Count - 1].Click += new EventHandler(Menu_Copy);
             }
             menu.MenuItems.Add("-");
             menu.MenuItems.Add("クリップボードにコピーする(&C)");
@@ -741,6 +744,18 @@ namespace TypingManager
             {
                 copy_text += menu.MenuItems[i].Text + Environment.NewLine;
             }
+            if (copy_text != "")
+            {
+                // クリップボードに文字列をコピーする
+                // アプリケーション終了後もクリップボードに残る
+                Clipboard.SetText(copy_text);
+            }
+        }
+
+        void Menu_Copy(object sender, EventArgs e)
+        {
+            MenuItem sender_item = (MenuItem)sender;
+            string copy_text = sender_item.Text;
             if (copy_text != "")
             {
                 // クリップボードに文字列をコピーする
@@ -804,7 +819,8 @@ namespace TypingManager
                 if (date.ToString(Plugin.LogDir.DAY_FORMAT) != DateTime.Now.ToString(Plugin.LogDir.DAY_FORMAT))
                 {
                     // ファイルが存在しなくても大丈夫
-                    num_log = new StrokeNumLog(date);
+                    num_log = new StrokeNumLog();
+                    num_log.Load(date);
                 }
 
                 ContextMenu menu = new ContextMenu();
@@ -830,8 +846,8 @@ namespace TypingManager
                                         app_list[order_list[i]].AppID);
                     string app_path = num_log.ProcessName.GetPath(
                                         app_list[order_list[i]].AppID);
-                    Console.WriteLine("id:{0}, name:{1}, path:{2}",
-                        app_list[order_list[i]].AppID,app_name,app_path);
+                    Debug.WriteLine(string.Format("id:{0}, name:{1}, path:{2}",
+                        app_list[order_list[i]].AppID,app_name,app_path));
                     int app_total = num_list[order_list[i]];
 
                     string format = (string)AppConfig.RightClickCopyFormat.Clone();
@@ -851,7 +867,7 @@ namespace TypingManager
                         
                         //  sub_menu.MenuItems.CopyTo(menu_items,0)をやったあとに
                         // 以下のステップを実行すると，なぜかsub_menuのMenuItemsがからっぽになる
-                        // 上のようにClonMenu()を使うと大丈夫．．．なぜだろう？
+                        // 上のようにCloneMenu()を使うと大丈夫．．．なぜだろう？
                         menu.MenuItems[menu.MenuItems.Count - 1].MenuItems.AddRange(menu_items);
 
                         menu.MenuItems[menu.MenuItems.Count - 1].MenuItems[menu_items.Length - 1].Tag = sub_menu;

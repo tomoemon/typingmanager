@@ -68,6 +68,12 @@ namespace TypingManager
         /// <summary>プラグインのバージョンを書くこと</summary>
         public override string GetVersion() { return "0.0.1"; }
 
+        public override void Init()
+        {
+            //StrokeNumLogからLoad()を直接呼び出される
+            //Load();
+        }
+
         public override object GetInfo()
         {
             return (Plugin.IProcessNameData)this;
@@ -75,14 +81,15 @@ namespace TypingManager
 
         public override void AutoSave()
         {
-            Save();
+            //StrokeNumLogからSave()を直接呼び出される
+            //Save();
         }
         public override void Close()
         {
-            Save();
+            //StrokeNumLogからSave()を直接呼び出される
+            //Save();
         }
         #endregion
-
 
         public StrokeProcessName()
         {
@@ -212,6 +219,7 @@ namespace TypingManager
 
         public void Save(string filename)
         {
+            Debug.WriteLine("StrokeProcessName Save:" + base.GetHashCode().ToString());
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.IndentChars = ("\t");
@@ -227,6 +235,7 @@ namespace TypingManager
                 writer.WriteStartElement("ProcessList");
                 foreach (ProcessNameInfo info in path_dic.Values)
                 {
+                    Debug.WriteLine(info.original_path.ToString());
                     writer.WriteStartElement("Process");
                     writer.WriteAttributeString("id", "", info.id.ToString());
                     writer.WriteAttributeString("path", "", info.original_path.ToString());

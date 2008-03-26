@@ -171,13 +171,11 @@ namespace TypingManager
             filter_controller = new FilterController(this);
         }
 
-
         public void Load()
         {
             LoadFilterPlugin();
             LoadStrokePlugin();
             LoadPluginConfig();
-            Init();
         }
 
         private void LoadFilterPlugin()
@@ -258,17 +256,37 @@ namespace TypingManager
 
         public void Init()
         {
-            foreach (IPluginBase plugin in index_dic.Values)
+            foreach (IStrokePlugin plugin in stroke_plugin_list)
             {
-                plugin.Init();
+                if (plugin.Valid == true)
+                {
+                    plugin.Init();
+                }
+            }
+            foreach (IFilterPlugin plugin in filter_controller.GetFilterPluginList())
+            {
+                if (plugin.Valid == true)
+                {
+                    plugin.Init();
+                }
             }
         }
 
         public void Close()
         {
-            foreach (IPluginBase plugin in index_dic.Values)
+            foreach (IStrokePlugin plugin in stroke_plugin_list)
             {
-                plugin.Close();
+                if (plugin.Valid == true)
+                {
+                    plugin.Close();
+                }
+            }
+            foreach (IFilterPlugin plugin in filter_controller.GetFilterPluginList())
+            {
+                if (plugin.Valid == true)
+                {
+                    plugin.Close();
+                }
             }
             SavePluginConfig();
         }

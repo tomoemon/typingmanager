@@ -175,6 +175,7 @@ namespace CountPerKey
             {
                 FormOpen = true;
                 form = new CountForm(this);
+                //Console.WriteLine("x={0}, y={1}", MainForm.Location.X, MainForm.Location.Y);
                 form.Location = MainForm.Location;
                 form.Show();
             }

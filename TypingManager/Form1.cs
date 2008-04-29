@@ -7,7 +7,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
+using System.Xml;
 using Plugin;
+using System.Runtime.InteropServices;
 
 namespace TypingManager
 {
@@ -24,6 +26,7 @@ namespace TypingManager
         private GraphChanger graphChanger;
         private TimerTaskController timerTaskController = null;
         private ConfigForm configForm = new ConfigForm();
+        private uint WM_TaskbarCreated = 0;
 
         // 前回取得したウィンドウタイトル
         // タイトルが違う場合のみプロセス名を取得しなおす
@@ -162,6 +165,9 @@ namespace TypingManager
         }
         #endregion
 
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern uint RegisterWindowMessage(string register_string);
+
         public Form1()
         {
             InitializeComponent();
@@ -173,6 +179,8 @@ namespace TypingManager
             // ログ保存用のディレクトリの存在チェックと生成
             Plugin.LogDir.LogDirectoryCheck();
 
+            WM_TaskbarCreated = RegisterWindowMessage("TaskbarCreated");
+
             // アプリケーションの設定ファイル読み込み
             try
             {
@@ -182,6 +190,13 @@ namespace TypingManager
             {
                 MessageBox.Show("設定ファイルの読み込みに失敗しました。" + Environment.NewLine +
                         "設定ファイルを編集しているプロセスがある場合は終了させてください。", Properties.Resources.ApplicationName);
+                this.Close();
+                return;
+            }
+            catch (XmlException)
+            {
+                MessageBox.Show("設定ファイルに問題がある可能性があります。" + Environment.NewLine +
+                        "configフォルダ内のファイルが壊れていないか確認してください。", Properties.Resources.ApplicationName);
                 this.Close();
                 return;
             }
@@ -990,6 +1005,15 @@ namespace TypingManager
         }
 
         #region タスクトレイ関係...
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_TaskbarCreated)
+            {
+                notifyIcon1.Visible = true;
+            }
+            base.WndProc(ref m);
+        }
+
         private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)

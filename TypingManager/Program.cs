@@ -68,6 +68,12 @@ namespace TypingManager
 
                 //すでに起動していると判断して終了
                 MessageBox.Show(string.Format("{0}は同じディレクトリですでに起動中です",txt), txt);
+
+                Process prevProc = MultipleBootCheck.GetPreviousProcess();
+                if (prevProc != null)
+                {
+                    MultipleBootCheck.WakeupWindow(prevProc);
+                }
                 return;
             }
 

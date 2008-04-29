@@ -132,6 +132,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.Name = "CountForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "キー別打鍵数";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CountForm_FormClosed);
             this.ResumeLayout(false);

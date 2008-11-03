@@ -28,6 +28,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DetailLogPlugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DetailLogPlugin\bin\Release\DetailLogPlugin.dll</HintPath>
+    </Reference>
     <Reference Include="Plugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\AnalyzePlugin\bin\Release\Plugin.dll</HintPath>
@@ -39,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FilterRuleSet.cs" />
     <Compile Include="InputFilterPlugin.cs" />
     <Compile Include="InputFilterPluginForm.cs">
       <SubType>Form</SubType>

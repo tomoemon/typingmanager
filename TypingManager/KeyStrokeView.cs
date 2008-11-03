@@ -71,7 +71,7 @@ namespace TypingManager
                     view.Items[info.path].ToolTipText = info.path;
                     view.Items[info.path].SubItems.Add(info.name);
                     view.Items[info.path].SubItems.Add(info.total.ToString());
-
+                    
                     // ƒAƒCƒRƒ“‚Ì’Ç‰Á
                     Icon icon = ModuleIcon.GetIcon(info.path,
                         ModuleIcon.SHGFI_ICON | ModuleIcon.SHGFI_SMALLICON);

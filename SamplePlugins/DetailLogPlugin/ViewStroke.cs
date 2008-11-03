@@ -8,17 +8,15 @@ namespace DetailLogPlugin
 {
     public class ViewStroke
     {
-        class Stroke
+        class StrokeString : Stroke
         {
-            public Stroke(IKeyState _key, uint _militime)
+            public StrokeString(IKeyState _key, uint down_time, uint up_time)
+                   :base(_key, down_time, up_time)
             {
-                key = _key;
-                militime = _militime;
-                data = string.Format("{0}, {1}, {2}", militime.ToString().PadLeft(5, ' '),
-                    key.KeyCode.ToString().PadLeft(3, ' '), key.KeyName);
+                uint militime = down_time > up_time ? down_time : up_time;
+                data = string.Format("{0}, {1}, {2}, {3}", militime.ToString().PadLeft(5, ' '),
+                    _key.KeyCode.ToString().PadLeft(3, ' '), _key.KeyName, this.KeyModify);
             }
-            IKeyState key;
-            uint militime;
             string data;
 
             public override string ToString()
@@ -38,8 +36,8 @@ namespace DetailLogPlugin
         private int first_up_length = 0;
         private int first_down_length = 0;
 
-        LinkedList<Stroke> up_list = new LinkedList<Stroke>();
-        LinkedList<Stroke> down_list = new LinkedList<Stroke>();
+        LinkedList<StrokeString> up_list = new LinkedList<StrokeString>();
+        LinkedList<StrokeString> down_list = new LinkedList<StrokeString>();
 
         public ViewStroke(TextBox _up_text, TextBox _down_text, int max)
         {
@@ -90,7 +88,7 @@ namespace DetailLogPlugin
             }
             militime -= first_event_time;
 
-            up_list.AddLast(new Stroke(key_state, militime));
+            up_list.AddLast(new StrokeString(key_state, 0, militime));
             string line = GetLastUp();
             up_text.Text += line + Environment.NewLine;
             if (UpCount == 1)
@@ -124,7 +122,7 @@ namespace DetailLogPlugin
             militime -= first_event_time;
             //Console.WriteLine("first:{0}, time:{1}", first_event_time, militime);
 
-            down_list.AddLast(new Stroke(key_state, militime));
+            down_list.AddLast(new StrokeString(key_state, militime, 0));
             string line = GetLastDown();
             down_text.Text += line + Environment.NewLine;
             if (DownCount == 1)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using System.Windows.Forms;
 using Plugin;
 
@@ -10,13 +11,19 @@ namespace SoftInputFilterPlugin
     {
         public static string CONFIG_DIR = "";
         public static string LOG_DIR = "";
-
+        
         private IFilterPluginController filter_controller;
         private IPluginController plugin_controller;
         private bool valid = false;
         private Form main_form = null;
         private bool form_open = false;
         private InputFilterPluginForm form;
+
+        /// <summary>読み込み済みのフィルタ</summary>
+        private List<FilterRuleSet> ruleSetList = new List<FilterRuleSet>();
+
+        /// <summary>現在適用しているフィルタ番号</summary>
+        private int filterIndex = -1;
 
         #region プロパティ...
         public bool FormOpen
@@ -99,6 +106,7 @@ namespace SoftInputFilterPlugin
         {
             CONFIG_DIR = Controller.GetConfigDir(this.GetAccessName());
             LOG_DIR = Controller.GetSaveDir(this.GetAccessName());
+            LoadFilter();
         }
 
         public bool IsHasConfigForm()
@@ -147,5 +155,17 @@ namespace SoftInputFilterPlugin
             set { valid = value; }
         }
         #endregion
+
+        public void LoadFilter()
+        {
+            string[] files = Directory.GetFiles(CONFIG_DIR, "*.filter.txt");
+
+            foreach (string path in files)
+            {
+                Console.WriteLine(path);
+                FilterRuleSet ruleset = new FilterRuleSet(path);
+                ruleSetList.Add(ruleset);
+            }
+        }
     }
 }

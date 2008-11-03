@@ -26,12 +26,15 @@ namespace TypingManager
         // called_keyÇÃÉLÅ[ñº
         private string called_key_name = "";
 
-        private int VK_LMENU = (int)Keys.LMenu;
-        private int VK_RMENU = (int)Keys.RMenu;
-        private int VK_LSHIFT = (int)Keys.LShiftKey;
-        private int VK_RSHIFT = (int)Keys.RShiftKey;
-        private int VK_LCTRL = (int)Keys.LControlKey;
-        private int VK_RCTRL = (int)Keys.RControlKey;
+        private const int VK_LMENU = (int)Keys.LMenu;
+        private const int VK_RMENU = (int)Keys.RMenu;
+        private const int VK_MENU = (int)Keys.Menu;
+        private const int VK_LSHIFT = (int)Keys.LShiftKey;
+        private const int VK_RSHIFT = (int)Keys.RShiftKey;
+        private const int VK_SHIFT = (int)Keys.ShiftKey;
+        private const int VK_LCTRL = (int)Keys.LControlKey;
+        private const int VK_RCTRL = (int)Keys.RControlKey;
+        private const int VK_CTRL = (int)Keys.ControlKey;
 
         public int KeyCode
         {
@@ -115,17 +118,17 @@ namespace TypingManager
 
         public bool IsAlt
         {
-            get { return IsDown(VK_LMENU) || IsDown(VK_RMENU); }
+            get { return IsDown(VK_LMENU) || IsDown(VK_RMENU) || IsDown(VK_MENU); }
         }
 
         public bool IsControl
         {
-            get { return IsDown(VK_LCTRL) || IsDown(VK_RCTRL); }
+            get { return IsDown(VK_LCTRL) || IsDown(VK_RCTRL) || IsDown(VK_CTRL); }
         }
 
         public bool IsShift
         {
-            get { return IsDown(VK_LSHIFT) || IsDown(VK_RSHIFT); }
+            get { return IsDown(VK_LSHIFT) || IsDown(VK_RSHIFT) || IsDown(VK_SHIFT); }
         }
     }
 }

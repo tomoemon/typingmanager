@@ -127,6 +127,7 @@
     <Compile Include="ViewPluginForm.Designer.cs">
       <DependentUpon>ViewPluginForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="XmlValidStringTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="history.txt" />

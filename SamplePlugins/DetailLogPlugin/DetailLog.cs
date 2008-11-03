@@ -10,7 +10,7 @@ using Plugin;
 
 namespace DetailLogPlugin
 {
-    public struct Stroke
+    public class Stroke
     {
         // 仮想キー
         private int vkey;
@@ -18,22 +18,33 @@ namespace DetailLogPlugin
         // キーの名前
         private string key_name;
 
+        // AltやCtrl,Shiftが押されていたか
+        // Altのみ押されているとき："A"
+        // AltとCtrlが押されているとき："AC"
+        // Alt,Ctrl,Shiftが押されているとき："ACS"
+        private string modify = "";
+
         // キー押下時間（詳細ログを開始してから経過したミリ秒）
-        private int down_time;
+        private uint down_time;
 
         // キー押上時間
-        private int up_time;
+        private uint up_time;
 
         #region プロパティ...
         public int VKey
         {
             get { return vkey; }
         }
-        public int DownTime
+        public string KeyModify
+        {
+            get { return modify; }
+            set { modify = value; }
+        }
+        public uint DownTime
         {
             get { return down_time; }
         }
-        public int UpTime
+        public uint UpTime
         {
             get { return up_time; }
         }
@@ -43,11 +54,32 @@ namespace DetailLogPlugin
         }
         #endregion
 
-        public Stroke(int vkey, int down_time, int up_time)
+        public Stroke(IKeyState key, uint down_time, uint up_time)
+        {
+            this.vkey = key.KeyCode;
+            this.down_time = down_time;
+            this.up_time = up_time;
+            this.key_name = VirtualKeyName.GetKeyName(this.vkey);
+            if (key.IsAlt)
+            {
+                modify = "A";
+            }
+            if (key.IsControl)
+            {
+                modify += "C";
+            }
+            if (key.IsShift)
+            {
+                modify += "S";
+            }
+        }
+
+        public Stroke(int vkey, uint down_time, uint up_time, string modify)
         {
             this.vkey = vkey;
             this.down_time = down_time;
             this.up_time = up_time;
+            this.modify = modify;
             this.key_name = VirtualKeyName.GetKeyName(vkey);
         }
 
@@ -136,7 +168,7 @@ namespace DetailLogPlugin
 
         // <押されたキー,押された時間>
         // そのキーが上がった時に二つを組み合わせてStrokeインスタンスを作る
-        private Dictionary<int, int> down_dic = new Dictionary<int, int>();
+        private Dictionary<int, uint> down_dic = new Dictionary<int, uint>();
 
         // 一つのキーについて押された時間と離した時間をペアにしたインスタンスのリスト
         private List<Stroke> stroke_list = new List<Stroke>();
@@ -252,11 +284,11 @@ namespace DetailLogPlugin
             if (down_dic.ContainsKey(key_state.KeyCode))
             {
                 stroke_list.Add(
-                    new Stroke(key_state.KeyCode, down_dic[key_state.KeyCode],
+                    new Stroke(key_state, down_dic[key_state.KeyCode],
                         down_dic[key_state.KeyCode]));
             }
             //Console.WriteLine("DetailLog keydown:{0}", key_state.KeyCode);
-            down_dic[key_state.KeyCode] = (int)(militime - start_time);
+            down_dic[key_state.KeyCode] = (uint)(militime - start_time);
         }
 
         public override void KeyUp(IKeyState key_state, uint militime, string app_path, string app_title)
@@ -270,8 +302,8 @@ namespace DetailLogPlugin
             if (down_dic.ContainsKey(key_state.KeyCode))
             {
                 stroke_list.Add(
-                    new Stroke(key_state.KeyCode, down_dic[key_state.KeyCode],
-                    (int)(militime - start_time)));
+                    new Stroke(key_state, down_dic[key_state.KeyCode],
+                    militime - start_time));
                 down_dic.Remove(key_state.KeyCode);
             }
         }
@@ -382,7 +414,7 @@ namespace DetailLogPlugin
                 stroke_list.Sort(
                     delegate(Stroke s1, Stroke s2)
                     {
-                        return s1.DownTime - s2.DownTime;
+                        return (int)(s1.DownTime - s2.DownTime);
                     }
                 );
                 Save();
@@ -423,6 +455,7 @@ namespace DetailLogPlugin
                     writer.WriteAttributeString("vkey_code", "", st.VKey.ToString());
                     writer.WriteAttributeString("down", "", st.DownTime.ToString());
                     writer.WriteAttributeString("up", "", st.UpTime.ToString());
+                    writer.WriteAttributeString("modify", "", st.KeyModify);
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
@@ -487,6 +520,7 @@ namespace DetailLogPlugin
                     {
                         sw.Write(st.KeyName); sw.Write(",");
                         sw.Write(st.VKey); sw.Write(",");
+                        sw.Write(st.KeyModify); sw.Write(",");
                         sw.Write(st.DownTime); sw.Write(",");
                         sw.Write(st.UpTime); sw.Write("\n");
                     }
@@ -525,9 +559,15 @@ namespace DetailLogPlugin
                 {
                     XmlAttributeCollection key_attrs = key_node.Attributes;
                     int vkey = int.Parse(key_attrs["vkey_code"].Value);
-                    int down = int.Parse(key_attrs["down"].Value);
-                    int up = int.Parse(key_attrs["up"].Value);
-                    stroke_list.Add(new Stroke(vkey, down, up));
+                    uint down = uint.Parse(key_attrs["down"].Value);
+                    uint up = uint.Parse(key_attrs["up"].Value);
+                    string modify = "";
+                    XmlAttribute modify_attr = key_attrs["modify"];
+                    if (modify_attr != null)
+                    {
+                        modify = modify_attr.Value;
+                    }
+                    stroke_list.Add(new Stroke(vkey, down, up, modify));
                 }
             }
         }

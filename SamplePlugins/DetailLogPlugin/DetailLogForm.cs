@@ -251,9 +251,7 @@ namespace DetailLogPlugin
                 DetailLog log = new DetailLog();
                 log.Load(info.FileName);
 
-                string plugin_dir = Path.Combine(LogDir.LOG_DIR,DetailLog.PLUGIN_NAME);
-                string csv_dir = Path.Combine(plugin_dir, DetailLog.CSV_DIR);
-                string filename = Path.Combine(csv_dir, 
+                string filename = Path.Combine(DetailLog.CSV_DIR, 
                     Path.GetFileNameWithoutExtension(info.FileName) + ".csv");
                 if (!log.SaveCSV(filename))
                 {

@@ -57,7 +57,7 @@ namespace TypingManager
 
             // Mutexの名前には'\'が入っているとダメなのでパス名に使えない'/'に置換
             string mutex_name = asm_name + "_" + cur_dir.Replace('\\', '/');
-            
+
             _mutex = new Mutex(false, mutex_name);
             
             //ミューテックスの所有権を要求する
@@ -72,11 +72,11 @@ namespace TypingManager
                 Process prevProc = MultipleBootCheck.GetPreviousProcess();
                 if (prevProc != null)
                 {
+                    //MessageBox.Show("ウィンドウを最前面に表示します", "WakeupWindow");
                     MultipleBootCheck.WakeupWindow(prevProc);
                 }
                 return;
             }
-
             try
             {
                 MessageFilter.ChangeWindowMessageFilter(WinMessage.WM_KEYDOWN, FilterType.MSGFLT_ADD);

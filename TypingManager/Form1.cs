@@ -246,7 +246,7 @@ namespace TypingManager
 
             // キーの状態を保存するクラス
             keyState = new KeyState();
-            
+
             // プラグインコントローラの作成とプラグインの読み込み
             pluginController = new PluginController(this);
             pluginController.AddStrokePlugin(strokeNumLog);
@@ -266,10 +266,11 @@ namespace TypingManager
                 return;
             }
             pluginController.AddMenu(PluginMenu);
-            
+
             // キー入力に応じて打鍵ログをGUIに反映させるクラス
             keyStrokeView = new KeyStrokeView(this, strokeNumLog);
             keyStrokeView.DayStrokeViewLoad();
+            // すべてのプロセスのアイコンを読み込むようにしていると恐ろしく時間がかかる
             keyStrokeView.ProcessViewLoad();
             keyStrokeView.MainTabLoad();
 
@@ -725,9 +726,9 @@ namespace TypingManager
             for (int i = 0; i < descend_title.Count; i++)
             {
                 string format = (string)AppConfig.RightClickCopyFormat.Clone();
+                format = format.Replace("\\t", "\t");
                 format = format.Replace("%1", title_total[order_list[i]].ToString());
                 format = format.Replace("%2", descend_title[order_list[i]]);
-                format = format.Replace("\\t", "\t");
                 menu.MenuItems.Add(format);
                 // 各項目をクリックしたときにそのテキストをコピーする
                 menu.MenuItems[menu.MenuItems.Count - 1].Click += new EventHandler(Menu_Copy);

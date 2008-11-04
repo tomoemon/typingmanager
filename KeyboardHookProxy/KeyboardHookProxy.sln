@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyboardHookProxy", "KeyboardHookProxy\KeyboardHookProxy.vcproj", "{CAB9B16C-A8D5-4261-9CEE-85D50374B0A3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{EC144FC5-85A1-4C71-9191-2C578098C1E9} = {EC144FC5-85A1-4C71-9191-2C578098C1E9}

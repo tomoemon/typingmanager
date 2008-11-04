@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CF2A8E15-52CF-4BB5-A756-B98912C9DB3D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -133,7 +133,6 @@
     <Compile Include="ViewPluginForm.Designer.cs">
       <DependentUpon>ViewPluginForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="XmlValidStringTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="history.txt" />

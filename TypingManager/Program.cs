@@ -26,32 +26,27 @@ namespace TypingManager
             // カレントディレクトリの設定
             string cur_dir = Path.GetDirectoryName(Application.ExecutablePath);
             Directory.SetCurrentDirectory(cur_dir);
-
+            
             if (!KeyboardProxyHook.IsExists())
             {
                 string msg = string.Format(
                     "{0}または{1}が見つかりません。{2}実行ディレクトリ：{3}",
-                    KeyboardProxyHook.PROXY_EXE, KeyboardProxyHook.PROXY_DLL,
-                    Environment.NewLine, cur_dir);
-                MessageBox.Show(msg,"プログラムを終了します");
-                return;
-            }
-            else if (!RequiredDll.IsExists())
-            {
-                string msg = string.Format(
-                    "{0}または{1}，{2}が見つかりません。{3}実行ディレクトリ：{4}",
-                    RequiredDll.IRON_PYTHON, RequiredDll.IRON_MATH, RequiredDll.PLUGIN,
+                    KeyboardProxyHook.PROXY_DLL_32, KeyboardProxyHook.PROXY_DLL_64,
                     Environment.NewLine, cur_dir);
                 MessageBox.Show(msg, "プログラムを終了します");
                 return;
             }
 
-            /*
-            AnalyzeTool plugin = PythonTool.Create();
-            Console.WriteLine("author name:{0}", plugin.GetAuthorName());
-            Console.WriteLine("template:{0}", plugin.GetInputTemplate());
-            Console.WriteLine("analyze result:{0}", plugin.Run());
-             */
+            if (!RequiredDll.IsExists())
+            {
+                string msg = string.Format(
+                    "{0}または{1}が見つかりません。{2}実行ディレクトリ：{3}",
+                    RequiredDll.IRON_PYTHON, RequiredDll.PLUGIN,
+                    Environment.NewLine, cur_dir);
+                MessageBox.Show(msg, "プログラムを終了します");
+                return;
+            }
+            
             //Mutexクラスの作成
             string asm_name = Assembly.GetExecutingAssembly().GetName().Name;
 

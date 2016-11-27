@@ -49,7 +49,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstDLL, DWORD dwReason, LPVOID lpReserved)
 LRESULT CALLBACK HookProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if(nCode == HC_ACTION){
-		if(lParam & 0x80000000){
+		if(HIWORD(lParam) & KF_UP){
 			//MessageBox(NULL, L"dll up",L"",MB_OK);
 			printlp(L"wParam:", wParam);
 			printlp(L"lParam:", lParam);

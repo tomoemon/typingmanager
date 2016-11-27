@@ -23,18 +23,16 @@ namespace TypingManager
         private static string _windowTitle = "MessageEventsWindow";
 		private static SynchronizationContext _context;
 
-		public static event EventHandler<MessageReceivedEventArgs> MessageReceived;
-
         public static string WindowTitle
         {
             get { return _windowTitle; }
             set { _windowTitle = value; }
         }
 
-		public static void WatchMessage(int message)
+		public static void WatchMessage(int message, Action<MessageReceivedEventArgs> action)
 		{
 			EnsureInitialized();
-			_window.RegisterEventForMessage(message);
+			_window.RegisterEventForMessage(message, action);
 		}
 
 		public static IntPtr WindowHandle
@@ -76,33 +74,28 @@ namespace TypingManager
 		private class MessageWindow : Form
 		{
 			private ReaderWriterLock _lock = new ReaderWriterLock();
-			private Dictionary<int, bool> _messageSet = new Dictionary<int, bool>();
+			private Dictionary<int, Action<MessageReceivedEventArgs>> _messageSet = new Dictionary<int, Action<MessageReceivedEventArgs>>();
 
-			public void RegisterEventForMessage(int messageID)
+			public void RegisterEventForMessage(int messageID, Action<MessageReceivedEventArgs> action)
 			{
 				_lock.AcquireWriterLock(Timeout.Infinite);
-				_messageSet[messageID] = true;
+				_messageSet[messageID] = action;
 				_lock.ReleaseWriterLock();
 			}
 
 			protected override void WndProc(ref Message m)
 			{
 				_lock.AcquireReaderLock(Timeout.Infinite);
-				bool handleMessage = _messageSet.ContainsKey(m.Msg);
-				_lock.ReleaseReaderLock();
-
-				if (handleMessage)
-				{
-					MessageEvents._context.Post(delegate(object state)
+                if (_messageSet.ContainsKey(m.Msg))
+                {
+                    var handler = _messageSet[m.Msg];
+					MessageEvents._context.Post(state =>
 					{
-						EventHandler<MessageReceivedEventArgs> handler = MessageEvents.MessageReceived;
-                        if (handler != null)
-                        {
-                            handler(null, new MessageReceivedEventArgs((Message)state));
-                        }
+                        handler(new MessageReceivedEventArgs((Message)state));
 					}, m);
 				}
-				base.WndProc(ref m);
+                _lock.ReleaseReaderLock();
+                base.WndProc(ref m);
 			}
 		}
 	}

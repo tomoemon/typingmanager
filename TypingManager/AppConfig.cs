@@ -27,7 +27,6 @@ namespace TypingManager
     public class RequiredDll
     {
         public const string IRON_PYTHON = "IronPython.dll";
-        public const string IRON_MATH = "IronMath.dll";
         public const string PLUGIN = "Plugin.dll";
 
         public static bool IsExists()

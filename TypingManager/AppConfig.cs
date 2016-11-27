@@ -32,7 +32,7 @@ namespace TypingManager
 
         public static bool IsExists()
         {
-            if (!File.Exists(IRON_PYTHON) || !File.Exists(IRON_MATH) || !File.Exists(PLUGIN))
+            if (!File.Exists(IRON_PYTHON) || !File.Exists(PLUGIN))
             {
                 return false;
             }

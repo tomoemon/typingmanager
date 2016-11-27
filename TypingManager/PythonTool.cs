@@ -5,29 +5,30 @@ using System.IO;
 using System.Reflection;
 using IronPython.Hosting;
 using Plugin;
+using Microsoft.Scripting.Hosting;
 
 namespace TypingManager
 {
     public class PythonTool{
         private static PythonTool __instance = new PythonTool();
-        private PythonEngine _engine;
+        private ScriptEngine _engine;
 
         private PythonTool(){}
 
-        private PythonEngine Engine {
+        private ScriptEngine Engine {
             get {
                 if (_engine == null) {
-                    _engine = new PythonEngine();
-                    _engine.Sys.DefaultEncoding = Encoding.UTF8;
+                    _engine = Python.CreateEngine();
 
                     Assembly a = this.GetType().Assembly;
-                    _engine.LoadAssembly(a);
+                    _engine.Runtime.LoadAssembly(a);
                     string current_dir = Directory.GetCurrentDirectory();
-                    _engine.LoadAssembly(Assembly.LoadFile(Path.Combine(current_dir,"AnalyzePlugin.dll")));
+                    _engine.Runtime.LoadAssembly(Assembly.LoadFile(Path.Combine(current_dir,"AnalyzePlugin.dll")));
                     
                     string path = Path.Combine(Path.GetDirectoryName(a.Location), "tools");
-                    _engine.Sys.path.Append(path);
-                    _engine.Sys.path.Append(current_dir);
+                    var searchPath = _engine.GetSearchPaths();
+                    searchPath.Add(path);
+                    _engine.SetSearchPaths(searchPath);
                 }
                 return _engine;
             }
@@ -35,7 +36,7 @@ namespace TypingManager
 
         ~PythonTool() {
             if (_engine != null) {
-                _engine.Dispose();
+                _engine.Runtime.Shutdown();
             }
         }
 
@@ -43,7 +44,7 @@ namespace TypingManager
         {
             __instance.Engine.ExecuteFile(filename);
             string file_without_ext = Path.GetFileNameWithoutExtension(filename);
-            return __instance.Engine.EvaluateAs<AnalyzeTool>(file_without_ext + "()");
+            return __instance.Engine.Execute<AnalyzeTool>(file_without_ext + "()");
         }
     }
 }

@@ -14,7 +14,7 @@ inline void dprintf_real( const _TCHAR * fmt, ... )
   _TCHAR buf[DPRINTF_MES_LENGTH];
   va_list ap;
   va_start(ap, fmt);
-  _vsntprintf(buf, DPRINTF_MES_LENGTH, fmt, ap);
+  _vsntprintf_s(buf, DPRINTF_MES_LENGTH, fmt, ap);
   va_end(ap);
   OutputDebugString(buf);
 }

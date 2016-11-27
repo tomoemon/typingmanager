@@ -13,12 +13,6 @@ typedef BOOL (__stdcall *FUNCTYPE)(UINT, DWORD);
 
 static HWND target_window = NULL;
 
-#ifdef _DEBUG
-#pragma comment(lib,"../debug/KeyboardHookDll.lib")
-#else
-#pragma comment(lib,"../release/_proxy.lib")
-#endif
-
 /*
 unsigned int GetMiliTime()
 {

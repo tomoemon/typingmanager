@@ -21,11 +21,14 @@ namespace TypingManager
 
         public static bool IsExists()
         {
+            return true;
+            /*
             if (!File.Exists(PROXY_EXE) || !File.Exists(PROXY_DLL))
             {
                 return false;
             }
             return true;
+            */
         }
 
         /*

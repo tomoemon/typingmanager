@@ -2,7 +2,7 @@
 #define WIN32_LEAN_AND_MEAN		// Windows ヘッダーから使用されていない部分を除外します。
 #include <windows.h>
 #include "Main.h"
-#include "../KeyboardHookProxy/dprintf.h"
+#include "dprintf.h"
 
 /* フックプロシージャで使用する変数は共有メモリにおく */
 /*                                                    */
